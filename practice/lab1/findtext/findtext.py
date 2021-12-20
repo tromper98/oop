@@ -23,6 +23,12 @@ def get_filename_and_searchable_string(args: list) -> Optional[Tuple]:
     return book, searchable_string
 
 
+def check_file_exists(filename: str) -> None:
+    file_path = os.path.join(DATA, filename)
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f'File {filename} doesn\'t exist in {DATA} directory')
+
+
 def find_string_in_file(filename: str, searchable_string: str) -> List:
     rows_number: List[int] = []
     with open(os.path.join(DATA, filename), "r", encoding='UTF-8') as f:
@@ -43,6 +49,7 @@ def output_result(row_numbers: List[int]) -> None:
 
 
 if __name__ == '__main__':
-    file, string = get_filename_and_searchable_string(sys.argv)
-    result: List[int] = find_string_in_file(file, string)
+    filename, string = get_filename_and_searchable_string(sys.argv)
+    check_file_exists(filename)
+    result: List[int] = find_string_in_file(filename, string)
     output_result(result)
