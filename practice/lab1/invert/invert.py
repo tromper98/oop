@@ -4,6 +4,7 @@ from typing import List
 class Matrix:
     def __init__(self, matrix: List[List[int]]):
         self.matrix = matrix
+        self.determinant = self.get_determinant()
 
     def _is_quadratic_matrix(self) -> bool:
         ln = len(self.matrix)
@@ -81,14 +82,21 @@ class Matrix:
         minors_determinats = self.get_minors_determinants(minors)
         minors_determinats = self.get_minor_algebraic_additions_matrix(minors_determinats)
         transposed_determinats = self.transpose_matrix(minors_determinats)
-        return transposed_determinats
+
+        inverse_matrix: List[List[int]] = []
+        for transpoded_row in transposed_determinats:
+                inverse_matrix.append(list(map(lambda x: x / self.determinant, transpoded_row)))
+
+        return inverse_matrix
 
 
-matrix = [
-    [2, 5, 7],
-    [6, 3, 4],
-    [5, -2, -3]
-]
+class MatrixFactory:
+    @staticmethod
+    def from_file(filename: str):
+        matrix: List[List[int]] = []
+        with open(filename, 'r', encoding='utf-8') as file:
+            for row in file:
+                str_row = row.split(' ')
+                matrix.append([int(x) for x in str_row])
+        return Matrix(matrix)
 
-mt = Matrix(matrix)
-mt2 = mt.get_inverse_matrix()
