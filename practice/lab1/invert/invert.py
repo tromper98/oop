@@ -4,18 +4,11 @@ from typing import List
 class Matrix:
     def __init__(self, matrix: List[List[int]]):
         self.matrix = matrix
-        self.determinant = self.get_determinant()
+        self.determinant = self.calculate_determinant()
 
-    def _is_quadratic_matrix(self) -> bool:
-        ln = len(self.matrix)
-        for row in self.matrix:
-            if len(row) != ln:
-                return False
-        return True
-
-    def get_determinant(self):
+    def calculate_determinant(self):
         arr = self.matrix
-        coefs: list = [
+        coeficients: list = [
             arr[0][0] * arr[1][1] * arr[2][2],
             arr[2][0] * arr[0][1] * arr[1][2],
             arr[1][0] * arr[2][1] * arr[0][2],
@@ -23,9 +16,9 @@ class Matrix:
             -1 * arr[0][0] * arr[2][1] * arr[1][2],
             -1 * arr[1][0] * arr[0][1] * arr[2][2]
         ]
-        return sum(coefs)
+        return sum(coeficients)
 
-    def get_minors(self) -> List[List[List[List[int]]]]:
+    def calculate_minors(self) -> List[List[List[List[int]]]]:
         def get_minor(ignore_row: int, ignore_column: int) -> List[List[int]]:
             minor = []
             for i, row in enumerate(self.matrix):
@@ -45,22 +38,23 @@ class Matrix:
             minors.append(minor_row)
         return minors
 
-    def get_minors_determinants(self, minors: List[List[List[List[int]]]]) -> List[List[int]]:
-        def get_minor_determinant(minor: List[List[int]]) -> int:
+    def calculate_minors_determinants(self, minors: List[List[List[List[int]]]]) -> List[List[int]]:
+        def _get_minor_determinant(minor: List[List[int]]) -> int:
             coefs: list = [
                 minor[0][0] * minor[1][1],
                 -1 * minor[0][1] * minor[1][0]
             ]
             return sum(coefs)
+
         determinats = []
         for minor_row in minors:
             determinats_row = []
             for minor in minor_row:
-                determinats_row.append(get_minor_determinant(minor))
+                determinats_row.append(_get_minor_determinant(minor))
             determinats.append(determinats_row)
         return determinats
 
-    def get_minor_algebraic_additions_matrix(self, minor_matrix: List[List[int]]) -> List[List[int]]:
+    def calculate_minor_algebraic_additions_matrix(self, minor_matrix: List[List[int]]) -> List[List[int]]:
         algebraic_additions_matrix = minor_matrix
         algebraic_additions_matrix[0][1] *= -1
         algebraic_additions_matrix[1][2] *= -1
@@ -74,18 +68,18 @@ class Matrix:
             transpose_matrix.append([x[i] for x in matrix])
         return transpose_matrix
 
-    def get_inverse_matrix(self) -> List[List[int]]:
-        determinant = self.get_determinant()
+    def inverse_matrix(self) -> List[List[int]]:
+        determinant = self.calculate_determinant()
         if not determinant:
             raise ValueError("This matrix doesn't have inverse matrix because determinant = 0")
-        minors = self.get_minors()
-        minors_determinats = self.get_minors_determinants(minors)
-        minors_determinats = self.get_minor_algebraic_additions_matrix(minors_determinats)
+        minors = self.calculate_minors()
+        minors_determinats = self.calculate_minors_determinants(minors)
+        minors_determinats = self.calculate_minor_algebraic_additions_matrix(minors_determinats)
         transposed_determinats = self.transpose_matrix(minors_determinats)
 
         inverse_matrix: List[List[int]] = []
         for transpoded_row in transposed_determinats:
-                inverse_matrix.append(list(map(lambda x: x / self.determinant, transpoded_row)))
+            inverse_matrix.append(list(map(lambda x: x / self.determinant, transpoded_row)))
 
         return inverse_matrix
 
@@ -99,4 +93,3 @@ class MatrixFactory:
                 str_row = row.split(' ')
                 matrix.append([int(x) for x in str_row])
         return Matrix(matrix)
-
