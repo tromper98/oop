@@ -1,55 +1,59 @@
 import os
 import sys
+import argparse
 
+from dataclasses import dataclass
 from typing import Tuple, Optional, List
 
-DATA = os.path.abspath('data')
+DATA_DIR = os.path.abspath('data')
 
 
-def get_filename_and_searchable_string(args: list) -> Optional[Tuple]:
-    def _check_params_count(count_args) -> None:
-        if count_args == 3:
-            return
-
-        if count_args > 3:
-            raise NotImplementedError("Too much parameters was given")
-
-        if count_args < 3:
-            raise NotImplementedError("Not enough parameters was given")
-
-    _check_params_count(len(args))
-    book: str = args[1]
-    searchable_string: str = args[2]
-    return book, searchable_string
+@dataclass()
+class TextFile:
+    def __init__(self, file_path: str, searchable_string: str) -> None:
+        self.file_path = file_path
+        self.searchable_string = searchable_string
 
 
-def check_file_exists(filename: str) -> None:
-    file_path = os.path.join(DATA, filename)
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f'File {filename} doesn\'t exist in {DATA} directory')
+def get_filename_and_searchable_string() -> TextFile:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('file_path', help='The path to the file in which to search for the string')
+    parser.add_argument('searchable_string', help='The string to be found in the file')
+
+    args = parser.parse_args()
+    return TextFile(args.file_path, args.searchable_string)
 
 
-def find_string_in_file(filename: str, searchable_string: str) -> List:
+def find_string_in_file(file: TextFile) -> List[int]:
+    file_path = os.path.abspath(file.file_path)
     rows_number: List[int] = []
-    with open(os.path.join(DATA, filename), "r", encoding='UTF-8') as f:
-        for (i, row) in enumerate(f):
-            if searchable_string in row:
-                rows_number.append(i)
+    try:
+        with open(file_path, "r", encoding='UTF-8') as f:
+            for (i, row) in enumerate(f):
+                if file.searchable_string in row:
+                    rows_number.append(i)
+    except:
+        raise FileNotFoundError(f'File {file_path} doesn\'t exist')
+
+    if not rows_number:
+        print('Text not found')
+        sys.exit(1)
+
     return rows_number
 
 
-def output_result(row_numbers: List[int]) -> None:
-    if not row_numbers:
-        print('1', 'Text not found', sep='\n')
-        return
-
-    print('0')
+def print_array(row_numbers: List[int]) -> None:
     for number in row_numbers:
         print(number)
+    sys.exit(0)
+
+
+def find_rows_in_text_file() -> None:
+    file = get_filename_and_searchable_string()
+    result: List[int] = find_string_in_file(file)
+    print_array(result)
 
 
 if __name__ == '__main__':
-    filename, string = get_filename_and_searchable_string(sys.argv)
-    check_file_exists(filename)
-    result: List[int] = find_string_in_file(filename, string)
-    output_result(result)
+    find_rows_in_text_file()
