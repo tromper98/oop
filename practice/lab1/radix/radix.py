@@ -25,19 +25,19 @@ class Number:
 
 
 class Radix:
-    def __init__(self, number: Number, radix_from: int, radix_to: int) -> None:
-        self.number: Number = number
+    def __init__(self, number: str, radix_from: int, radix_to: int) -> None:
+        self.number: Number = Number(number)
         self.radix_from: int = self._check_radix(radix_from)
         self.radix_to: int = self._check_radix(radix_to)
         self._validate_number()
 
     def convert_number(self) -> Number:
         def _convert_string_to_number(number: str, radix_from: int) -> int:
-            degree = 0
-            result = 1
+            degree = len(number)
+            result = 0
             for digit in number:
-                result *= int(ALPHABET.index(digit)) * radix_from
-                degree += 1
+                degree -= 1
+                result += int(ALPHABET.index(digit)) * radix_from ** degree
             return result
 
         converted_number = _convert_string_to_number(self.number.number, self.radix_from)
@@ -47,6 +47,10 @@ class Radix:
         while converted_number > 0:
             converted_number, digit = divmod(converted_number, self.radix_to)
             result += ALPHABET[digit]
+
+        if self.number.is_negative_number:
+            result += '-'
+
         return Number(result[::-1])
 
     def _check_radix(self, radix: int) -> int:
@@ -69,13 +73,13 @@ def parse_params() -> Radix:
     parser.add_argument('radix_to', help="Radix in which the 'number' will be converted", type=int)
 
     args = parser.parse_args()
-    return Radix(Number(args.number), args.radix_from, args.radix_to)
+    return Radix(args.number, args.radix_from, args.radix_to)
 
 
 def convert_number():
     radix: Radix = parse_params()
-    result: Number = radix.convert_number()
-    print(result)
+    converted_number: Number = radix.convert_number()
+    print(converted_number)
     sys.exit(0)
 
 
