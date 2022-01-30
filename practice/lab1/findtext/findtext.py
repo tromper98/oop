@@ -3,7 +3,7 @@ import sys
 import argparse
 
 from dataclasses import dataclass
-from typing import Tuple, Optional, List
+from typing import List
 
 DATA_DIR = os.path.abspath('data')
 
