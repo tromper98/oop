@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Iterator
 
 BORDER = '#'
 PASSABLE = ' '
@@ -54,6 +54,26 @@ class Cell:
 class Labyrinth:
     def __init__(self, field: List[List[Cell]]):
         self.field: List[List[Cell]] = field
+        self.start, self.finish = self.find_start_and_end_cells()
+
+    def __iter__(self) -> Iterator[Cell]:
+        for row in self.field:
+            for cell in row:
+                yield cell
+
+    def find_start_and_end_cells(self) -> Tuple[Cell, Cell]:
+        start_cell = None
+        finish_cell = None
+        for cell in self:
+            if cell.is_start():
+                start_cell = cell
+            if cell.is_finish():
+                finish_cell = cell
+        if not start_cell:
+            raise AttributeError('Start point not found in labyrinth')
+        if not finish_cell:
+            raise AttributeError('Finish point not found in labyrinth')
+        return start_cell, finish_cell
 
     def to_file(self, output_file_path: str):
         with open(output_file_path, 'w', encoding='utf-8') as file:
