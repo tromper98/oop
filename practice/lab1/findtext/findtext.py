@@ -5,8 +5,6 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 
-DATA_DIR = os.path.abspath('data')
-
 
 @dataclass()
 class TextFile:

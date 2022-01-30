@@ -30,5 +30,5 @@ def test_get_inverse_matrixs():
     expected_matrixs = [expected_matrix1, expected_matrix2, expected_matrix3]
     for i, file in enumerate(files):
         matrix = MatrixFactory.from_file(os.path.join(DATA_DIR, file))
-        inverse_matrix = matrix.inverse_matrix()
+        inverse_matrix = matrix.get_inverse_matrix()
         assert [res == exp for res, exp in zip(inverse_matrix, expected_matrixs[i])]

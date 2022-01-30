@@ -1,4 +1,7 @@
+import os.path
+import argparse
 from typing import List
+
 
 
 class Matrix:
@@ -8,7 +11,7 @@ class Matrix:
 
     def calculate_determinant(self):
         arr = self.matrix
-        coeficients: list = [
+        coefficients: list = [
             arr[0][0] * arr[1][1] * arr[2][2],
             arr[2][0] * arr[0][1] * arr[1][2],
             arr[1][0] * arr[2][1] * arr[0][2],
@@ -16,7 +19,7 @@ class Matrix:
             -1 * arr[0][0] * arr[2][1] * arr[1][2],
             -1 * arr[1][0] * arr[0][1] * arr[2][2]
         ]
-        return sum(coeficients)
+        return sum(coefficients)
 
     def calculate_minors(self) -> List[List[List[List[int]]]]:
         def get_minor(ignore_row: int, ignore_column: int) -> List[List[int]]:
@@ -44,15 +47,15 @@ class Matrix:
                 minor[0][0] * minor[1][1],
                 -1 * minor[0][1] * minor[1][0]
             ]
-            return sum(coefs)
+            return sum (coefs)
 
-        determinats = []
+        determinants = []
         for minor_row in minors:
-            determinats_row = []
+            determinants_row = []
             for minor in minor_row:
-                determinats_row.append(_get_minor_determinant(minor))
-            determinats.append(determinats_row)
-        return determinats
+                determinants_row.append(_get_minor_determinant(minor))
+            determinants.append(determinants_row)
+        return determinants
 
     def calculate_minor_algebraic_additions_matrix(self, minor_matrix: List[List[int]]) -> List[List[int]]:
         algebraic_additions_matrix = minor_matrix
@@ -68,18 +71,18 @@ class Matrix:
             transpose_matrix.append([x[i] for x in matrix])
         return transpose_matrix
 
-    def inverse_matrix(self) -> List[List[int]]:
+    def get_inverse_matrix(self) -> List[List[int]]:
         determinant = self.calculate_determinant()
         if not determinant:
             raise ValueError("This matrix doesn't have inverse matrix because determinant = 0")
         minors = self.calculate_minors()
-        minors_determinats = self.calculate_minors_determinants(minors)
-        minors_determinats = self.calculate_minor_algebraic_additions_matrix(minors_determinats)
-        transposed_determinats = self.transpose_matrix(minors_determinats)
+        minors_determinants = self.calculate_minors_determinants(minors)
+        minors_determinants = self.calculate_minor_algebraic_additions_matrix(minors_determinants)
+        transposed_determinants = self.transpose_matrix(minors_determinants)
 
         inverse_matrix: List[List[int]] = []
-        for transpoded_row in transposed_determinats:
-            inverse_matrix.append(list(map(lambda x: x / self.determinant, transpoded_row)))
+        for transposed_row in transposed_determinants:
+            inverse_matrix.append(list(map(lambda x: x / self.determinant, transposed_row)))
 
         return inverse_matrix
 
@@ -93,3 +96,28 @@ class MatrixFactory:
                 str_row = row.split(' ')
                 matrix.append([int(x) for x in str_row])
         return Matrix(matrix)
+
+
+def get_file_path() -> str:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file_path', help='Path to the matrix file', type=str)
+    args = parser.parse_args()
+    return os.path.abspath(args.file_path)
+
+
+def print_matrix(matrix: List[List[int]]) -> None:
+    for row in matrix:
+        for number in row:
+            print(number, end=' ')
+        print()
+
+
+def calculate_inverse_matrix():
+    file_path: str = get_file_path()
+    matrix: Matrix = MatrixFactory().from_file(file_path)
+    inverse_matrix = matrix.get_inverse_matrix()
+    print_matrix(inverse_matrix)
+
+
+if __name__ == "__main__":
+    calculate_inverse_matrix()
