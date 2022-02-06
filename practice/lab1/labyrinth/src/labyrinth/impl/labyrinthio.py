@@ -22,4 +22,4 @@ class LabyrinthIO:
                     cell = Cell(i, j, symbol)
                     field_row.append(cell)
                 field.append(field_row)
-        return LabyrinthIO(field)
+        return field

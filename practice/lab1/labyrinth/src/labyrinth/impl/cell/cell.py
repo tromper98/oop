@@ -36,9 +36,6 @@ class Cell:
     def get_coordinates(self) -> Tuple[int, int]:
         return self.x, self.y
 
-    def set_distance(self, distance) -> None:
-        self.distance = distance
-
     def get_cell_type(self) -> str:
         if self.is_border():
             return BORDER
@@ -56,3 +53,6 @@ class Cell:
             return ROUTE
 
         return ''
+
+    def set_route_cell_type(self):
+        self.cell_type = ROUTE

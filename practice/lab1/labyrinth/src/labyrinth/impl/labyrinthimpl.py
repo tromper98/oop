@@ -92,5 +92,5 @@ class LabyrinthImplementation:
         while current_cell != self.start:
             neighbours_cell = self.find_cell_neighbours(current_cell)
             if current_cell is not self.finish:
-                current_cell.cell_type = ROUTE
+                current_cell.set_route_cell_type()
             current_cell = _find_cell_with_min_distance(neighbours_cell)

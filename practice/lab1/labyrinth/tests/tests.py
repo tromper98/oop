@@ -1,9 +1,8 @@
 
+from practice.lab1.labyrinth import Labyrinth
 
-from labirint import *
 
-
-labyrinth = Labyrinth.from_file('./data/labyrinth-1.txt')
+labyrinth = Labyrinth('./data/labyrinth-1.txt')
 print(labyrinth)
 labyrinth.calculate_distance()
 print('_' * 5, 'calculate distance complete', '_' * 5)
