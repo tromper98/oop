@@ -1,4 +1,4 @@
-from typing import List, Tuple, Iterator
+from typing import List, Tuple, Iterator, Optional
 
 BORDER = '#'
 PASSABLE = ' '
@@ -9,10 +9,15 @@ ROOT = '_'
 
 class Cell:
     def __init__(self, x: int, y: int, cell_type: str):
-        self._x: int = x
-        self._y: int = y
+        self.x: int = x
+        self.y: int = y
         self._cell_type: str = cell_type
-        self.distance: int = 0
+        self.distance: Optional[int] = None
+        self.checked: bool = False
+
+    def __str__(self):
+        return f'Cell [{self.x}][{self.y}] Distance = {self.distance} Checked = {self.checked}'
+
 
     def is_border(self) -> bool:
         return True if self._cell_type == BORDER else False
@@ -30,12 +35,12 @@ class Cell:
         return True if self._cell_type == ROOT else False
 
     def get_coordinates(self) -> Tuple[int, int]:
-        return self._x, self._y
+        return self.x, self.y
 
     def set_distance(self, distance) -> None:
         self.distance = distance
 
-    def get_cell(self) -> str:
+    def get_cell_type(self) -> str:
         if self.is_border():
             return BORDER
 
@@ -48,7 +53,10 @@ class Cell:
         if self.is_passable():
             return PASSABLE
 
-        return ROOT
+        if self.is_root():
+            return ROOT
+
+        return ''
 
 
 class Labyrinth:
@@ -60,6 +68,21 @@ class Labyrinth:
         for row in self.field:
             for cell in row:
                 yield cell
+
+    def __str__(self) -> str:
+        labyrinth = '\n'
+        for row in self.field:
+            for cell in row:
+                if cell.distance is None:
+                    labyrinth += f' {cell.get_cell_type()} '
+                else:
+                    labyrinth += f' {str(cell.distance)} '
+            labyrinth += '\n'
+        return labyrinth
+
+    def get_cell(self, x: int, y: int) -> Optional[Cell]:
+        if 0 <= x < len(self.field) and 0 <= y < len(self.field[x]):
+            return self.field[x][y]
 
     def find_start_and_end_cells(self) -> Tuple[Cell, Cell]:
         start_cell = None
@@ -75,11 +98,44 @@ class Labyrinth:
             raise AttributeError('Finish point not found in labyrinth')
         return start_cell, finish_cell
 
+    def find_cell_neighbours(self, cell: Cell) -> List[Cell]:
+        coordinates_list = [(cell.x, cell.y - 1), (cell.x + 1, cell.y), (cell.x, cell.y + 1), (cell.x - 1, cell.y)]
+        cells: List[Cell] = []
+        for coordinate in coordinates_list:
+            cell: Cell = self.get_cell(coordinate[0], coordinate[1])
+            if not cell.is_border():
+                cells.append(cell)
+        return cells
+
+    def calculate_distance(self) -> None:
+        def _get_checked_cells_list(new_cells: List[Cell]) -> List[Cell]:
+            checked_cells: List[Cell] = []
+            for new_cell in new_cells:
+                if new_cell not in checked_cells and new_cell.checked is False:
+                    checked_cells.append(new_cell)
+            return checked_cells
+
+        distance: int = 0
+        checked_cells: List[Cell] = [self.start]
+        while len(checked_cells) != 0:
+
+            new_cells: List[Cell] = []
+            for cell in checked_cells:
+                cell.distance = distance
+                cell.checked = True
+                neighbours_cells = self.find_cell_neighbours(cell)
+                new_cells.extend(neighbours_cells)
+            checked_cells = _get_checked_cells_list(new_cells)
+            distance += 1
+
+            if self.finish.distance is not None:
+                break
+
     def to_file(self, output_file_path: str):
         with open(output_file_path, 'w', encoding='utf-8') as file:
             for row in self.field:
                 for cell in row:
-                    file.write(cell.get_cell())
+                    file.write(cell.get_cell_type())
                 file.write('\n')
 
     @staticmethod
@@ -93,4 +149,3 @@ class Labyrinth:
                     field_row.append(cell)
                 field.append(field_row)
         return Labyrinth(field)
-
