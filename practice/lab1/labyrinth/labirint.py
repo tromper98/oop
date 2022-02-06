@@ -1,38 +1,38 @@
 from typing import List, Tuple, Iterator, Optional
+import math
 
 BORDER = '#'
 PASSABLE = ' '
 START = 'S'
 FINISH = 'F'
-ROOT = '_'
+ROUTE = '_'
 
 
 class Cell:
     def __init__(self, x: int, y: int, cell_type: str):
         self.x: int = x
         self.y: int = y
-        self._cell_type: str = cell_type
+        self.cell_type: str = cell_type
         self.distance: Optional[int] = None
         self.checked: bool = False
 
     def __str__(self):
         return f'Cell [{self.x}][{self.y}] Distance = {self.distance} Checked = {self.checked}'
 
-
     def is_border(self) -> bool:
-        return True if self._cell_type == BORDER else False
+        return True if self.cell_type == BORDER else False
 
     def is_start(self) -> bool:
-        return True if self._cell_type == START else False
+        return True if self.cell_type == START else False
 
     def is_finish(self) -> bool:
-        return True if self._cell_type == FINISH else False
+        return True if self.cell_type == FINISH else False
 
     def is_passable(self) -> bool:
-        return True if self._cell_type == PASSABLE else False
+        return True if self.cell_type == PASSABLE else False
 
-    def is_root(self) -> bool:
-        return True if self._cell_type == ROOT else False
+    def is_route(self) -> bool:
+        return True if self.cell_type == ROUTE else False
 
     def get_coordinates(self) -> Tuple[int, int]:
         return self.x, self.y
@@ -53,8 +53,8 @@ class Cell:
         if self.is_passable():
             return PASSABLE
 
-        if self.is_root():
-            return ROOT
+        if self.is_route():
+            return ROUTE
 
         return ''
 
@@ -130,6 +130,26 @@ class Labyrinth:
 
             if self.finish.distance is not None:
                 break
+
+    def find_route(self):
+        def _find_cell_with_min_distance(cells: List[Cell]) -> Cell:
+            min_distance_cell: Optional[Cell] = None
+            min_distance = math.inf
+            for cell in cells:
+                if isinstance(cell.distance, int):
+                    if cell.distance < min_distance:
+                        min_distance = cell.distance
+                        min_distance_cell = cell
+            return min_distance_cell
+
+        if self.finish.distance is None:
+            raise ValueError('Еhe route to the finish line was not found')
+        current_cell: Cell = self.finish
+        while current_cell != self.start:
+            neighbours_cell = self.find_cell_neighbours(current_cell)
+            if current_cell is not self.finish:
+                current_cell.cell_type = ROUTE
+            current_cell = _find_cell_with_min_distance(neighbours_cell)
 
     def to_file(self, output_file_path: str):
         with open(output_file_path, 'w', encoding='utf-8') as file:
