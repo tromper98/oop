@@ -1,5 +1,5 @@
+import argparse, math
 from typing import List, Tuple, Iterator, Optional
-import math
 
 BORDER = '#'
 PASSABLE = ' '
@@ -177,9 +177,17 @@ class Labyrinth:
         return Labyrinth(field)
 
 
-def find_way_in_labyrinth(input_file: str, output_file: str) -> None:
-    labyrinth: Labyrinth = Labyrinth.from_file(input_file)
+def find_way_in_labyrinth() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_file_path', help='Path to the labyrinth file')
+    parser.add_argument('output_file_path', help='Path to the file where the found route will be saved')
+    args = parser.parse_args()
+
+    labyrinth: Labyrinth = Labyrinth.from_file(args.input_file_path)
     labyrinth.calculate_distance()
     labyrinth.find_route()
-    labyrinth.to_file(output_file)
+    labyrinth.to_file(args.output_file_path)
 
+
+if __name__ == '__main__':
+    find_way_in_labyrinth()
