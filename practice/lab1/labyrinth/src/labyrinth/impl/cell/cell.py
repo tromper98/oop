@@ -4,7 +4,7 @@ BORDER = '#'
 PASSABLE = ' '
 START = 'S'
 FINISH = 'F'
-ROUTE = '*'
+ROUTE = '_'
 
 
 class Cell:
