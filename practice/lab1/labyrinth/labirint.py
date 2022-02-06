@@ -73,7 +73,13 @@ class Labyrinth:
         labyrinth = '\n'
         for row in self.field:
             for cell in row:
-                if cell.distance is None:
+                if cell.is_start():
+                    labyrinth += f' {START} '
+                elif cell.is_finish():
+                    labyrinth += f' {FINISH} '
+                elif cell.is_route():
+                    labyrinth += f' {ROUTE} '
+                elif cell.distance is None:
                     labyrinth += f' {cell.get_cell_type()} '
                 else:
                     labyrinth += f' {str(cell.distance)} '
