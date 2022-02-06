@@ -175,3 +175,11 @@ class Labyrinth:
                     field_row.append(cell)
                 field.append(field_row)
         return Labyrinth(field)
+
+
+def find_way_in_labyrinth(input_file: str, output_file: str) -> None:
+    labyrinth: Labyrinth = Labyrinth.from_file(input_file)
+    labyrinth.calculate_distance()
+    labyrinth.find_route()
+    labyrinth.to_file(output_file)
+
