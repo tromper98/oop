@@ -1,6 +1,6 @@
 import argparse
 
-from impl import LabyrinthIO, LabyrinthImplementation
+from .impl import LabyrinthIO, LabyrinthImplementation
 
 
 class Labyrinth(LabyrinthImplementation):

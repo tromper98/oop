@@ -1,5 +1,5 @@
 
-from practice.lab1.labyrinth import Labyrinth
+from practice.lab1.labyrinth.src.labyrinth import Labyrinth
 
 
 labyrinth = Labyrinth('./data/labyrinth-1.txt')

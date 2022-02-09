@@ -1,2 +1,2 @@
-import impl
-from labyrinth import Labyrinth
+from .impl import *
+from .labyrinth import Labyrinth
