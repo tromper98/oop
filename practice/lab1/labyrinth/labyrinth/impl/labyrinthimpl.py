@@ -29,13 +29,18 @@ class LabyrinthImplementation:
         finish_cell = None
         for cell in self:
             if cell.is_start():
+                if isinstance(start_cell, Cell):
+                    raise ValueError('More than one start point find in labyrinth')
                 start_cell = cell
             if cell.is_finish():
+                if isinstance(finish_cell, Cell):
+                    raise ValueError('More than one finish point find in labirynth ')
                 finish_cell = cell
+
         if not start_cell:
-            raise AttributeError('Start point not found in labyrinth')
+            raise ValueError('Start point not found in labyrinth')
         if not finish_cell:
-            raise AttributeError('Finish point not found in labyrinth')
+            raise ValueError('Finish point not found in labyrinth')
         return start_cell, finish_cell
 
     def get_cell(self, x: int, y: int) -> Optional[Cell]:
@@ -87,7 +92,8 @@ class LabyrinthImplementation:
             return min_distance_cell
 
         if self.finish.distance is None:
-            raise ValueError('Еhe route to the finish line was not found')
+            return
+
         current_cell: Cell = self.finish
         while current_cell != self.start:
             neighbours_cell = self.find_cell_neighbours(current_cell)

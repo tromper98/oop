@@ -1,2 +1,2 @@
-from .labyrinthio import LabyrinthIO
+from .labyrinthsource import LabyrinthSource
 from .labyrinthimpl import LabyrinthImplementation

@@ -1,4 +1,0 @@
-.pytest_cache
-.idea
-src/labyrinth/impl/__pycache__/
-src/labyrinth/impl/cell/__pycache__/

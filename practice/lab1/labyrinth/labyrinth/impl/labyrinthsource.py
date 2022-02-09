@@ -4,7 +4,7 @@ from typing import List
 from .cell import Cell
 
 
-class LabyrinthIO:
+class LabyrinthSource:
     @staticmethod
     def save_to_file(field: List[List[Cell]], output_file_path: str):
         with open(path.abspath(output_file_path), 'w', encoding='utf-8') as file:

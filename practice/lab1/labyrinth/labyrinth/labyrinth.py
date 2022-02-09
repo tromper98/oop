@@ -1,11 +1,11 @@
 import argparse
 
-from .impl import LabyrinthIO, LabyrinthImplementation
+from impl import LabyrinthSource, LabyrinthImplementation
 
 
 class Labyrinth(LabyrinthImplementation):
     def __init__(self, file_path: str) -> None:
-        labyrinth = LabyrinthIO.from_file(file_path)
+        labyrinth = LabyrinthSource.from_file(file_path)
         super(Labyrinth, self).__init__(labyrinth)
 
     def find_route_in_labyrinth(self):
@@ -13,7 +13,7 @@ class Labyrinth(LabyrinthImplementation):
         self.find_route()
 
     def save_labyrinth_to_file(self, file_path: str):
-        LabyrinthIO.save_to_file(self.field, file_path)
+        LabyrinthSource.save_to_file(self.field, file_path)
 
 
 def find_way_in_labyrinth() -> None:
