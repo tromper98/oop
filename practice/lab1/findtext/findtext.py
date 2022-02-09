@@ -31,8 +31,9 @@ def find_string_in_file(file: TextFile) -> List[int]:
             for (i, row) in enumerate(f):
                 if file.searchable_string in row:
                     rows_number.append(i)
-    except:
-        raise FileNotFoundError(f'File {file_path} doesn\'t exist')
+    except FileNotFoundError:
+        print(f'File {file_path} doesn\'t exist')
+        sys.exit(1)
 
     if not rows_number:
         print('Text not found')
