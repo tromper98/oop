@@ -1,12 +1,11 @@
 from typing import List
 
-from matrix.impl import MatrixImplementation
-from matrix.factory import MatrixIO
+from .impl import MatrixImplementation, MatrixReader
 
 
 class Matrix(MatrixImplementation):
     def __init__(self, file_path: str):
-        matrix = MatrixIO.from_file(file_path)
+        matrix = MatrixReader.from_file(file_path)
         super().__init__(matrix)
 
     def get_inverse_matrix(self) -> List[List[int]]:

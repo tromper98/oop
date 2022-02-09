@@ -1,7 +1,7 @@
 from typing import List
 
 
-class MatrixIO:
+class MatrixReader:
     @staticmethod
     def from_file(filename: str):
         matrix: List[List[int]] = []
