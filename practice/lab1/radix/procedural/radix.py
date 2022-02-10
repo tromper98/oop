@@ -67,7 +67,7 @@ def get_number_from_string(number: str, radix: int) -> int:
     result = 0
     for digit in number:
         degree -= 1
-        result += int(ALPHABET.index(digit)) * radix ** degree #Можно убрать возведение в степень
+        result = result * radix + int(ALPHABET.index(digit)) #Можно убрать возведение в степень
     return result
 
 
