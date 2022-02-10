@@ -9,9 +9,9 @@ from typing import List, Optional
 #Лучше назвать по другому ProgramArguments, Args
 @dataclass()
 class ProgramArguments:
-    def __init__(self, file_path: str, searchable_string: str) -> None:
+    def __init__(self, file_path: str, text_to_find: str) -> None:
         self.file_path = file_path
-        self.searchable_string = searchable_string
+        self.text_to_find = text_to_find
 
 
 #лучше назвать parse_command_line
@@ -26,7 +26,7 @@ def parse_command_line() -> ProgramArguments:
 
 
 #Лучше чтобы функция принимала отдельные аргументы
-def find_string_numbers_contains_in_file(file_path: str, searchable_string: str) -> Optional[List[int]]:
+def find_text_in_file(file_path: str, searchable_string: str) -> Optional[List[int]]:
     file_path = os.path.abspath(file_path)
     rows_number: List[int] = []
     try:
@@ -53,7 +53,7 @@ def print_array(row_numbers: List[int]) -> None:
 
 def find_rows_in_text_file() -> None:
     args: ProgramArguments = parse_command_line()
-    result: Optional[List[int]] = find_string_numbers_contains_in_file(args.file_path, args.searchable_string)
+    result: Optional[List[int]] = find_text_in_file(args.file_path, args.text_to_find)
     if isinstance(result, list):
         print_array(result)
     else:
