@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 ALPHABET = '0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ'
 
 
-def parse_params() -> Namespace:
+def parse_command_line() -> Namespace:
     parser = ArgumentParser()
 
     parser.add_argument('number', help="The number in 'radix_from' to be converted", type=str)
@@ -59,7 +59,7 @@ def convert_number(number: str, radix_from: int, radix_to: int) -> str:
 
 
 def convert_number_radix_from_radix_to() -> None:
-    args: Namespace = parse_params()
+    args: Namespace = parse_command_line()
     check_radix(args.radix_from)
     check_radix(args.radix_to)
     validate_number(args.number, args.radix_from)
