@@ -43,7 +43,6 @@ def validate_number(number: str, notation: int) -> None:
 
 #лучше использовать source_radix, target_radix
 def convert_number(number: str, source_notation: int, target_notation: int) -> str:
-
     if number[0] == '-':
         is_negative_number = True
         number: str = number[1:]

@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 
-#Лучше назвать по другому ProgramArguments, Args
 @dataclass()
 class ProgramArguments:
     def __init__(self, file_path: str, text_to_find: str) -> None:
@@ -14,7 +13,6 @@ class ProgramArguments:
         self.text_to_find = text_to_find
 
 
-#лучше назвать parse_command_line
 def parse_command_line() -> ProgramArguments:
     parser = argparse.ArgumentParser()
 
@@ -24,8 +22,8 @@ def parse_command_line() -> ProgramArguments:
     args = parser.parse_args()
     return ProgramArguments(args.file_path, args.searchable_string)
 
-
-#Лучше чтобы функция принимала отдельные аргументы
+#Выделить в отдельную функцию работу с файлом и чтение данных
+#Лучше сделать через Iterator
 def find_text_in_file(file_path: str, searchable_string: str) -> Optional[List[int]]:
     file_path = os.path.abspath(file_path)
     rows_number: List[int] = []
@@ -36,7 +34,7 @@ def find_text_in_file(file_path: str, searchable_string: str) -> Optional[List[i
                     rows_number.append(i + 1)
     except FileNotFoundError:
         print(f'File {file_path} doesn\'t exist')
-        return None #в функции не должно быть sys.exit()
+        return None
 
     if not rows_number:
         print('Text not found')
@@ -48,7 +46,6 @@ def find_text_in_file(file_path: str, searchable_string: str) -> Optional[List[i
 def print_array(row_numbers: List[int]) -> None:
     for number in row_numbers:
         print(number)
-    #не должно быть sys.exit()
 
 
 def find_rows_in_text_file() -> None:
