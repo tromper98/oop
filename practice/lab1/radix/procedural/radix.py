@@ -1,20 +1,16 @@
-import sys
-from typing import Tuple
-
-import argparse
+from argparse import ArgumentParser, Namespace
 
 ALPHABET = '0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ'
 
 
-def parse_params() -> Tuple[str, int, int]:
-    parser = argparse.ArgumentParser()
+def parse_params() -> Namespace:
+    parser = ArgumentParser()
 
     parser.add_argument('number', help="The number in 'radix_from' to be converted", type=str)
     parser.add_argument('radix_from', help="Radix in which the 'number' is located", type=int)
     parser.add_argument('radix_to', help="Radix in which the 'number' will be converted", type=int)
 
-    args = parser.parse_args()
-    return args.number, args.radix_from, args.radix_to
+    return parser.parse_args()
 
 
 def check_radix(radix: int) -> int:
@@ -63,13 +59,12 @@ def convert_number(number: str, radix_from: int, radix_to: int) -> str:
 
 
 def convert_number_radix_from_radix_to() -> None:
-    number, radix_from, radix_to = parse_params()
-    check_radix(radix_from)
-    check_radix(radix_to)
-    validate_number(number, radix_from)
-    converted_number: str = convert_number(number, radix_from, radix_to)
+    args: Namespace = parse_params()
+    check_radix(args.radix_from)
+    check_radix(args.radix_to)
+    validate_number(args.number, args.radix_from)
+    converted_number: str = convert_number(args.number, args.radix_from, args.radix_to)
     print(converted_number)
-    sys.exit(0)
 
 
 if __name__ == "__main__":
