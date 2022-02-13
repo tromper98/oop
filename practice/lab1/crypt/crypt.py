@@ -66,10 +66,6 @@ def validate_params(args: ProgramArgument):
     check_file_exists(args.input_file)
 
 
-def encrypt(row: bytearray, key: int) -> List[int]:
-    ...
-
-
 def xor_byte_with_key(byte: bytes, key: int) -> bitarray:
     byte_as_bit = bitarray()
     byte_as_bit.frombytes(byte)
@@ -78,13 +74,25 @@ def xor_byte_with_key(byte: bytes, key: int) -> bitarray:
     return byte_as_bit ^ key_as_bit
 
 
-def transpose_bits(source_byte: bitarray) -> bitarray:
+def transpose_bits(source_byte: bitarray, order: str = 'forward') -> bitarray:
+    """
+    :param source_byte: byte which be transposed
+    :param order: swap order. If `forward` - bits will be transpose in transpose_rules
+    If 'reverse' - bits will be transpose in reverse order of the rules of the transpose_rules
+    """
+    if order not in ('forward', 'reverse'):
+        raise ValueError(f'Unsupported order method {order}')
+
     transpose_rules = [[7, 5], [6, 1], [5, 0], [4, 7], [3, 6], [2, 4], [1, 3], [0, 2]]
     source_byte = source_byte[::-1]
     target_byte = bitarray('00000000')
     for rule in transpose_rules:
-        bit = source_byte[rule[0]]
-        target_byte[rule[1]] = bit
+        if order == 'forward':
+            bit = source_byte[rule[0]]
+            target_byte[rule[1]] = bit
+        else:
+            bit = source_byte[rule[1]]
+            target_byte[rule[0]] = bit
     return target_byte[::-1]
 
 
@@ -93,18 +101,32 @@ def crypt_byte(byte: bytes, key: int) -> bytes:
     return bytes(transpose_bits(xor_byte))
 
 
-def crypt_data(input_data: Iterable, key: int) -> Iterator[bytes]:
-    for byte in input_data:
+def encrypt_byte(byte: bytes, key: int) -> bytes:
+    byte_as_bit = bitarray()
+    byte_as_bit.frombytes(byte)
+    transpose_byte = bytes(transpose_bits(byte_as_bit, order='reverse'))
+    return bytes(xor_byte_with_key(transpose_byte, key))
+
+
+def crypt_data(data: Iterable, key: int) -> Iterator[bytes]:
+    for byte in data:
         yield crypt_byte(byte, key)
+
+
+def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
+    for byte in data:
+        yield encrypt_byte(byte, key)
 
 
 def main():
     args: ProgramArgument = parse_params()
     validate_params(args)
+    data_iterator = file_iterator(args.input_file)
     if args.action == 'crypt':
-        data_iterator = file_iterator(args.input_file)
         data = crypt_data(data_iterator, args.key)
-        save_to_file(args.output_file, data)
+    else:
+        data = encrypt_data(data_iterator, args.key)
+    save_to_file(args.output_file, data)
 
 
 if __name__ == "__main__":
