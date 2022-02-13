@@ -29,6 +29,7 @@ def test_get_inverse_matrixs():
     ]
     expected_matrixs = [expected_matrix1, expected_matrix2, expected_matrix3]
     for i, file in enumerate(files):
-        matrix = Matrix(os.path.join(DATA_DIR, file))
+        matrix = Matrix.from_file(os.path.join(DATA_DIR, file))
         inverse_matrix = matrix.get_inverse_matrix()
+        print(inverse_matrix)
         assert [res == exp for res, exp in zip(inverse_matrix, expected_matrixs[i])]

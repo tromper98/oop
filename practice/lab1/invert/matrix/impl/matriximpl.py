@@ -67,3 +67,9 @@ class MatrixImplementation:
         for i in range(len(matrix[0])):
             transpose_matrix.append([x[i] for x in matrix])
         return transpose_matrix
+
+    def transpose_algebraic_additions_matrix(self, transposed_determinants: List[List[int]]):
+        inverse_matrix: List[List[int]] = []
+        for transposed_row in transposed_determinants:
+            inverse_matrix.append(list(map(lambda x: round(x / self.determinant, 3), transposed_row)))
+        return inverse_matrix

@@ -21,7 +21,7 @@ def print_matrix(matrix: List[List[int]]) -> None:
 
 def calculate_inverse_matrix():
     file_path: str = get_file_path()
-    matrix: Matrix = Matrix(file_path)
+    matrix: Matrix = Matrix.from_file(file_path)
     inverse_matrix = matrix.get_inverse_matrix()
     print_matrix(inverse_matrix)
 

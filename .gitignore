@@ -7,8 +7,10 @@ practice/lab1/radix/.pytest_cache/
 practice/lab1/.pytest_cache/
 practice/lab1/invert/__pycache__/
 practice/lab1/invert/matrix/__pycache__/
-practice/lab1/invert/matrix/impl/__pycache__/
+practice/lab1/invert/matrix/functions/__pycache__/
 practice/lab1/labyrinth/labyrinth/__pycache__/
 practice/lab1/labyrinth/labyrinth/impl/__pycache__/
 practice/lab1/labyrinth/labyrinth/impl/cell/__pycache__/
 practice/lab1/radix/__pycache__/
+practice/lab1/radix/procedural/.pytest_cache
+practice/lab1/radix/procedural/__pycache__/
