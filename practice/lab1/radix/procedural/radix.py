@@ -80,7 +80,7 @@ def convert_notation(number: int, notation: int) -> str:
 
 #Вместо radix используем notation
 #Переименовать функцию в convert_number_annotation
-def convert_number_radix_notation() -> None:
+def convert_number_notation() -> None:
     args: ProgramArgument = parse_command_line()
     validate_annotation(args.source_notation)
     validate_annotation(args.target_notation)
@@ -90,4 +90,4 @@ def convert_number_radix_notation() -> None:
 
 
 if __name__ == "__main__":
-    convert_number_radix_notation()
+    convert_number_notation()
