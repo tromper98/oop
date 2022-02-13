@@ -3,7 +3,7 @@ import argparse
 import sys
 
 from dataclasses import dataclass
-from typing import List, Optional, Iterator
+from typing import List, Optional, Iterator, Iterable
 
 
 @dataclass()
@@ -31,19 +31,18 @@ def check_file_exists(file_path: str) -> None:
 
 
 def file_iterator(file_path: str) -> Iterator[str]:
-    with open(file_path, 'r', encoding='UTF-8') as f:
-        yield f.readline()
+    with open(file_path, 'r', encoding='UTF-8') as file:
+        for row in file:
+            yield row
+
 
 #Выделить в отдельную функцию работу с файлом и чтение данных
 #Лучше сделать через Iterator
-def find_text_in_file(file_path: str, searchable_string: str) -> Optional[List[int]]:
-    file_path = os.path.abspath(file_path)
+def find_string_in_data(data_source: Iterable, searchable_string: str) -> Optional[List[int]]:
     rows_number: List[int] = []
-    with open(file_path, "r", encoding='UTF-8') as f:
-        for (i, row) in enumerate(f):
-            if searchable_string in row:
-                rows_number.append(i + 1)
-
+    for (i, row) in enumerate(data_source):
+        if searchable_string in row:
+            rows_number.append(i + 1)
     return rows_number
 
 
@@ -55,7 +54,7 @@ def print_array(row_numbers: List[int]) -> None:
 def find_rows_in_text_file() -> None:
     args: ProgramArguments = parse_command_line()
     check_file_exists(args.file_path)
-    result: Optional[List[int]] = find_text_in_file(args.file_path, args.text_to_find)
+    result: Optional[List[int]] = find_string_in_data(file_iterator(args.file_path), args.text_to_find)
     if len(result) > 0:
         print_array(result)
     else:
