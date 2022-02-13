@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 
-ALPHABET = '0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ'
+ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 @dataclass()
