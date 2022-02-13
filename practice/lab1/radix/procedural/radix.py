@@ -12,7 +12,6 @@ class ProgramArgument:
         self.target_notation: int = target_notation
 
 
-#Добавить dataclass для аргументов
 def parse_command_line() -> ProgramArgument:
     parser = ArgumentParser()
 
@@ -23,15 +22,12 @@ def parse_command_line() -> ProgramArgument:
     return ProgramArgument(args.number, args.source_notation, args.target_notation)
 
 
-#Неправильный вывод функции
-#Лучше назвать checkradix
 def validate_annotation(notation: int) -> None:
     if 2 <= notation <= 36:
         return None
     raise ValueError(f'Invalid number system. {notation} must be in [2, 36]')
 
 
-#radix_from можно сократить до radix
 def validate_number(number: str, notation: int) -> None:
     if number[0] == '-':
         number = number[1:]
@@ -41,7 +37,6 @@ def validate_number(number: str, notation: int) -> None:
             raise ValueError(f'Invalid number. {number} is not {notation}-numeral system')
 
 
-#лучше использовать source_radix, target_radix
 def convert_number(number: str, source_notation: int, target_notation: int) -> str:
     if number[0] == '-':
         is_negative_number = True
@@ -52,7 +47,7 @@ def convert_number(number: str, source_notation: int, target_notation: int) -> s
     converted_number = get_number_from_string(number, source_notation)
     if converted_number == 0:
         return '0'
-    #Выделить цикл в отдельную функцию с понятным входом и выходом
+
     result = convert_notation(converted_number, target_notation)
 
     if is_negative_number:
@@ -66,7 +61,7 @@ def get_number_from_string(number: str, radix: int) -> int:
     result = 0
     for digit in number:
         degree -= 1
-        result = result * radix + int(ALPHABET.index(digit)) #Можно убрать возведение в степень
+        result = result * radix + int(ALPHABET.index(digit))
     return result
 
 
@@ -78,8 +73,6 @@ def convert_notation(number: int, notation: int) -> str:
     return result
 
 
-#Вместо radix используем notation
-#Переименовать функцию в convert_number_annotation
 def convert_number_notation() -> None:
     args: ProgramArgument = parse_command_line()
     validate_annotation(args.source_notation)

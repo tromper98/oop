@@ -26,8 +26,8 @@ def test_run_file_with_four_arguments():
 
 def test_success_find_strings_in_file():
     params: List[str] = ['python', 'findtext.py', 'data/Terkin.txt', 'Теркин']
-    expected: List[int] = [62, 68, 114, 116, 123, 150, 160, 208, 209,
-                           210, 211, 226, 237, 257, 276, 334, 343
+    expected: List[int] = [63, 69, 115, 117, 124, 151, 161, 209, 210,
+                           211, 212, 227, 238, 258, 277, 335, 344
                            ]
 
     res = subprocess.run(params, stdout=subprocess.PIPE)
