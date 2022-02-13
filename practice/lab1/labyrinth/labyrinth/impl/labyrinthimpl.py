@@ -34,7 +34,7 @@ class LabyrinthImplementation:
                 start_cell = cell
             if cell.is_finish():
                 if isinstance(finish_cell, Cell):
-                    raise ValueError('More than one finish point find in labirynth ')
+                    raise ValueError('More than one finish point find in labyrinth ')
                 finish_cell = cell
 
         if not start_cell:
