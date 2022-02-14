@@ -1,3 +1,4 @@
+import sys
 from typing import List, Callable
 
 
@@ -55,6 +56,10 @@ def print_function_result(description: str, func: Callable, numbers: List[float]
 
 if __name__ == '__main__':
     numbers = get_list_from_args()
+
+    if len(numbers) == 0:
+        print('List is empty')
+        sys.exit(0)
 
     print_function_result('add avg for each number',
                           add_avg_for_each_number,
