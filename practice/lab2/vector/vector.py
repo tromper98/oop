@@ -50,7 +50,7 @@ def multiply_numbers_max_and_divide_min(numbers: List[float]) -> List[float]:
 def print_function_result(description: str, func: Callable, numbers: List[float]) -> None:
     print('-' * 5, description, '-' * 5, sep='', end='\n\n')
     result = func(numbers)
-    print(result, end='\n\n')
+    print(result.sort(), end='\n\n')
     print('-' * (len(description) + 10), end='\n\n')
 
 
