@@ -68,10 +68,6 @@ def html_decode(text: str) -> str:
 def main():
     args: ProgramArguments = parse_args()
 
-    if not args.text:
-        print('Text is empty')
-        sys.exit(0)
-
     if args.action == 'encode':
         result = html_encode(args.text)
     else:
