@@ -5,59 +5,68 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 
 HTML_SYMBOLS: Dict[str, str] = {
-    '"': '&quot',
-    '’': '&apos',
-    '<': '&lt',
-    '>': '&qt',
-    '&': '&amp'
+    '"': '&quot;',
+    '’': '&apos;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;'
 }
 
 
 @dataclass()
-class ProgramArgument:
+class ProgramArguments:
     def __init__(self, action: str, text: str):
         self.action = action
         self.text = text
 
 
-def parse_params() -> ProgramArgument:
+def get_symbol_by_html_code(html_code: str) -> str:
+    for key, value in HTML_SYMBOLS.items():
+        if value == html_code:
+            return key
+
+
+def parse_args() -> ProgramArguments:
     parser = ArgumentParser()
     parser.add_argument('action',
                         help='ecnode - encode text to html;\n decode - decode html to text',
-                        type=str)
-    parser.add_argument('text', help='text with be encoded or decoded',type=str)
+                        type=str,
+                        choices=['encode', 'decode'])
+    parser.add_argument('text', help='text with be encoded or decoded', type=str)
 
     args = parser.parse_args()
-    return ProgramArgument(args.action, args.text)
-
-
-def validate_action(action: str) -> None:
-    if action in ['encode', 'decode']:
-        return
-    raise ValueError(f"Invalid action. Action may be 'encode' or 'decode'")
+    return ProgramArguments(args.action, args.text)
 
 
 def html_encode(text: str) -> str:
     encoded_html: str = ''
     for symbol in text:
-        if symbol in HTML_SYMBOLS.keys():
-            encoded_html += HTML_SYMBOLS.get(symbol)
-        else:
-            encoded_html += symbol
-        print(encoded_html)
+        encoded_html += HTML_SYMBOLS.get(symbol) if HTML_SYMBOLS.get(symbol) else symbol
     return encoded_html
 
 
-def html_decode(raw_html: str) -> str:
-    decoded_text = raw_html
-    for symbol, html_code in HTML_SYMBOLS.items():
-        decoded_text = decoded_text.replace(html_code, symbol)
+def html_decode(text: str) -> str:
+    decoded_text: str = ''
+    html_code: str = ''
+    is_html_code = False
+    for symbol in text:
+        if symbol == '&':
+            is_html_code = True
+
+        if symbol == ';':
+            is_html_code = False
+            symbol = get_symbol_by_html_code(html_code + ';')
+            html_code = ''
+
+        if is_html_code:
+            html_code += symbol
+        else:
+            decoded_text += symbol
     return decoded_text
 
 
 def main():
-    args: ProgramArgument = parse_params()
-    validate_action(args.action)
+    args: ProgramArguments = parse_args()
 
     if not args.text:
         print('Text is empty')
@@ -68,3 +77,7 @@ def main():
     else:
         result = html_decode(args.text)
     print(result)
+
+
+if __name__ == '__main__':
+    main()
