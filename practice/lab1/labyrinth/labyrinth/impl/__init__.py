@@ -1,1 +1,0 @@
-from .labyrinthimpl import LabyrinthImplementation
