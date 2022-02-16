@@ -89,7 +89,14 @@ class Matrix:
     def from_file(filename: str):
         matrix: List[List[int]] = []
         with open(filename, 'r', encoding='utf-8') as file:
-            for row in file:
-                str_row = row.split(' ')
+            for (i, row) in enumerate(file):
+                str_row: List[str] = row.split(' ')
+                if len(str_row) != 3:
+                    raise FileExistsError(f'Size of numbers: {len(str_row)} '
+                                          f'in a row does not match the specified size: 3')
+
                 matrix.append([int(x) for x in str_row])
+        if len(matrix) != 3:
+            raise FileExistsError(f'Number of rows: {len(matrix)} of the matrix '
+                                  f'does not match the specified value: 3')
         return Matrix(matrix)
