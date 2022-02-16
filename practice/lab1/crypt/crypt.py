@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 
 @dataclass()
-class ProgramArgument:
+class ProgramArguments:
     def __init__(self, action: str, input_file: str, output_file: str, key: int):
         self.action = action
         self.input_file = input_file
@@ -15,7 +15,7 @@ class ProgramArgument:
         self.key = key
 
 
-def parse_params() -> ProgramArgument:
+def parse_params() -> ProgramArguments:
     parser = ArgumentParser()
     parser.add_argument('action', help='crypt or decrypt data', type=str)
     parser.add_argument('input_file', help='file path to file which will crypt/decrypt', type=str)
@@ -23,7 +23,7 @@ def parse_params() -> ProgramArgument:
     parser.add_argument('key', help='number in [0, 255] which used in encryption/decryption algorithm', type=int)
 
     args = parser.parse_args()
-    return ProgramArgument(args.action, args.input_file, args.output_file, args.key)
+    return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
 
 
 def validate_action(action: str) -> None:
@@ -60,7 +60,7 @@ def validate_key(key: int):
     raise ValueError(f'Invalid value key={key}. Key must be in [0, 255]')
 
 
-def validate_params(args: ProgramArgument):
+def validate_params(args: ProgramArguments):
     validate_action(args.action)
     validate_key(args.key)
     check_file_exists(args.input_file)
@@ -119,7 +119,7 @@ def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
 
 
 def main():
-    args: ProgramArgument = parse_params()
+    args: ProgramArguments = parse_params()
     validate_params(args)
     data_iterator = file_iterator(args.input_file)
     if args.action == 'crypt':
