@@ -33,3 +33,15 @@ def test_get_inverse_matrixs():
         inverse_matrix = matrix.get_inverse_matrix()
         print(inverse_matrix)
         assert [res == exp for res, exp in zip(inverse_matrix, expected_matrixs[i])]
+
+
+def test_get_empty_file():
+    file_name = 'empty_matrix.txt'
+    with pytest.raises(FileExistsError):
+        matrix = Matrix.from_file(os.path.join(DATA_DIR, file_name))
+
+
+def test_get_wrong_matrix():
+    file_name = 'wrong_matrix.txt'
+    with pytest.raises(FileExistsError):
+        matrix = Matrix.from_file(os.path.join(DATA_DIR, file_name))
