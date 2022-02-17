@@ -5,24 +5,24 @@ ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 @dataclass()
-class ProgramArgument:
+class ProgramArguments:
     def __init__(self, number: str, source_notation: int, target_notation: int):
         self.number: str = number
         self.source_notation: int = source_notation
         self.target_notation: int = target_notation
 
 
-def parse_command_line() -> ProgramArgument:
+def parse_command_line() -> ProgramArguments:
     parser = ArgumentParser()
 
     parser.add_argument('number', help="The number in 'radix_from' to be converted", type=str)
     parser.add_argument('source_notation', help="Radix in which the 'number' is located", type=int)
     parser.add_argument('target_notation', help="Radix in which the 'number' will be converted", type=int)
     args = parser.parse_args()
-    return ProgramArgument(args.number, args.source_notation, args.target_notation)
+    return ProgramArguments(args.number, args.source_notation, args.target_notation)
 
 
-def validate_annotation(notation: int) -> None:
+def validate_notation(notation: int) -> None:
     if 2 <= notation <= 36:
         return None
     raise ValueError(f'Invalid number system. {notation} must be in [2, 36]')
@@ -74,9 +74,9 @@ def convert_notation(number: int, notation: int) -> str:
 
 
 def convert_number_notation() -> None:
-    args: ProgramArgument = parse_command_line()
-    validate_annotation(args.source_notation)
-    validate_annotation(args.target_notation)
+    args: ProgramArguments = parse_command_line()
+    validate_notation(args.source_notation)
+    validate_notation(args.target_notation)
     validate_number(args.number, args.source_notation)
     converted_number: str = convert_number(args.number, args.source_notation, args.target_notation)
     print(converted_number)
