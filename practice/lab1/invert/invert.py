@@ -5,7 +5,7 @@ from typing import List
 from matrix import Matrix
 
 
-def get_file_path() -> str:
+def file_path_from_command_line() -> str:
     parser = argparse.ArgumentParser()
     parser.add_argument('file_path', help='Path to the matrix file', type=str)
     args = parser.parse_args()
@@ -20,7 +20,7 @@ def print_matrix(matrix: List[List[int]]) -> None:
 
 
 def calculate_inverse_matrix():
-    file_path: str = get_file_path()
+    file_path: str = file_path_from_command_line()
     matrix: Matrix = Matrix.from_file(file_path)
     inverse_matrix = matrix.get_inverse_matrix()
     print_matrix(inverse_matrix)

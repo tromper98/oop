@@ -138,7 +138,7 @@ class Labyrinth:
         return Labyrinth(field)
 
 
-def parse_arguments():
+def parse_command_line():
     parser = ArgumentParser()
     parser.add_argument('input_file_path', help='Path to the labyrinth file')
     parser.add_argument('output_file_path', help='Path to the file where the found route will be saved')
@@ -147,7 +147,7 @@ def parse_arguments():
 
 
 def find_way_in_labyrinth() -> None:
-    args: ProgramArguments = parse_arguments()
+    args: ProgramArguments = parse_command_line()
     labyrinth = Labyrinth.from_file(args.input_file)
     labyrinth.find_route_in_labyrinth()
     labyrinth.save_labyrinth_to_file(args.output_file)
