@@ -1,5 +1,5 @@
 import os.path
-from typing import Iterator, Iterable, Optional, List
+from typing import Iterator, Iterable
 from argparse import ArgumentParser
 from bitarray import bitarray
 
@@ -15,21 +15,15 @@ class ProgramArguments:
         self.key = key
 
 
-def parse_params() -> ProgramArguments:
+def parse_command_line() -> ProgramArguments:
     parser = ArgumentParser()
-    parser.add_argument('action', help='crypt or decrypt data', type=str)
+    parser.add_argument('action', help='crypt or decrypt data', choices=['crypt', 'encrypt'], type=str)
     parser.add_argument('input_file', help='file path to file which will crypt/decrypt', type=str)
     parser.add_argument('output_file', help='file path to file where result of crypt/decrypt will be store', type=str)
     parser.add_argument('key', help='number in [0, 255] which used in encryption/decryption algorithm', type=int)
 
     args = parser.parse_args()
     return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
-
-
-def validate_action(action: str) -> None:
-    if action in ['crypt', 'encrypt']:
-        return
-    raise ValueError(f"Invalid {action}. Action may by 'crypt' or 'encrypt'")
 
 
 def check_file_exists(file_path: str) -> None:
@@ -61,7 +55,6 @@ def validate_key(key: int):
 
 
 def validate_params(args: ProgramArguments):
-    validate_action(args.action)
     validate_key(args.key)
     check_file_exists(args.input_file)
 
@@ -119,9 +112,10 @@ def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
 
 
 def main():
-    args: ProgramArguments = parse_params()
+    args: ProgramArguments = parse_command_line()
     validate_params(args)
     data_iterator = file_iterator(args.input_file)
+
     if args.action == 'crypt':
         data = crypt_data(data_iterator, args.key)
     else:
