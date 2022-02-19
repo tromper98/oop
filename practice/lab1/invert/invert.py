@@ -38,9 +38,15 @@ def validate_determinant(determinant: float):
     sys.exit(-1)
 
 
-def get_matrix_from_file(filename: str):
+def get_matrix_from_file(file_path: str):
+    file_path = os.path.abspath(file_path)
+
+    if os.stat(file_path).st_size == 0:
+        print(f'File {file_path} is empty')
+        sys.exit(-1)
+
     matrix: List[List[float]] = []
-    with open(filename, 'r', encoding='utf-8') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         for (i, row) in enumerate(file):
             str_row: List[str] = row.split(' ')
             matrix.append([float(x) for x in str_row])

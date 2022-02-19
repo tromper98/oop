@@ -2,7 +2,7 @@ import os.path
 
 import pytest
 
-from matrix import Matrix
+from invert import *
 
 DATA_DIR = os.path.abspath('data')
 
@@ -29,19 +29,34 @@ def test_get_inverse_matrixs():
     ]
     expected_matrixs = [expected_matrix1, expected_matrix2, expected_matrix3]
     for i, file in enumerate(files):
-        matrix = Matrix.from_file(os.path.join(DATA_DIR, file))
-        inverse_matrix = matrix.get_inverse_matrix()
+        matrix = get_matrix_from_file(os.path.join(DATA_DIR, file))
+        determinant = calculate_determinant(matrix)
+        inverse_matrix = get_inverse_matrix(matrix, determinant)
         print(inverse_matrix)
         assert [res == exp for res, exp in zip(inverse_matrix, expected_matrixs[i])]
 
 
 def test_get_empty_file():
     file_name = 'empty_matrix.txt'
-    with pytest.raises(FileExistsError):
-        matrix = Matrix.from_file(os.path.join(DATA_DIR, file_name))
+    with pytest.raises(SystemExit) as e:
+        get_matrix_from_file(os.path.join(DATA_DIR, file_name))
+    assert e.type == SystemExit
+    assert e.value.code == -1
 
 
 def test_get_wrong_matrix():
     file_name = 'wrong_matrix.txt'
-    with pytest.raises(FileExistsError):
-        matrix = Matrix.from_file(os.path.join(DATA_DIR, file_name))
+    with pytest.raises(SystemExit) as e:
+        validate_file_path(file_name)
+    assert e.type == SystemExit
+    assert e.value.code == -1
+
+
+def test_degenerate_matrix():
+    file_name = 'degenerate_matrix.txt'
+    with pytest.raises(SystemExit) as e:
+        matrix = get_matrix_from_file(os.path.join(DATA_DIR, file_name))
+        determinant = calculate_determinant(matrix)
+        validate_determinant(determinant)
+    assert e.type == SystemExit
+    assert e.value.code == -1
