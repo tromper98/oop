@@ -37,40 +37,47 @@ def validate_number(number: str, notation: int) -> None:
             raise ValueError(f'Invalid number. {number} is not {notation}-numeral system')
 
 
+#Перенести обработку - внутрь функцию
 def convert_number(number: str, source_notation: int, target_notation: int) -> str:
+    converted_number = get_number_from_string(number, source_notation)
+    #Перенести внутрь int_to_str
+    return int_to_str(converted_number, target_notation)
+
+
+def get_number_from_string(number: str, notation: int) -> int:
+    is_negative_number = False
     if number[0] == '-':
         is_negative_number = True
         number: str = number[1:]
-    else:
-        is_negative_number = False
 
-    converted_number = get_number_from_string(number, source_notation)
-    if converted_number == 0:
-        return '0'
-
-    result = convert_notation(converted_number, target_notation)
-
-    if is_negative_number:
-        result += '-'
-
-    return result[::-1]
-
-
-def get_number_from_string(number: str, radix: int) -> int:
     degree = len(number)
     result = 0
     for digit in number:
         degree -= 1
-        result = result * radix + int(ALPHABET.index(digit))
+        result = result * notation + int(ALPHABET.index(digit))
+
+    result = result * -1 if is_negative_number else result
     return result
 
 
-def convert_notation(number: int, notation: int) -> str:
+#Скорее это название int_to_str
+def int_to_str(number: int, notation: int) -> str:
+    if number == 0:
+        return '0'
+
+    is_negative_number = False
+    if number < 0:
+        is_negative_number = True
+        number = abs(number)
     result = ''
+
     while number > 0:
         number, digit = divmod(number, notation)
         result += ALPHABET[digit]
-    return result
+
+    if is_negative_number:
+        result += '-'
+    return result[::-1]
 
 
 def convert_number_notation() -> None:
