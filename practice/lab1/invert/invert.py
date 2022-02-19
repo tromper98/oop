@@ -19,7 +19,7 @@ def validate_file_path(file_path: str) -> None:
     sys.exit(-1)
 
 
-def validate_3x3_matrix(matrix: List[List[float]]):
+def validate_3x3_matrix(matrix: List[List[float]]) -> None:
     if len(matrix) != 3:
         print('The number of rows of the matrix is not equal to 3')
         sys.exit('-1')
@@ -30,7 +30,7 @@ def validate_3x3_matrix(matrix: List[List[float]]):
             sys.exit('-1')
 
 
-def validate_determinant(determinant: float):
+def validate_determinant(determinant: float) -> None:
     if determinant:
         return
     # Это исключение стоит перехватить в функции main
@@ -38,7 +38,7 @@ def validate_determinant(determinant: float):
     sys.exit(-1)
 
 
-def get_matrix_from_file(file_path: str):
+def get_matrix_from_file(file_path: str) -> List[List[float]]:
     file_path = os.path.abspath(file_path)
 
     if os.stat(file_path).st_size == 0:
@@ -108,10 +108,10 @@ def transpose_matrix(matrix: List[List[float]]) -> List[List[float]]:
     return transposed_matrix
 
 
-def divide_matrix_by_determinant(matrix: List[List[float]], determinant: float):
+def divide_matrix_by_determinant(matrix: List[List[float]], determinant: float) -> List[List[float]]:
     inverse_matrix: List[List[float]] = []
     for row in matrix:
-        inverse_matrix.append(list(map(lambda x: x / determinant, row)))
+        inverse_matrix.append(list(map(lambda x: round(x / determinant, 3), row)))
     return inverse_matrix
 
 
@@ -131,7 +131,7 @@ def print_matrix(matrix: List[List[float]]) -> None:
         print()
 
 
-def calculate_inverse_matrix():
+def calculate_inverse_matrix() -> None:
     file_path: str = file_path_from_command_line()
     validate_file_path(file_path)
 
