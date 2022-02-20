@@ -54,7 +54,7 @@ def validate_key(key: int):
     raise ValueError(f'Invalid value key={key}. Key must be in [0, 255]')
 
 
-def validate_params(args: ProgramArguments):
+def validate_args(args: ProgramArguments):
     validate_key(args.key)
     check_file_exists(args.input_file)
 
@@ -113,11 +113,12 @@ def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
 
 def main():
     args: ProgramArguments = parse_command_line()
-    validate_params(args)
+    validate_args(args)
     data_iterator = file_iterator(args.input_file)
 
     if args.action == 'crypt':
         data = crypt_data(data_iterator, args.key)
+        print(data)
     else:
         data = encrypt_data(data_iterator, args.key)
     save_to_file(args.output_file, data)
