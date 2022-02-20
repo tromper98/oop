@@ -95,21 +95,20 @@ def find_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tup
     return cells
 
 
-def find_unchecked_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tuple[int, int]]:
-    neighbours_cells: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, x, y)
-    cells: List[Tuple[int, int]] = []
-    for neighbour_cell in neighbours_cells:
-        x, y = neighbour_cell
-        cell_number = labyrinth[x][y]
-        if cell_number == CELL_CODES.get(PASSABLE) or cell_number == CELL_CODES.get(FINISH):
-            cells.append((x, y))
-    return cells
-
-
 # Можно обойтись двумя списками: текущий фронт волны, и следующий фронт волны
 def calculate_distance(labyrinth: List[List[int]],
                        start_cell: Tuple[int, int],
                        finish_cell: Tuple[int, int]) -> List[List[int]]:
+
+    def _find_unchecked_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tuple[int, int]]:
+        neighbours_cells: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, x, y)
+        cells: List[Tuple[int, int]] = []
+        for neighbour_cell in neighbours_cells:
+            x, y = neighbour_cell
+            cell_number = labyrinth[x][y]
+            if cell_number == CELL_CODES.get(PASSABLE) or cell_number == CELL_CODES.get(FINISH):
+                cells.append((x, y))
+        return cells
     distance: int = 0
     current_wave: List[Tuple[int, int]] = [start_cell]
     next_wave: List[Tuple[int, int]] = []
@@ -120,7 +119,7 @@ def calculate_distance(labyrinth: List[List[int]],
             x, y = selected_cell
             labyrinth[x][y] = distance
 
-            neighbours_cells = find_unchecked_cell_neighbours(labyrinth, x, y)
+            neighbours_cells = _find_unchecked_cell_neighbours(labyrinth, x, y)
             next_wave.extend(neighbours_cells)
 
         current_wave = next_wave.copy()
