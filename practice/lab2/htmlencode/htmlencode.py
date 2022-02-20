@@ -54,9 +54,10 @@ def html_decode(text: str) -> str:
             is_html_code = True
 
         if symbol == ';':
-            is_html_code = False
-            symbol = get_symbol_by_html_code(html_code + ';')
-            html_code = ''
+            if is_html_code:
+                is_html_code = False
+                symbol = get_symbol_by_html_code(html_code + ';')
+                html_code = ''
 
         if is_html_code:
             html_code += symbol
