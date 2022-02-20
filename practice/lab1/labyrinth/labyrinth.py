@@ -38,7 +38,7 @@ def validate_file_path(file_path: str):
     if os.path.isfile(file_path):
         return
     print(f'File {file_path} doesn\t not exists')
-    sys.exit(-1)
+    sys.exit(1)
 
 
 def encode_labyrinth_cell(cell: str) -> int:
@@ -60,21 +60,21 @@ def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Tuple[Tuple[int, i
             if decode_labyrinth_cell(cell_number) == START:
                 if isinstance(start_cell, tuple):
                     print('More than one start point find in labyrinth')
-                    sys.exit(-1)
+                    sys.exit(1)
                 start_cell = (i, j)
 
             if decode_labyrinth_cell(cell_number) == FINISH:
                 if isinstance(finish_cell, tuple):
                     print('More than one finish point find in labyrinth')
-                    sys.exit(-1)
+                    sys.exit(1)
                 finish_cell = (i, j)
 
     if not start_cell:
         print('Start point not found in labyrinth')
-        sys.exit(-1)
+        sys.exit(1)
     if not finish_cell:
         print('Finish point not found in labyrinth')
-        sys.exit(-1)
+        sys.exit(1)
 
     return start_cell, finish_cell
 

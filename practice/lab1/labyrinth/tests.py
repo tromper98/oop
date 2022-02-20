@@ -1,30 +1,33 @@
 import os
 
 import pytest
-from labyrinth import Labyrinth
+from labyrinth import *
 
 
 def test_get_labyrinth_with_two_starts():
-    with pytest.raises(ValueError):
-        Labyrinth.from_file('data/labyrinth_with_two_start.txt')
+    with pytest.raises(SystemExit) as e:
+        labyrinth = get_labyrinth_from_file('data/labyrinth_with_two_start.txt')
+        start, end = find_start_and_finish_cell(labyrinth)
+    assert e.type == SystemExit
+    assert e.value.code == 1
 
 
 def test_get_labyrinth_with_now_wat():
-    labyrinth = Labyrinth.from_file('data/labyrinth_with_now_way.txt')
+    labyrinth = get_labyrinth_from_file('data/labyrinth_with_now_way.txt')
     expected = """
     ##############
     #   #        #
-    # S #        #
+    # A #        #
     #      #     #
     ##########   #
-    #       #F# ##
+    #       #B# ##
     # #########  #
     #   #  #     #
     #   #        #
     ##############
     """
-    labyrinth.find_route_in_labyrinth()
-    labyrinth.save_labyrinth_to_file('./test_lab.txt')
+    labyrinth = find_route_in_labyrinth(labyrinth)
+    save_labyrinth_to_file(labyrinth, './test_lab.txt')
 
     try:
         with open('./test_lab.txt', encoding='utf-8') as f:
@@ -35,21 +38,21 @@ def test_get_labyrinth_with_now_wat():
 
 
 def test_labyrinth_find_route():
-    labyrinth = Labyrinth.from_file('data/labyrinth-1.txt')
+    labyrinth = get_labyrinth_from_file('data/labyrinth-1.txt')
     expected = """
     ##############
-    #   #________#
-    # S #_ #####_#
-    # ____ #  ##_#
-    ######### #__#
-    #       _F#_##
-    # ######_ #__#
-    #   #  #_###_#
-    #   #   _____#
+    #   #........#
+    # A #. #####.#
+    # .... #  ##.#
+    ######### #..#
+    #       .B#.##
+    # ######. #..#
+    #   #  #.###.#
+    #   #   .....#
     ##############
     """
-    labyrinth.find_route_in_labyrinth()
-    labyrinth.save_labyrinth_to_file('./test_lab.txt')
+    labyrinth = find_route_in_labyrinth(labyrinth)
+    save_labyrinth_to_file(labyrinth, './test_lab.txt')
 
     try:
         with open('./test_lab.txt', encoding='utf-8') as f:

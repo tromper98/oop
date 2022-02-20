@@ -1,4 +1,5 @@
 import os.path
+import sys
 from typing import Iterator, Iterable
 from argparse import ArgumentParser
 from bitarray import bitarray
@@ -30,7 +31,8 @@ def check_file_exists(file_path: str) -> None:
     file_path = os.path.abspath(file_path)
     if os.path.isfile(file_path):
         return
-    raise FileNotFoundError(f'File {file_path} doesn\'t exists')
+    print(f'File {file_path} doesn\'t exists')
+    sys.exit(1)
 
 
 def file_iterator(input_file: str) -> Iterator[bytes]:
@@ -51,7 +53,8 @@ def save_to_file(file_name: str, data_iterator: Iterator[bytes]):
 def validate_key(key: int):
     if 0 <= key <= 255:
         return
-    raise ValueError(f'Invalid value key={key}. Key must be in [0, 255]')
+    print(f'Invalid value key={key}. Key must be in [0, 255]')
+    sys.exit(1)
 
 
 def validate_args(args: ProgramArguments):
@@ -118,7 +121,6 @@ def main():
 
     if args.action == 'crypt':
         data = crypt_data(data_iterator, args.key)
-        print(data)
     else:
         data = encrypt_data(data_iterator, args.key)
     save_to_file(args.output_file, data)
