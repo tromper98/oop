@@ -159,9 +159,13 @@ def find_route(labyrinth: List[List[int]],
     current_cell: Tuple[int, int] = finish_cell
     while current_cell != start_cell:
         neighbours_cell: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, current_cell[0], current_cell[1])
-        if current_cell != finish_cell:
-            x, y = current_cell
+        x, y = current_cell
+
+        if current_cell == finish_cell:
+            labyrinth[x][y] = CELL_CODES.get(FINISH)
+        else:
             labyrinth[x][y] = CELL_CODES.get(ROUTE)
+
         current_cell = _find_cell_with_min_distance(labyrinth, neighbours_cell)
     return labyrinth
 
