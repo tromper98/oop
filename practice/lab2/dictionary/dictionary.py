@@ -21,16 +21,62 @@ def close_file(file: TextIO) -> None:
     return file.close()
 
 
+def get_temp_file_path(file_path: str) -> str:
+    return file_path + '.tmp'
+
+def remove_temp_file(file_path: str) -> None:
+    temp_file_name: str = get_temp_file_path(file_path)
+    return os.remove(temp_file_name)
+
+
 def create_temp_file(file_path: str) -> str:
     file_path = os.path.abspath(file_path)
-    temp_file_path = os.path.abspath(file_path + '.tmp')
+    temp_file_path = get_temp_file_path(file_path)
     shutil.copy(file_path, temp_file_path)
     return temp_file_path
+
+
+def open_dictionary(file_path: str) -> TextIO:
+    file = create_temp_file(file_path)
+    return open_file(file)
 
 
 def get_last_updated_time(file_path: str) -> float:
     file_path = os.path.abspath(file_path)
     return os.stat(file_path).st_mtime
+
+
+def replace_file_with_temp_file(file_path: str, temp_file_path: str) -> None:
+    os.remove(file_path)
+    os.replace(temp_file_path, file_path)
+
+
+def ask_user_save_changes() -> str:
+    res: str = ''
+    while res not in ('y', 'n'):
+        res = input('Словарь был изменен. Y - сохранить изменения N - не сохранять изменения').lower()
+    return res
+
+
+def close_dictionary(file_path: str, file: TextIO) -> None:
+    file_path: str = os.path.abspath(file_path)
+    temp_file_path: str = get_temp_file_path(file_path)
+    file_update_time: float = get_last_updated_time(file_path)
+    temp_file_update_time: float = get_last_updated_time(temp_file_path)
+
+    if file_update_time == temp_file_update_time:
+        close_file(file)
+        remove_temp_file(temp_file_path)
+        return
+
+    answer: str = ask_user_save_changes()
+    if answer == 'n':
+        close_file(file)
+        remove_temp_file(temp_file_path)
+        return
+
+    close_file(file)
+    replace_file_with_temp_file(file_path, temp_file_path)
 
 
 def file_iterator(file: TextIO) -> Iterator[str]:

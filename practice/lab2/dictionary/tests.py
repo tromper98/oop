@@ -30,10 +30,10 @@ def test_create_temp_file():
         temp_file_path = create_temp_file(file_path)
 
         file = open(temp_file_path, 'r', encoding='UTF-8')
-        str = file.readline()
+        st = file.readline()
         file.close()
 
-        assert 'Test string' == str
+        assert 'Test string' == st
     finally:
         os.remove(file_path)
         os.remove(temp_file_path)
