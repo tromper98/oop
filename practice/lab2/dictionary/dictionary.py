@@ -17,12 +17,9 @@ def open_file(file_path: str) -> TextIO:
     return open(file_path, 'w+', encoding='utf-8')
 
 
-def close_file(file: TextIO) -> None:
-    return file.close()
-
-
 def get_temp_file_path(file_path: str) -> str:
     return file_path + '.tmp'
+
 
 def remove_temp_file(file_path: str) -> None:
     temp_file_name: str = get_temp_file_path(file_path)
@@ -34,11 +31,6 @@ def create_temp_file(file_path: str) -> str:
     temp_file_path = get_temp_file_path(file_path)
     shutil.copy(file_path, temp_file_path)
     return temp_file_path
-
-
-def open_dictionary(file_path: str) -> TextIO:
-    file = create_temp_file(file_path)
-    return open_file(file)
 
 
 def get_last_updated_time(file_path: str) -> float:
@@ -58,6 +50,11 @@ def ask_user_save_changes() -> str:
     return res
 
 
+def open_dictionary(file_path: str) -> TextIO:
+    temp_file_path = create_temp_file(file_path)
+    return open_file(temp_file_path)
+
+
 def close_dictionary(file_path: str, file: TextIO) -> None:
     file_path: str = os.path.abspath(file_path)
     temp_file_path: str = get_temp_file_path(file_path)
@@ -65,17 +62,17 @@ def close_dictionary(file_path: str, file: TextIO) -> None:
     temp_file_update_time: float = get_last_updated_time(temp_file_path)
 
     if file_update_time == temp_file_update_time:
-        close_file(file)
+        file.close()
         remove_temp_file(temp_file_path)
         return
 
     answer: str = ask_user_save_changes()
     if answer == 'n':
-        close_file(file)
+        file.close()
         remove_temp_file(temp_file_path)
         return
 
-    close_file(file)
+    file.close()
     replace_file_with_temp_file(file_path, temp_file_path)
 
 
@@ -105,31 +102,28 @@ def save_translate_to_file(word: str, translate: str, file: TextIO) -> None:
 
 
 def main() -> None:
-    file_path = get_dict_file_path_from_command_line()
-    copy_file_path = create_temp_file()
-    file: TextIO = open_file(file_path)
-    open_time: float = get_last_updated_time(file_path)
+    file_path: str = get_dict_file_path_from_command_line()
+    file: TextIO = open_dictionary(file_path)
 
     user_input = input()
     lower_input: str = user_input.lower()
 
-    found_string: Union[str, bool] = get_translate(lower_input, file_iterator(file))
-    if user_input == '...':
-        last_update_time = get_last_updated_time(file_path)
-        if open_time == last_update_time:
-            result = ''
-            while result != 'y' or result != 'n':
-                print('В словарь были внесены изменения. Введите y для сохранения данных '
-                      'или n чтобы не сохранять изменения')
-                result = input().lower()
-
-    if found_string:
-        print(found_string)
-    else:
-        print(f'Неизвестное слово {user_input}. Введите перевод или пустую строку для отказа')
-        translate: str = input()
-        if translate:
-            save_translate_to_file(user_input, translate, file)
+    # found_string: Union[str, bool] = get_translate(lower_input, file_iterator(file))
+    # if user_input == '...':
+    #     last_update_time = get_last_updated_time(file_path)
+    #         result = ''
+    #         while result != 'y' or result != 'n':
+    #             print('В словарь были внесены изменения. Введите y для сохранения данных '
+    #                   'или n чтобы не сохранять изменения')
+    #             result = input().lower()
+    #
+    # if found_string:
+    #     print(found_string)
+    # else:
+    #     print(f'Неизвестное слово {user_input}. Введите перевод или пустую строку для отказа')
+    #     translate: str = input()
+    #     if translate:
+    #         save_translate_to_file(user_input, translate, file)
 
 
 
