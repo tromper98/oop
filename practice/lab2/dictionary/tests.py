@@ -16,8 +16,8 @@ def test_parse_dict_string():
 
 def test_check_translate_exists():
     data = ['кот: cat', 'собака: dog', 'мышь: mouse']
-    assert find_translate('мышь', data) == True
-    assert find_translate('волк', data) == False
+    assert find_translate_in_source('мышь', data) == True
+    assert find_translate_in_source('волк', data) == False
 
 
 def test_create_temp_file():

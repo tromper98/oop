@@ -89,7 +89,7 @@ def parse_dict_string(string: str) -> Tuple[str, str]:
     return word, translate
 
 
-def find_translate(word: str, source: Iterable[str]) -> Optional[str]:
+def find_translate_in_source(word: str, source: Iterable[str]) -> Optional[str]:
     for data in source:
         wd, tr = parse_dict_string(data)
         if word == wd:
@@ -100,6 +100,11 @@ def find_translate(word: str, source: Iterable[str]) -> Optional[str]:
 def save_translate_to_file(word: str, translate: str, file: TextIO) -> None:
     row: str = word + ' : ' + translate
     file.write(row)
+
+
+def get_translate(word: str) -> Optional[str]:
+    print(f'Неизвестное слово {word}. Введите перевод или пустую строку для отказа')
+    return input()
 
 
 def main() -> None:
@@ -113,11 +118,10 @@ def main() -> None:
         if user_input == '...':
             close_dictionary(file_path, file)
 
-        translate: Optional[str] = find_translate(lower_input, file_iterator(file))
+        translate: Optional[str] = find_translate_in_source(lower_input, file_iterator(file))
         if translate:
             print(translate)
         else:
-            print(f'Неизвестное слово {user_input}. Введите перевод или пустую строку для отказа')
-            new_translate = input()
+            new_translate: str = get_translate(user_input)
             if new_translate:
                 save_translate_to_file(user_input, new_translate, file)
