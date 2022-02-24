@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Iterable, Iterator, List, Tuple, Union, TextIO
+from typing import Iterable, Iterator, List, Tuple, Optional, TextIO
 from argparse import ArgumentParser
 
 
@@ -46,7 +46,8 @@ def replace_file_with_temp_file(file_path: str, temp_file_path: str) -> None:
 def ask_user_save_changes() -> str:
     res: str = ''
     while res not in ('y', 'n'):
-        res = input('Словарь был изменен. Y - сохранить изменения N - не сохранять изменения').lower()
+        res = input('В словарь были внесены изменения. Введите y для сохранения данных'
+                    'или n чтобы не сохранять изменения').lower()
     return res
 
 
@@ -88,12 +89,12 @@ def parse_dict_string(string: str) -> Tuple[str, str]:
     return word, translate
 
 
-def get_translate(word: str, source: Iterable[str]) -> Union[str, bool]:
+def find_translate(word: str, source: Iterable[str]) -> Optional[str]:
     for data in source:
         wd, tr = parse_dict_string(data)
         if word == wd:
             return tr
-    return False
+    return None
 
 
 def save_translate_to_file(word: str, translate: str, file: TextIO) -> None:
@@ -105,25 +106,18 @@ def main() -> None:
     file_path: str = get_dict_file_path_from_command_line()
     file: TextIO = open_dictionary(file_path)
 
-    user_input = input()
-    lower_input: str = user_input.lower()
+    while True:
+        user_input = input()
+        lower_input: str = user_input.lower()
 
-    # found_string: Union[str, bool] = get_translate(lower_input, file_iterator(file))
-    # if user_input == '...':
-    #     last_update_time = get_last_updated_time(file_path)
-    #         result = ''
-    #         while result != 'y' or result != 'n':
-    #             print('В словарь были внесены изменения. Введите y для сохранения данных '
-    #                   'или n чтобы не сохранять изменения')
-    #             result = input().lower()
-    #
-    # if found_string:
-    #     print(found_string)
-    # else:
-    #     print(f'Неизвестное слово {user_input}. Введите перевод или пустую строку для отказа')
-    #     translate: str = input()
-    #     if translate:
-    #         save_translate_to_file(user_input, translate, file)
+        if user_input == '...':
+            close_dictionary(file_path, file)
 
-
-
+        translate: Optional[str] = find_translate(lower_input, file_iterator(file))
+        if translate:
+            print(translate)
+        else:
+            print(f'Неизвестное слово {user_input}. Введите перевод или пустую строку для отказа')
+            new_translate = input()
+            if new_translate:
+                save_translate_to_file(user_input, new_translate, file)
