@@ -1,6 +1,10 @@
-import pytest
+import os.path
 
+import pytest
+import os
 from dictionary import *
+
+DATA_DIR = os.path.abspath('data')
 
 
 def test_parse_dict_string():
@@ -16,3 +20,20 @@ def test_check_translate_exists():
     assert get_translate('волк', data) == False
 
 
+def test_create_temp_file():
+    file_path = os.path.join(DATA_DIR, 'test.txt')
+    temp_file_path = ''
+    try:
+        file = open(file_path, 'w', encoding='UTF-8')
+        file.write('Test string')
+        file.close()
+        temp_file_path = create_temp_file(file_path)
+
+        file = open(temp_file_path, 'r', encoding='UTF-8')
+        str = file.readline()
+        file.close()
+
+        assert 'Test string' == str
+    finally:
+        os.remove(file_path)
+        os.remove(temp_file_path)

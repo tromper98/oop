@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Iterable, Iterator, List, Tuple, Union, TextIO
 from argparse import ArgumentParser
 
@@ -18,6 +19,13 @@ def open_file(file_path: str) -> TextIO:
 
 def close_file(file: TextIO) -> None:
     return file.close()
+
+
+def create_temp_file(file_path: str) -> str:
+    file_path = os.path.abspath(file_path)
+    temp_file_path = os.path.abspath(file_path + '.tmp')
+    shutil.copy(file_path, temp_file_path)
+    return temp_file_path
 
 
 def get_last_updated_time(file_path: str) -> float:
@@ -52,6 +60,7 @@ def save_translate_to_file(word: str, translate: str, file: TextIO) -> None:
 
 def main() -> None:
     file_path = get_dict_file_path_from_command_line()
+    copy_file_path = create_temp_file()
     file: TextIO = open_file(file_path)
     open_time: float = get_last_updated_time(file_path)
 
