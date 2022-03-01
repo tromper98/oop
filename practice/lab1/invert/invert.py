@@ -1,7 +1,6 @@
-import sys
 import os.path
 import argparse
-from typing import List, Union
+from typing import List, Optional
 
 
 def file_path_from_command_line() -> str:
@@ -9,13 +8,6 @@ def file_path_from_command_line() -> str:
     parser.add_argument('file_path', help='Path to the matrix file', type=str)
     args = parser.parse_args()
     return os.path.abspath(args.file_path)
-
-
-def file_path_exists(file_path: str) -> bool:
-    if os.path.isfile(file_path):
-        return True
-    print(f'File {file_path} doesn\'t exists')
-    return False  # Не использовать exit
 
 
 def is_3x3_matrix(matrix: List[List[float]]) -> bool:
@@ -30,9 +22,9 @@ def is_3x3_matrix(matrix: List[List[float]]) -> bool:
     return True
 
 
-def get_matrix_from_file(file_path: str) -> Union[List[List[float]], bool]:
+def get_matrix_from_file(file_path: str) -> Optional[List[List[float]]]:
     if os.stat(file_path).st_size == 0:
-        return False
+        return
 
     matrix: List[List[float]] = []
     with open(file_path, 'r', encoding='utf-8') as file:

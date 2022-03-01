@@ -96,10 +96,12 @@ def find_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tup
 
 
 # Можно обойтись двумя списками: текущий фронт волны, и следующий фронт волны
+#Дать другое имя функции
 def calculate_distance(labyrinth: List[List[int]],
                        start_cell: Tuple[int, int],
                        finish_cell: Tuple[int, int]) -> List[List[int]]:
 
+#Меньше параметров. Labyrinth в области видимости вложенной функции
     def _find_unchecked_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tuple[int, int]]:
         neighbours_cells: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, x, y)
         cells: List[Tuple[int, int]] = []
@@ -135,8 +137,11 @@ def find_route(labyrinth: List[List[int]],
                start_cell: Tuple[int, int],
                finish_cell: Tuple[int, int]) -> List[List[int]]:
 
+    # Меньше параметров. Labyrinth в области видимости вложенной функции
     def _find_cell_with_min_distance(labyrinth: List[List[int]],
                                      cells: List[Tuple[int, int]]) -> Tuple[int, int]:
+
+        # Можно с каждым шагом просто искать distance - 1
         min_distance_cell: Optional[Tuple[int, int]] = None
         min_distance = math.inf
         for cell in cells:
