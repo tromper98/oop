@@ -33,14 +33,6 @@ def parse_command_line():
     return ProgramArguments(args.input_file_path, args.output_file_path)
 
 
-def validate_file_path(file_path: str):
-    file_path = os.path.abspath(file_path)
-    if os.path.isfile(file_path):
-        return
-    print(f'File {file_path} doesn\t not exists')
-    sys.exit(1)
-
-
 def encode_labyrinth_cell(cell: str) -> int:
     return CELL_CODES.get(cell)
 
@@ -52,7 +44,7 @@ def decode_labyrinth_cell(number: int) -> str:
     return ' '
 
 
-def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Optional[Tuple[Tuple[int, int], Tuple[int, int]]]:
     start_cell: Optional[Tuple[int, int]] = None
     finish_cell: Optional[Tuple[int, int]] = None
     for i, row in enumerate(labyrinth):
@@ -60,21 +52,21 @@ def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Tuple[Tuple[int, i
             if decode_labyrinth_cell(cell_number) == START:
                 if isinstance(start_cell, tuple):
                     print('More than one start point find in labyrinth')
-                    sys.exit(1)
+                    return
                 start_cell = (i, j)
 
             if decode_labyrinth_cell(cell_number) == FINISH:
                 if isinstance(finish_cell, tuple):
                     print('More than one finish point find in labyrinth')
-                    sys.exit(1)
+                    return
                 finish_cell = (i, j)
 
     if not start_cell:
         print('Start point not found in labyrinth')
-        sys.exit(1)
+        return
     if not finish_cell:
         print('Finish point not found in labyrinth')
-        sys.exit(1)
+        return
 
     return start_cell, finish_cell
 
@@ -95,14 +87,14 @@ def find_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tup
     return cells
 
 
-# Можно обойтись двумя списками: текущий фронт волны, и следующий фронт волны
-#Дать другое имя функции
-def calculate_distance(labyrinth: List[List[int]],
-                       start_cell: Tuple[int, int],
-                       finish_cell: Tuple[int, int]) -> List[List[int]]:
+# Дать другое имя функции
+def start_wave(labyrinth: List[List[int]],
+               start_cell: Tuple[int, int],
+               finish_cell: Tuple[int, int]) -> List[List[int]]:
+
 
 #Меньше параметров. Labyrinth в области видимости вложенной функции
-    def _find_unchecked_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tuple[int, int]]:
+    def _find_unchecked_cell_neighbours(x: int, y: int) -> List[Tuple[int, int]]:
         neighbours_cells: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, x, y)
         cells: List[Tuple[int, int]] = []
         for neighbour_cell in neighbours_cells:
@@ -121,7 +113,7 @@ def calculate_distance(labyrinth: List[List[int]],
             x, y = selected_cell
             labyrinth[x][y] = distance
 
-            neighbours_cells = _find_unchecked_cell_neighbours(labyrinth, x, y)
+            neighbours_cells = _find_unchecked_cell_neighbours(x, y)
             next_wave.extend(neighbours_cells)
 
         current_wave = next_wave.copy()
@@ -138,8 +130,7 @@ def find_route(labyrinth: List[List[int]],
                finish_cell: Tuple[int, int]) -> List[List[int]]:
 
     # Меньше параметров. Labyrinth в области видимости вложенной функции
-    def _find_cell_with_min_distance(labyrinth: List[List[int]],
-                                     cells: List[Tuple[int, int]]) -> Tuple[int, int]:
+    def _find_cell_with_min_distance(cells: List[Tuple[int, int]]) -> Tuple[int, int]:
 
         # Можно с каждым шагом просто искать distance - 1
         min_distance_cell: Optional[Tuple[int, int]] = None
@@ -153,11 +144,11 @@ def find_route(labyrinth: List[List[int]],
                     min_distance_cell = cell
         return min_distance_cell
 
-    def _route_to_cell_exists(labyrinth: List[List[int]], cell: Tuple[int, int]) -> bool:
+    def _route_to_cell_exists(cell: Tuple[int, int]) -> bool:
         x, y = cell
         return True if labyrinth[x][y] > 0 else False
 
-    if not _route_to_cell_exists(labyrinth, finish_cell):
+    if not _route_to_cell_exists(finish_cell):
         return labyrinth
 
     current_cell: Tuple[int, int] = finish_cell
@@ -170,13 +161,15 @@ def find_route(labyrinth: List[List[int]],
         else:
             labyrinth[x][y] = CELL_CODES.get(ROUTE)
 
-        current_cell = _find_cell_with_min_distance(labyrinth, neighbours_cell)
+        current_cell = _find_cell_with_min_distance(neighbours_cell)
     return labyrinth
 
 
-def find_route_in_labyrinth(labyrinth: List[List[int]]) -> List[List[int]]:
+def find_route_in_labyrinth(labyrinth: List[List[int]]) -> Optional[List[List[int]]]:
     start_cell, finish_cell = find_start_and_finish_cell(labyrinth)
-    labyrinth: List[List[int]] = calculate_distance(labyrinth, start_cell, finish_cell)
+    if not start_cell or not finish_cell:
+        return
+    labyrinth: List[List[int]] = start_wave(labyrinth, start_cell, finish_cell)
     return find_route(labyrinth, start_cell, finish_cell)
 
 
@@ -201,11 +194,16 @@ def save_labyrinth_to_file(labyrinth: List[List[int]], output_file_path: str):
 
 def find_way_in_labyrinth() -> None:
     args: ProgramArguments = parse_command_line()
-    validate_file_path(args.input_file)
+
+    if not os.path.isfile(args.input_file):
+        print(f'File {args.input_file} doesn\t not exists')
+        return
 
     labyrinth: List[List[int]] = get_labyrinth_from_file(args.input_file)
     labyrinth = find_route_in_labyrinth(labyrinth)
-    save_labyrinth_to_file(labyrinth, args.output_file)
+
+    if labyrinth:
+        save_labyrinth_to_file(labyrinth, args.output_file)
 
 
 if __name__ == "__main__":
