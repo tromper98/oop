@@ -1,7 +1,7 @@
 import sys
 import os.path
 import argparse
-from typing import List
+from typing import List, Union
 
 
 def file_path_from_command_line() -> str:
@@ -11,39 +11,28 @@ def file_path_from_command_line() -> str:
     return os.path.abspath(args.file_path)
 
 
-def validate_file_path(file_path: str) -> None:
-    file_path = os.path.abspath(file_path)
+def file_path_exists(file_path: str) -> bool:
     if os.path.isfile(file_path):
-        return
+        return True
     print(f'File {file_path} doesn\'t exists')
-    sys.exit(-1)
+    return False  # Не использовать exit
 
 
-def validate_3x3_matrix(matrix: List[List[float]]) -> None:
+def is_3x3_matrix(matrix: List[List[float]]) -> bool:
     if len(matrix) != 3:
         print('The number of rows of the matrix is not equal to 3')
-        sys.exit('-1')
+        return False
 
     for row in matrix:
         if len(row) != 3:
             print(f'Row contains {len(row)} numbers although must be 3 numbers')
-            sys.exit('-1')
+            return False
+    return True
 
 
-def validate_determinant(determinant: float) -> None:
-    if determinant:
-        return
-    # Это исключение стоит перехватить в функции main
-    print("This matrix doesn't have inverse matrix because determinant = 0")
-    sys.exit(-1)
-
-
-def get_matrix_from_file(file_path: str) -> List[List[float]]:
-    file_path = os.path.abspath(file_path)
-
+def get_matrix_from_file(file_path: str) -> Union[List[List[float]], bool]:
     if os.stat(file_path).st_size == 0:
-        print(f'File {file_path} is empty')
-        sys.exit(-1)
+        return False
 
     matrix: List[List[float]] = []
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -55,17 +44,16 @@ def get_matrix_from_file(file_path: str) -> List[List[float]]:
 
 def calculate_determinant(matrix: List[List[float]]) -> float:
     m = matrix
-    # Список лишний. Можно заменить сложением
-    determinant = m[0][0] * m[1][1] * m[2][2] + \
-                  m[2][0] * m[0][1] * m[1][2] + \
-                  m[1][0] * m[2][1] * m[0][2] + \
-                  -1 * m[2][0] * m[1][1] * m[0][2] + \
-                  -1 * m[0][0] * m[2][1] * m[1][2] + \
-                  -1 * m[1][0] * m[0][1] * m[2][2]
+    determinant = \
+        m[0][0] * m[1][1] * m[2][2] + \
+        m[2][0] * m[0][1] * m[1][2] + \
+        m[1][0] * m[2][1] * m[0][2] + \
+        -1 * m[2][0] * m[1][1] * m[0][2] + \
+        -1 * m[0][0] * m[2][1] * m[1][2] + \
+        -1 * m[1][0] * m[0][1] * m[2][2]
     return determinant
 
 
-# Лучше объединить с предыдущим методом
 def calculate_minors_determinants(matrix: List[List[float]]) -> List[List[float]]:
     def _get_minor(ignore_row: int, ignore_column: float) -> List[List[float]]:
         minor = []
@@ -78,7 +66,6 @@ def calculate_minors_determinants(matrix: List[List[float]]) -> List[List[float]
                 minor.append(new_row)
         return minor
 
-    # Лучше назвать get_2x2_determinant
     def _get_2x2_determinant(matrix: List[List[float]]) -> float:
         return matrix[0][0] * matrix[1][1] + -1 * matrix[0][1] * matrix[1][0]
 
@@ -92,13 +79,14 @@ def calculate_minors_determinants(matrix: List[List[float]]) -> List[List[float]
     return minor_determinants
 
 
-def get_algebraic_additions_matrix(matrix: List[List[float]]) -> List[List[float]]:
-    algebraic_additions_matrix = matrix
-    algebraic_additions_matrix[0][1] *= -1
-    algebraic_additions_matrix[1][2] *= -1
-    algebraic_additions_matrix[2][1] *= -1
-    algebraic_additions_matrix[1][0] *= -1
-    return algebraic_additions_matrix
+# Здесь портиться аргумент
+def get_cofactor_matrix(matrix: List[List[float]]) -> List[List[float]]:
+    cofactor_matrix = matrix.copy()
+    cofactor_matrix[0][1] *= -1
+    cofactor_matrix[1][2] *= -1
+    cofactor_matrix[2][1] *= -1
+    cofactor_matrix[1][0] *= -1
+    return cofactor_matrix
 
 
 def transpose_matrix(matrix: List[List[float]]) -> List[List[float]]:
@@ -111,14 +99,15 @@ def transpose_matrix(matrix: List[List[float]]) -> List[List[float]]:
 def divide_matrix_by_determinant(matrix: List[List[float]], determinant: float) -> List[List[float]]:
     inverse_matrix: List[List[float]] = []
     for row in matrix:
-        inverse_matrix.append(list(map(lambda x: round(x / determinant, 3), row)))
+        inverse_matrix.append(list(map(lambda x: x / determinant, row)))  # округление при выводе
     return inverse_matrix
 
 
-def get_inverse_matrix(matrix: List[List[float]], determinant: float) -> List[List[float]]:
+def get_inverse_matrix(matrix: List[List[float]]) -> List[List[float]]:
+    determinant: float = calculate_determinant(matrix)
     minors_determinants = calculate_minors_determinants(matrix)
-    algebraic_addition_matrix = get_algebraic_additions_matrix(minors_determinants)
-    transposed_matrix = transpose_matrix(algebraic_addition_matrix)
+    cofactor_matrix = get_cofactor_matrix(minors_determinants)
+    transposed_matrix = transpose_matrix(cofactor_matrix)  # Найти другое имя для матрицы ал. дополнений
     inverse_matrix = divide_matrix_by_determinant(transposed_matrix, determinant)
 
     return inverse_matrix
@@ -127,21 +116,31 @@ def get_inverse_matrix(matrix: List[List[float]], determinant: float) -> List[Li
 def print_matrix(matrix: List[List[float]]) -> None:
     for row in matrix:
         for number in row:
-            print(number, end=' ')
+            print(round(number, 3), end=' ')
         print()
 
 
 def calculate_inverse_matrix() -> None:
     file_path: str = file_path_from_command_line()
-    validate_file_path(file_path)
+    if not os.path.isfile(file_path):
+        print(f'File {file_path} doesn\'t exists')
+        return
 
     matrix: List[List[float]] = get_matrix_from_file(file_path)
-    validate_3x3_matrix(matrix)
+    if not matrix:
+        print(f'File {file_path} is empty')
+        return
 
+    if not is_3x3_matrix(matrix):
+        return
+
+    # Можно перенести в get_inverse_matrix
     determinant: float = calculate_determinant(matrix)
-    validate_determinant(determinant)
+    if determinant == 0:
+        print("This matrix doesn't have inverse matrix because determinant = 0")
+        return
 
-    inverse_matrix: List[List[float]] = get_inverse_matrix(matrix, determinant)
+    inverse_matrix: List[List[float]] = get_inverse_matrix(matrix)
     print_matrix(inverse_matrix)
 
 
