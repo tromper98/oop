@@ -1,5 +1,6 @@
 import os
 import math
+import sys
 from argparse import ArgumentParser
 from typing import List, Tuple, Optional
 
@@ -190,14 +191,17 @@ def find_way_in_labyrinth() -> None:
     args: ProgramArguments = parse_command_line()
 
     if not os.path.isfile(args.input_file):
-        print(f'File {args.input_file} doesn\t not exists')
-        return
+        print(f'File {args.input_file} doesn\'t not exists')
+        sys.exit(1)
 
     labyrinth: List[List[int]] = get_labyrinth_from_file(args.input_file)
     labyrinth = find_route_in_labyrinth(labyrinth)
 
-    if labyrinth:
-        save_labyrinth_to_file(labyrinth, args.output_file)
+    if not labyrinth:
+        sys.exit(1)
+
+    save_labyrinth_to_file(labyrinth, args.output_file)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -27,14 +27,6 @@ def parse_command_line() -> ProgramArguments:
     return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
 
 
-def check_file_exists(file_path: str) -> None:
-    file_path = os.path.abspath(file_path)
-    if os.path.isfile(file_path):
-        return
-    print(f'File {file_path} doesn\'t exists')
-    sys.exit(1)
-
-
 def file_iterator(input_file: str) -> Iterator[bytes]:
     input_file = os.path.abspath(input_file)
     with open(input_file, 'rb') as file:
@@ -43,23 +35,10 @@ def file_iterator(input_file: str) -> Iterator[bytes]:
                 yield symbol.to_bytes(1, byteorder='little')
 
 
-def save_to_file(file_name: str, data_iterator: Iterator[bytes]):
-    output_file: str = os.path.abspath(file_name)
-    with open(output_file, 'wb') as file:
+def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
+    with open(file_path, 'wb') as file:
         for data in data_iterator:
             file.write(data)
-
-
-def validate_key(key: int):
-    if 0 <= key <= 255:
-        return
-    print(f'Invalid value key={key}. Key must be in [0, 255]')
-    sys.exit(1)
-
-
-def validate_args(args: ProgramArguments):
-    validate_key(args.key)
-    check_file_exists(args.input_file)
 
 
 def xor_byte_with_key(byte: bytes, key: int) -> bitarray:
@@ -116,7 +95,15 @@ def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
 
 def main():
     args: ProgramArguments = parse_command_line()
-    validate_args(args)
+
+    if not os.path.isfile(args.input_file):
+        print(f'File {args.input_file} doesn\'t exists')
+        sys.exit(1)
+
+    if args.key < 0 or args.key > 255:
+        print(f'Invalid value key={args.key}. Key must be in [0, 255]')
+        sys.exit(1)
+
     data_iterator = file_iterator(args.input_file)
 
     if args.action == 'crypt':
@@ -124,6 +111,7 @@ def main():
     else:
         data = encrypt_data(data_iterator, args.key)
     save_to_file(args.output_file, data)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

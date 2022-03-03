@@ -1,5 +1,6 @@
 import os.path
 import argparse
+import sys
 from typing import List, Optional
 
 
@@ -121,16 +122,16 @@ def calculate_inverse_matrix() -> None:
     matrix: List[List[float]] = get_matrix_from_file(file_path)
     if not matrix:
         print(f'File {file_path} is empty')
-        return
+        sys.exit(1)
 
     if not is_3x3_matrix(matrix):
-        return
+        sys.exit(1)
 
     # Можно перенести в get_inverse_matrix
     determinant: float = calculate_determinant(matrix)
     if determinant == 0:
         print("This matrix doesn't have inverse matrix because determinant = 0")
-        return
+        sys.exit(1)
 
     inverse_matrix: List[List[float]] = get_inverse_matrix(matrix)
     print_matrix(inverse_matrix)
