@@ -1,5 +1,4 @@
 import os
-import sys
 import math
 from argparse import ArgumentParser
 from typing import List, Tuple, Optional
@@ -91,9 +90,7 @@ def find_cell_neighbours(labyrinth: List[List[int]], x: int, y: int) -> List[Tup
 def start_wave(labyrinth: List[List[int]],
                start_cell: Tuple[int, int],
                finish_cell: Tuple[int, int]) -> List[List[int]]:
-
-
-#Меньше параметров. Labyrinth в области видимости вложенной функции
+    # Меньше параметров. Labyrinth в области видимости вложенной функции
     def _find_unchecked_cell_neighbours(x: int, y: int) -> List[Tuple[int, int]]:
         neighbours_cells: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, x, y)
         cells: List[Tuple[int, int]] = []
@@ -103,6 +100,7 @@ def start_wave(labyrinth: List[List[int]],
             if cell_number == CELL_CODES.get(PASSABLE) or cell_number == CELL_CODES.get(FINISH):
                 cells.append((x, y))
         return cells
+
     distance: int = 0
     current_wave: List[Tuple[int, int]] = [start_cell]
     next_wave: List[Tuple[int, int]] = []
@@ -128,21 +126,14 @@ def start_wave(labyrinth: List[List[int]],
 def find_route(labyrinth: List[List[int]],
                start_cell: Tuple[int, int],
                finish_cell: Tuple[int, int]) -> List[List[int]]:
-
     # Меньше параметров. Labyrinth в области видимости вложенной функции
     def _find_cell_with_min_distance(cells: List[Tuple[int, int]]) -> Tuple[int, int]:
-
         # Можно с каждым шагом просто искать distance - 1
-        min_distance_cell: Optional[Tuple[int, int]] = None
-        min_distance = math.inf
         for cell in cells:
             x, y = cell
-            cell_number = labyrinth[x][y]
-            if cell_number >= 0:
-                if cell_number < min_distance:
-                    min_distance = cell_number
-                    min_distance_cell = cell
-        return min_distance_cell
+            cell_distance = labyrinth[x][y]
+            if cell_distance == distance - 1:
+                return cell
 
     def _route_to_cell_exists(cell: Tuple[int, int]) -> bool:
         x, y = cell
@@ -155,6 +146,7 @@ def find_route(labyrinth: List[List[int]],
     while current_cell != start_cell:
         neighbours_cell: List[Tuple[int, int]] = find_cell_neighbours(labyrinth, current_cell[0], current_cell[1])
         x, y = current_cell
+        distance = labyrinth[x][y]
 
         if current_cell == finish_cell:
             labyrinth[x][y] = CELL_CODES.get(FINISH)
@@ -166,8 +158,10 @@ def find_route(labyrinth: List[List[int]],
 
 
 def find_route_in_labyrinth(labyrinth: List[List[int]]) -> Optional[List[List[int]]]:
-    start_cell, finish_cell = find_start_and_finish_cell(labyrinth)
-    if not start_cell or not finish_cell:
+    cells: Optional[tuple] = find_start_and_finish_cell(labyrinth)
+    if isinstance(cells, tuple):
+        start_cell, finish_cell = cells
+    else:
         return
     labyrinth: List[List[int]] = start_wave(labyrinth, start_cell, finish_cell)
     return find_route(labyrinth, start_cell, finish_cell)

@@ -5,14 +5,12 @@ from labyrinth import *
 
 
 def test_get_labyrinth_with_two_starts():
-    with pytest.raises(SystemExit) as e:
-        labyrinth = get_labyrinth_from_file('data/labyrinth_with_two_start.txt')
-        start, end = find_start_and_finish_cell(labyrinth)
-    assert e.type == SystemExit
-    assert e.value.code == 1
+    labyrinth = get_labyrinth_from_file('data/labyrinth_with_two_start.txt')
+    cells = find_start_and_finish_cell(labyrinth)
+    assert cells is None
 
 
-def test_get_labyrinth_with_now_wat():
+def test_get_labyrinth_with_no_wave():
     labyrinth = get_labyrinth_from_file('data/labyrinth_with_now_way.txt')
     expected = """
     ##############
