@@ -1,6 +1,7 @@
 import os
 import shutil
-from typing import Iterable, Iterator, List, Tuple, Optional, TextIO
+import sys
+from typing import Iterable, Iterator, Tuple, Optional, TextIO
 from argparse import ArgumentParser
 
 
@@ -13,28 +14,22 @@ def get_dict_file_path_from_command_line() -> str:
 
 
 def open_file(file_path: str) -> TextIO:
-    file_path = os.path.abspath(file_path)
-    return open(file_path, 'w+', encoding='utf-8')
+    file = open(file_path, 'r+', encoding='utf-8')
+    return file
 
 
 def get_temp_file_path(file_path: str) -> str:
     return file_path + '.tmp'
 
 
-def remove_temp_file(file_path: str) -> None:
-    temp_file_name: str = get_temp_file_path(file_path)
-    return os.remove(temp_file_name)
-
-
 def create_temp_file(file_path: str) -> str:
-    file_path = os.path.abspath(file_path)
     temp_file_path = get_temp_file_path(file_path)
-    shutil.copy(file_path, temp_file_path)
-    return temp_file_path
+    if not os.path.isfile(file_path):
+        open(file_path, 'w', encoding='utf-8').close()
+    return shutil.copy2(file_path, temp_file_path)
 
 
-def get_last_updated_time(file_path: str) -> float:
-    file_path = os.path.abspath(file_path)
+def get_file_last_updated_time(file_path: str) -> float:
     return os.stat(file_path).st_mtime
 
 
@@ -46,8 +41,9 @@ def replace_file_with_temp_file(file_path: str, temp_file_path: str) -> None:
 def ask_user_save_changes() -> str:
     res: str = ''
     while res not in ('y', 'n'):
-        res = input('В словарь были внесены изменения. Введите y для сохранения данных'
-                    'или n чтобы не сохранять изменения').lower()
+        print('В словарь были внесены изменения. Введите y для сохранения данных '
+              'или n чтобы не сохранять изменения')
+        res = input().lower()
     return res
 
 
@@ -57,20 +53,19 @@ def open_dictionary(file_path: str) -> TextIO:
 
 
 def close_dictionary(file_path: str, file: TextIO) -> None:
-    file_path: str = os.path.abspath(file_path)
     temp_file_path: str = get_temp_file_path(file_path)
-    file_update_time: float = get_last_updated_time(file_path)
-    temp_file_update_time: float = get_last_updated_time(temp_file_path)
+    file_update_time: float = get_file_last_updated_time(file_path)
+    temp_file_update_time: float = get_file_last_updated_time(temp_file_path)
 
     if file_update_time == temp_file_update_time:
         file.close()
-        remove_temp_file(temp_file_path)
+        os.remove(temp_file_path)
         return
 
     answer: str = ask_user_save_changes()
     if answer == 'n':
         file.close()
-        remove_temp_file(temp_file_path)
+        os.remove(temp_file_path)
         return
 
     file.close()
@@ -98,8 +93,9 @@ def find_translate_in_source(word: str, source: Iterable[str]) -> Optional[str]:
 
 
 def save_translate_to_file(word: str, translate: str, file: TextIO) -> None:
-    row: str = word + ' : ' + translate
+    row: str = word + ':' + translate + '\n'
     file.write(row)
+    file.seek(0)
 
 
 def get_translate(word: str) -> Optional[str]:
@@ -117,11 +113,17 @@ def main() -> None:
 
         if user_input == '...':
             close_dictionary(file_path, file)
+            sys.exit(0)
 
-        translate: Optional[str] = find_translate_in_source(lower_input, file_iterator(file))
-        if translate:
-            print(translate)
-        else:
-            new_translate: str = get_translate(user_input)
-            if new_translate:
-                save_translate_to_file(user_input, new_translate, file)
+        if user_input:
+            translate: Optional[str] = find_translate_in_source(lower_input, file_iterator(file))
+            if translate:
+                print(translate)
+            else:
+                new_translate: str = get_translate(user_input)
+                if new_translate:
+                    save_translate_to_file(user_input, new_translate, file)
+
+
+if __name__ == '__main__':
+    main()

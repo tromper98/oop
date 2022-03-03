@@ -1,4 +1,5 @@
 import os.path
+import shutil
 
 import pytest
 import os
