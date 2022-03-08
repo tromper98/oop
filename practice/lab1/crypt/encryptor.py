@@ -41,7 +41,7 @@ def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
             file.write(data)
 
 
-def xor_byte_with_key(byte: bytes, key: int) -> bitarray:
+def xor_byte_and_key(byte: bytes, key: int) -> bitarray:
     byte_as_bit = bitarray()
     byte_as_bit.frombytes(byte)
     key_as_bit = bitarray()
@@ -50,29 +50,26 @@ def xor_byte_with_key(byte: bytes, key: int) -> bitarray:
 
 
 def transpose_bits(source_byte: bitarray, order: str = 'forward') -> bitarray:
-    """
-    :param source_byte: byte which be transposed
-    :param order: swap order. If `forward` - bits will be transpose in transpose_rules
-    If 'reverse' - bits will be transpose in reverse order of the rules of the transpose_rules
-    """
     if order not in ('forward', 'reverse'):
         raise ValueError(f'Unsupported order method {order}')
 
     transpose_rules = [[7, 5], [6, 1], [5, 0], [4, 7], [3, 6], [2, 4], [1, 3], [0, 2]]
     source_byte = source_byte[::-1]
     target_byte = bitarray('00000000')
-    for rule in transpose_rules:
-        if order == 'forward':
+    if order == 'forward':
+        for rule in transpose_rules:
             bit = source_byte[rule[0]]
             target_byte[rule[1]] = bit
-        else:
+    else:
+        for rule in transpose_rules:
             bit = source_byte[rule[1]]
             target_byte[rule[0]] = bit
+
     return target_byte[::-1]
 
 
 def crypt_byte(byte: bytes, key: int) -> bytes:
-    xor_byte: bitarray = xor_byte_with_key(byte, key)
+    xor_byte: bitarray = xor_byte_and_key(byte, key)
     return bytes(transpose_bits(xor_byte))
 
 
@@ -80,7 +77,7 @@ def encrypt_byte(byte: bytes, key: int) -> bytes:
     byte_as_bit = bitarray()
     byte_as_bit.frombytes(byte)
     transpose_byte = bytes(transpose_bits(byte_as_bit, order='reverse'))
-    return bytes(xor_byte_with_key(transpose_byte, key))
+    return bytes(xor_byte_and_key(transpose_byte, key))
 
 
 def crypt_data(data: Iterable, key: int) -> Iterator[bytes]:
@@ -110,8 +107,8 @@ def main():
         data = crypt_data(data_iterator, args.key)
     else:
         data = encrypt_data(data_iterator, args.key)
+
     save_to_file(args.output_file, data)
-    sys.exit(0)
 
 
 if __name__ == "__main__":
