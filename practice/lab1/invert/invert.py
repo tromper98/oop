@@ -1,6 +1,7 @@
 import os.path
 import argparse
 import sys
+import copy
 from typing import List, Optional
 
 
@@ -72,9 +73,9 @@ def calculate_minors_determinants(matrix: List[List[float]]) -> List[List[float]
     return minor_determinants
 
 
-# Здесь портиться аргумент
+# Здесь портиться аргумент. Должно быть глубокое копирование matrix
 def get_cofactor_matrix(matrix: List[List[float]]) -> List[List[float]]:
-    cofactor_matrix = matrix.copy()
+    cofactor_matrix = copy.deepcopy(matrix)
     cofactor_matrix[0][1] *= -1
     cofactor_matrix[1][2] *= -1
     cofactor_matrix[2][1] *= -1
@@ -92,15 +93,18 @@ def transpose_matrix(matrix: List[List[float]]) -> List[List[float]]:
 def divide_matrix_by_determinant(matrix: List[List[float]], determinant: float) -> List[List[float]]:
     inverse_matrix: List[List[float]] = []
     for row in matrix:
-        inverse_matrix.append(list(map(lambda x: x / determinant, row)))  # округление при выводе
+        inverse_matrix.append(list(map(lambda x: x / determinant, row)))
     return inverse_matrix
 
 
-def get_inverse_matrix(matrix: List[List[float]]) -> List[List[float]]:
+def get_inverse_matrix(matrix: List[List[float]]) -> Optional[List[List[float]]]:
     determinant: float = calculate_determinant(matrix)
+    if not determinant:
+        return
+
     minors_determinants = calculate_minors_determinants(matrix)
     cofactor_matrix = get_cofactor_matrix(minors_determinants)
-    transposed_matrix = transpose_matrix(cofactor_matrix)  # Найти другое имя для матрицы ал. дополнений
+    transposed_matrix = transpose_matrix(cofactor_matrix)
     inverse_matrix = divide_matrix_by_determinant(transposed_matrix, determinant)
 
     return inverse_matrix
@@ -117,7 +121,7 @@ def calculate_inverse_matrix() -> None:
     file_path: str = file_path_from_command_line()
     if not os.path.isfile(file_path):
         print(f'File {file_path} doesn\'t exists')
-        return
+        sys.exit(1)
 
     matrix: List[List[float]] = get_matrix_from_file(file_path)
     if not matrix:
@@ -127,13 +131,11 @@ def calculate_inverse_matrix() -> None:
     if not is_3x3_matrix(matrix):
         sys.exit(1)
 
-    # Можно перенести в get_inverse_matrix
-    determinant: float = calculate_determinant(matrix)
-    if determinant == 0:
+    inverse_matrix: List[List[float]] = get_inverse_matrix(matrix)
+    if not matrix:
         print("This matrix doesn't have inverse matrix because determinant = 0")
         sys.exit(1)
 
-    inverse_matrix: List[List[float]] = get_inverse_matrix(matrix)
     print_matrix(inverse_matrix)
 
 
