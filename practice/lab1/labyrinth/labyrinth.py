@@ -202,7 +202,6 @@ def find_way_in_labyrinth() -> None:
         sys.exit(1)
 
     save_labyrinth_to_file(labyrinth, args.output_file)
-    sys.exit(0)
 
 
 if __name__ == "__main__":
