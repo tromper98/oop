@@ -38,3 +38,10 @@ def test_find_prime_numbers_1_upper_bound():
     res = find_prime_numbers(upper_bound)
     expected = []
     assert res == expected
+
+
+def test_count_prime_numbers_100_millions_upper_bound():
+    upper_bound = 100000000
+    res = find_prime_numbers(upper_bound)
+    expected = 5761455
+    assert expected == len(res)

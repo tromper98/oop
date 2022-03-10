@@ -1,5 +1,6 @@
+import sys
 from argparse import ArgumentParser
-from typing import List, Set
+from typing import List
 
 
 def get_upper_bound() -> int:
@@ -14,24 +15,26 @@ def get_upper_bound() -> int:
 
 
 def find_prime_numbers(upper_bound: int) -> List[int]:
-    all_numbers: List[bool] = [True] * (upper_bound + 1)
-    all_numbers[0] = False
-    all_numbers[1] = False
+    sieve: List[bool] = [True] * (upper_bound + 1)
 
-    i = 2
-    while i <= upper_bound:
-        if all_numbers[i]:
-            j = i + i
+    for i in range(3, int(upper_bound ** 0.5) + 1, 2):
+        if sieve[i]:
+            sieve[i*i::2*i] = [False]*((upper_bound-i*i-1)//(2*i)+1)
 
-            while j <= upper_bound:
-                all_numbers[j] = False
-                j = j + i
-        i += 1
+    return [2] + [i for i in range(3, upper_bound, 2) if sieve[i]]
 
-    prime_numbers: List[int] = []
-    for i, is_prime in enumerate(all_numbers):
-        if is_prime:
-            prime_numbers.append(i)
 
-    return prime_numbers
+def main():
+    upper_bound = get_upper_bound()
 
+    if upper_bound <= 0:
+        print('upper_bound must be positive integer: > 0')
+        sys.exit(-1)
+
+    prime_numbers: List[int] = find_prime_numbers(upper_bound)
+    for number in prime_numbers:
+        print(number)
+
+
+if __name__ == '__main__':
+    main()
