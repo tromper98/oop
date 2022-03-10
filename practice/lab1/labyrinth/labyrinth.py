@@ -59,13 +59,13 @@ def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Optional[Tuple[Cel
     for i, row in enumerate(labyrinth):
         for j, cell_number in enumerate(row):
             if decode_labyrinth_cell(cell_number) == START:
-                if isinstance(start_cell, tuple):
+                if isinstance(start_cell, Cell):
                     print('More than one start point find in labyrinth')
                     return
                 start_cell = Cell(i, j)
 
             if decode_labyrinth_cell(cell_number) == FINISH:
-                if isinstance(finish_cell, tuple):
+                if isinstance(finish_cell, Cell):
                     print('More than one finish point find in labyrinth')
                     return
                 finish_cell = Cell(i, j)
