@@ -18,7 +18,7 @@ def test_crypt_one_string_file():
         params = ['python', 'encryptor.py', 'crypt', file_name, temp_file, '255']
         subprocess.run(params, stdout=subprocess.PIPE)
 
-        params = ['python', 'encryptor.py', 'encrypt', temp_file, temp1_file, '255']
+        params = ['python', 'encryptor.py', 'decrypt', temp_file, temp1_file, '255']
         subprocess.run(params, stdout=subprocess.PIPE)
 
         with open(temp1_file, 'rb') as f:
@@ -42,7 +42,7 @@ def test_crypt_large_file():
         params = ['python', 'encryptor.py', 'crypt', file_name, temp_file, '80']
         subprocess.run(params, stdout=subprocess.PIPE)
 
-        params = ['python', 'encryptor.py', 'encrypt', temp_file, temp1_file, '80']
+        params = ['python', 'encryptor.py', 'decode', temp_file, temp1_file, '80']
         subprocess.run(params, stdout=subprocess.PIPE)
 
         with open(temp1_file, 'rb') as f:
@@ -111,3 +111,17 @@ def test_read_binary_file():
         while chunk := file.read(512):
             for byte in chunk:
                 print(byte)
+
+
+def test_shuffle_byte():
+    byte = 0b11001110
+    expected = 0b01111010
+    result = shuffle_bits(byte)
+    assert bin(result) == bin(expected)
+
+
+def test_shuffle_byte_backward():
+    byte = 0b01111010
+    expected = 0b11001110
+    result = shuffle_bits_backward(byte)
+    assert bin(result) == bin(expected)

@@ -2,12 +2,35 @@ import os.path
 import sys
 from typing import Iterator, Iterable
 from argparse import ArgumentParser
-from bitarray import bitarray
 
 from dataclasses import dataclass
 
-BITE_TRANSPOSE_RULES = [[7, 5], [6, 1], [5, 0], [4, 7], [3, 6], [2, 4], [1, 3], [0, 2]]
+# 7 >> 2: 5
+# 6 >> 5: 1
+# 5 >> 5: 0
+# 4 << 3: 7
+# 3 << 3: 6
+# 2 << 2: 4
+# 1 << 2: 3
+# 0 << 2: 2
 
+
+def shuffle_bits(byte: int) -> int:
+    result: int = 0
+    result += (byte << 2 & 0b00011100)
+    result += (byte << 3 & 0b11000000)
+    result += (byte >> 5 & 0b00000011)
+    result += (byte >> 2 & 0b00100000)
+    return result
+
+
+def shuffle_bits_backward(byte: int) -> int:
+    result: int = 0
+    result += (byte >> 2 & 0b00000111)
+    result += (byte >> 3 & 0b00011000)
+    result += (byte << 5 & 0b01100000)
+    result += (byte << 2 & 0b10000000)
+    return result
 
 @dataclass()
 class ProgramArguments:
@@ -34,13 +57,13 @@ def file_iterator(input_file: str) -> Iterator[int]:
     with open(input_file, 'rb') as file:
         while chunk := file.read(512): #В двоичном файле уточнить существование строк
             for byte in chunk:
-                yield byte
+                yield int(byte)
 
 
-def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
+def save_to_file(file_path: str, data_iterator: Iterator[int]):
     with open(file_path, 'wb') as file:
         for data in data_iterator:
-            file.write(data)
+            file.write(bytes(data))
 
 
 # def xor_byte_and_key(byte: int, key: int) -> bitarray:
@@ -53,33 +76,22 @@ def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
 
 
 #Переделать Обработку байтов
-def crypt_byte(byte: int, key: int) -> bytes:
+def crypt_byte(byte: int, key: int) -> int:
     xor_byte: int = byte ^ key
-    crypt_byte = bitarray('00000000')
-    for rule in BITE_TRANSPOSE_RULES:
-        bit = xor_byte[rule[0]]
-        crypt_byte[rule[1]] = bit
-    return bytes(crypt_byte)
+    return shuffle_bits(xor_byte)
 
 
-def decode_byte(byte: bytes, key: int) -> bytes:
-    byte_as_bit = bitarray()
-    print('byte: ', byte)
-    byte_as_bit.frombytes(byte)
-    decode_byte = bitarray('00000000')
-    for rule in BITE_TRANSPOSE_RULES:
-        bit = byte_as_bit[rule[1]]
-        decode_byte[rule[0]] = bit
-    decode_byte = decode_byte[::-1]
-    return bytes(decode_byte ^ key)
+def decode_byte(byte: int, key: int) -> int:
+    shuffle_byte = shuffle_bits_backward(byte)
+    return shuffle_byte ^ key
 
 
-def crypt_data(data: Iterable, key: int) -> Iterator[bytes]:
+def crypt_data(data: Iterable, key: int) -> Iterator[int]:
     for byte in data:
         yield crypt_byte(byte, key)
 
 
-def decode_data(data: Iterable, key: int) -> Iterator[bytes]:
+def decode_data(data: Iterable, key: int) -> Iterator[int]:
     for byte in data:
         yield decode_byte(byte, key)
 
