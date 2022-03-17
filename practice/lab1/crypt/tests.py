@@ -1,7 +1,8 @@
 import os
 import subprocess
-
+import time
 import pytest
+
 
 from encryptor import *
 
@@ -92,3 +93,21 @@ def test_invalid_key():
     params = ['python', 'encryptor.py', 'crypt', file_name, 'data/file.bin', '290']
     res = subprocess.run(params, stdout=subprocess.PIPE)
     assert res.returncode == 1
+
+
+def test_crypt_large_picture():
+    file_name = os.path.join(DATA_DIR, 'large_picture.jpg')
+    params = ['python', 'encryptor.py', 'crypt', file_name, 'data/large_picture-encrypted', '100']
+    start_time = time.perf_counter()
+    res = subprocess.run(params, stdout=subprocess.PIPE)
+    end_time = time.perf_counter()
+    assert res.returncode == 0
+    print(f'\n Время шифрования файла составило {(end_time - start_time):0.4f} секунд')
+
+
+def test_read_binary_file():
+    file_name = os.path.join(DATA_DIR, 'secret.bin')
+    with open(file_name, 'rb') as file:
+        while chunk := file.read(512):
+            for byte in chunk:
+                print(byte)

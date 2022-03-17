@@ -6,6 +6,8 @@ from bitarray import bitarray
 
 from dataclasses import dataclass
 
+BITE_TRANSPOSE_RULES = [[7, 5], [6, 1], [5, 0], [4, 7], [3, 6], [2, 4], [1, 3], [0, 2]]
+
 
 @dataclass()
 class ProgramArguments:
@@ -18,7 +20,7 @@ class ProgramArguments:
 
 def parse_command_line() -> ProgramArguments:
     parser = ArgumentParser()
-    parser.add_argument('action', help='crypt or decrypt data', choices=['crypt', 'encrypt'], type=str)
+    parser.add_argument('action', help='crypt or decrypt data', choices=['crypt', 'decode'], type=str)
     parser.add_argument('input_file', help='file path to file which will crypt/decrypt', type=str)
     parser.add_argument('output_file', help='file path to file where result of crypt/decrypt will be store', type=str)
     parser.add_argument('key', help='number in [0, 255] which used in encryption/decryption algorithm', type=int)
@@ -27,12 +29,12 @@ def parse_command_line() -> ProgramArguments:
     return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
 
 
-def file_iterator(input_file: str) -> Iterator[bytes]:
+def file_iterator(input_file: str) -> Iterator[int]:
     input_file = os.path.abspath(input_file)
     with open(input_file, 'rb') as file:
-        for row in file:
-            for symbol in row:
-                yield symbol.to_bytes(1, byteorder='little')
+        while chunk := file.read(512): #В двоичном файле уточнить существование строк
+            for byte in chunk:
+                yield byte
 
 
 def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
@@ -41,43 +43,35 @@ def save_to_file(file_path: str, data_iterator: Iterator[bytes]):
             file.write(data)
 
 
-def xor_byte_and_key(byte: bytes, key: int) -> bitarray:
+# def xor_byte_and_key(byte: int, key: int) -> bitarray:
+#     #Неудачное имя
+#     byte_as_bit = bitarray()
+#     byte_as_bit.frombytes(byte)
+#     key_as_bit = bitarray()
+#     key_as_bit.frombytes(key.to_bytes(1, byteorder='little'))
+#     return byte_as_bit ^ key_as_bit
+
+
+#Переделать Обработку байтов
+def crypt_byte(byte: int, key: int) -> bytes:
+    xor_byte: int = byte ^ key
+    crypt_byte = bitarray('00000000')
+    for rule in BITE_TRANSPOSE_RULES:
+        bit = xor_byte[rule[0]]
+        crypt_byte[rule[1]] = bit
+    return bytes(crypt_byte)
+
+
+def decode_byte(byte: bytes, key: int) -> bytes:
     byte_as_bit = bitarray()
+    print('byte: ', byte)
     byte_as_bit.frombytes(byte)
-    key_as_bit = bitarray()
-    key_as_bit.frombytes(key.to_bytes(1, byteorder='little'))
-    return byte_as_bit ^ key_as_bit
-
-
-def transpose_bits(source_byte: bitarray, order: str = 'forward') -> bitarray:
-    if order not in ('forward', 'reverse'):
-        raise ValueError(f'Unsupported order method {order}')
-
-    transpose_rules = [[7, 5], [6, 1], [5, 0], [4, 7], [3, 6], [2, 4], [1, 3], [0, 2]]
-    source_byte = source_byte[::-1]
-    target_byte = bitarray('00000000')
-    if order == 'forward':
-        for rule in transpose_rules:
-            bit = source_byte[rule[0]]
-            target_byte[rule[1]] = bit
-    else:
-        for rule in transpose_rules:
-            bit = source_byte[rule[1]]
-            target_byte[rule[0]] = bit
-
-    return target_byte[::-1]
-
-
-def crypt_byte(byte: bytes, key: int) -> bytes:
-    xor_byte: bitarray = xor_byte_and_key(byte, key)
-    return bytes(transpose_bits(xor_byte))
-
-
-def encrypt_byte(byte: bytes, key: int) -> bytes:
-    byte_as_bit = bitarray()
-    byte_as_bit.frombytes(byte)
-    transpose_byte = bytes(transpose_bits(byte_as_bit, order='reverse'))
-    return bytes(xor_byte_and_key(transpose_byte, key))
+    decode_byte = bitarray('00000000')
+    for rule in BITE_TRANSPOSE_RULES:
+        bit = byte_as_bit[rule[1]]
+        decode_byte[rule[0]] = bit
+    decode_byte = decode_byte[::-1]
+    return bytes(decode_byte ^ key)
 
 
 def crypt_data(data: Iterable, key: int) -> Iterator[bytes]:
@@ -85,16 +79,16 @@ def crypt_data(data: Iterable, key: int) -> Iterator[bytes]:
         yield crypt_byte(byte, key)
 
 
-def encrypt_data(data: Iterable, key: int) -> Iterator[bytes]:
+def decode_data(data: Iterable, key: int) -> Iterator[bytes]:
     for byte in data:
-        yield encrypt_byte(byte, key)
+        yield decode_byte(byte, key)
 
 
 def main():
     args: ProgramArguments = parse_command_line()
 
     if not os.path.isfile(args.input_file):
-        print(f'File {args.input_file} doesn\'t exists')
+        print(f'File {args.input_file} doesn\'t exist')
         sys.exit(1)
 
     if args.key < 0 or args.key > 255:
@@ -106,7 +100,7 @@ def main():
     if args.action == 'crypt':
         data = crypt_data(data_iterator, args.key)
     else:
-        data = encrypt_data(data_iterator, args.key)
+        data = decode_data(data_iterator, args.key)
 
     save_to_file(args.output_file, data)
 
