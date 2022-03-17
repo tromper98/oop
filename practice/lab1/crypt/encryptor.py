@@ -34,6 +34,7 @@ def parse_command_line() -> ProgramArguments:
     args = parser.parse_args()
     return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
 
+
 def shuffle_bits(byte: int) -> int:
     result: int = 0
     result += (byte << 2 & 0b00011100)
@@ -67,24 +68,24 @@ def save_to_file(file_path: str, data_iterator: Iterator[int]):
 
 
 #Переделать Обработку байтов
-def crypt_byte(byte: int, key: int) -> int:
-    xor_byte: int = byte ^ key
+def crypt_number(number: int, key: int) -> int:
+    xor_byte: int = number ^ key
     return shuffle_bits(xor_byte)
 
 
-def decode_byte(byte: int, key: int) -> int:
-    shuffle_byte = shuffle_bits_backward(byte)
-    return shuffle_byte ^ key
+def decode_number(number: int, key: int) -> int:
+    shuffled_number = shuffle_bits_backward(number)
+    return shuffled_number ^ key
 
 
 def crypt_data(data: Iterable, key: int) -> Iterator[int]:
-    for byte in data:
-        yield crypt_byte(byte, key)
+    for number in data:
+        yield crypt_number(number, key)
 
 
 def decode_data(data: Iterable, key: int) -> Iterator[int]:
     for byte in data:
-        yield decode_byte(byte, key)
+        yield decode_number(byte, key)
 
 
 def main():

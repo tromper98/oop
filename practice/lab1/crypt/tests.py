@@ -105,14 +105,6 @@ def test_crypt_large_picture():
     print(f'\n Время шифрования файла составило {(end_time - start_time):0.4f} секунд')
 
 
-def test_read_binary_file():
-    file_name = os.path.join(DATA_DIR, 'secret.bin')
-    with open(file_name, 'rb') as file:
-        while chunk := file.read(512):
-            for byte in chunk:
-                print(byte)
-
-
 def test_shuffle_byte():
     byte = 0b11001110
     expected = 0b01111010
