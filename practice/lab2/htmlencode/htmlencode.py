@@ -1,4 +1,3 @@
-import sys
 from typing import Dict
 
 from argparse import ArgumentParser
@@ -29,7 +28,7 @@ def get_symbol_by_html_code(html_code: str) -> str:
 def parse_args() -> ProgramArguments:
     parser = ArgumentParser()
     parser.add_argument('action',
-                        help='ecnode - encode text to html;\n decode - decode html to text',
+                        help='encode - encode text to html;\n decode - decode html to text',
                         type=str,
                         choices=['encode', 'decode'])
     parser.add_argument('text', help='text with be encoded or decoded', type=str)
