@@ -24,7 +24,8 @@ class ProgramArguments:
         self.output_file = output_file
 
 
-class Cell:
+#Лучше назвать coordinate
+class Coord:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
@@ -52,23 +53,22 @@ def decode_labyrinth_cell(number: int) -> str:
     return ' '
 
 
-# Можно возвращать класс
-def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Optional[Tuple[Cell, Cell]]:
-    start_cell: Optional[Cell] = None
-    finish_cell: Optional[Cell] = None
+def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Optional[Tuple[Coord, Coord]]:
+    start_cell: Optional[Coord] = None
+    finish_cell: Optional[Coord] = None
     for i, row in enumerate(labyrinth):
-        for j, cell_number in enumerate(row):
-            if decode_labyrinth_cell(cell_number) == START:
-                if isinstance(start_cell, Cell):
+        for j, cell_code in enumerate(row):
+            if decode_labyrinth_cell(cell_code) == START:
+                if isinstance(start_cell, Coord):
                     print('More than one start point find in labyrinth')
                     return
-                start_cell = Cell(i, j)
+                start_cell = Coord(i, j)
 
-            if decode_labyrinth_cell(cell_number) == FINISH:
-                if isinstance(finish_cell, Cell):
+            if decode_labyrinth_cell(cell_code) == FINISH:
+                if isinstance(finish_cell, Coord):
                     print('More than one finish point find in labyrinth')
                     return
-                finish_cell = Cell(i, j)
+                finish_cell = Coord(i, j)
 
     if not start_cell:
         print('Start point not found in labyrinth')
@@ -80,42 +80,42 @@ def find_start_and_finish_cell(labyrinth: List[List[int]]) -> Optional[Tuple[Cel
     return start_cell, finish_cell
 
 
-def find_cell_neighbours(labyrinth: List[List[int]], cell: Cell) -> List[Cell]:
-    def _labyrinth_cell_exists(cell: Cell) -> bool:
+def find_cell_neighbours(labyrinth: List[List[int]], cell: Coord) -> List[Coord]:
+    def _labyrinth_cell_exists(cell: Coord) -> bool:
         return 0 <= cell.x <= len(labyrinth) - 1 and 0 <= cell.y <= len(labyrinth[cell.x]) - 1
 
-    def _filter_passable_cells(cell: Cell) -> Cell:
+    def _filter_passable_cells(cell: Coord) -> Coord:
         if _labyrinth_cell_exists(cell):
             cell_code: int = labyrinth[cell.x][cell.y]
             if cell_code != CELL_CODES.get(BORDER):
                 return cell
 
     x, y = cell.x, cell.y
-    all_neighbours: List[Cell] = [Cell(x, y - 1), Cell(x + 1, y), Cell(x, y + 1), Cell(x - 1, y)]  # Можно назвать all_neighbours
-    neighbours_cells: List[Cell] = list(filter(_filter_passable_cells, all_neighbours))
+    all_neighbours: List[Coord] = [Coord(x, y - 1), Coord(x + 1, y), Coord(x, y + 1), Coord(x - 1, y)]  # Можно назвать all_neighbours
+    neighbours_cells: List[Coord] = list(filter(_filter_passable_cells, all_neighbours))
     return neighbours_cells
 
 
 # Кортеж может служчить источником ошибок. Легко перепутать строки со столбцами
-def start_wave(labyrinth: List[List[int]], start_cell: Cell, finish_cell: Cell) -> List[List[int]]:
+def start_wave(labyrinth: List[List[int]], start_cell: Coord, finish_cell: Coord) -> List[List[int]]:
 
-    def _find_unchecked_cell_neighbours(cell: Cell) -> List[Cell]:
-        def _filter_unchecked_cells(cell: Cell):
+    def _find_unchecked_cell_neighbours(cell: Coord) -> List[Coord]:
+        def _filter_unchecked_cells(cell: Coord):
             cell_number = labyrinth[cell.x][cell.y]
             if cell_number == CELL_CODES.get(PASSABLE) or cell_number == CELL_CODES.get(FINISH):
                 return cell
 
-        all_neighbours: List[Cell] = find_cell_neighbours(labyrinth, cell)
+        all_neighbours: List[Coord] = find_cell_neighbours(labyrinth, cell)
         unchecked_neighbours_cells = list(filter(_filter_unchecked_cells, all_neighbours))
         return unchecked_neighbours_cells
 
     distance: int = 0
-    current_wave: List[Cell] = [start_cell]
-    next_wave: List[Cell] = []
+    current_wave: List[Coord] = [start_cell]
+    next_wave: List[Coord] = []
 
     while len(current_wave) != 0:
         for i in range(len(current_wave)):
-            selected_cell: Cell = current_wave[i]
+            selected_cell: Coord = current_wave[i]
             labyrinth[selected_cell.x][selected_cell.y] = distance
 
             neighbours_cells = _find_unchecked_cell_neighbours(selected_cell)
@@ -130,22 +130,22 @@ def start_wave(labyrinth: List[List[int]], start_cell: Cell, finish_cell: Cell) 
     return labyrinth
 
 
-def find_route(labyrinth: List[List[int]], start_cell: Cell, finish_cell: Cell) -> List[List[int]]:
-    def _find_cell_with_min_distance(cells: List[Cell]) -> Cell:
+def find_route(labyrinth: List[List[int]], start_cell: Coord, finish_cell: Coord) -> List[List[int]]:
+    def _find_cell_with_min_distance(cells: List[Coord]) -> Coord:
         for cell in cells:
             cell_distance = labyrinth[cell.x][cell.y]
             if cell_distance == distance - 1:
                 return cell
 
-    def _route_to_cell_exists(cell: Cell) -> bool:
+    def _route_to_cell_exists(cell: Coord) -> bool:
         return True if labyrinth[cell.x][cell.y] > 0 else False
 
     if not _route_to_cell_exists(finish_cell):
         return labyrinth
 
-    current_cell: Cell = finish_cell
+    current_cell: Coord = finish_cell
     while current_cell != start_cell:
-        neighbours_cells: List[Cell] = find_cell_neighbours(labyrinth, current_cell)
+        neighbours_cells: List[Coord] = find_cell_neighbours(labyrinth, current_cell)
         x, y = current_cell.x, current_cell.y
         distance = labyrinth[x][y]
 
