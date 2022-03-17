@@ -18,7 +18,7 @@ def test_crypt_one_string_file():
         params = ['python', 'encryptor.py', 'crypt', file_name, temp_file, '255']
         subprocess.run(params, stdout=subprocess.PIPE)
 
-        params = ['python', 'encryptor.py', 'decrypt', temp_file, temp1_file, '255']
+        params = ['python', 'encryptor.py', 'decode', temp_file, temp1_file, '255']
         subprocess.run(params, stdout=subprocess.PIPE)
 
         with open(temp1_file, 'rb') as f:
@@ -66,7 +66,7 @@ def test_crypt_empty_file():
         params = ['python', 'encryptor.py', 'crypt', file_name, temp_file, '120']
         subprocess.run(params, stdout=subprocess.PIPE)
 
-        params = ['python', 'encryptor.py', 'encrypt', temp_file, temp1_file, '120']
+        params = ['python', 'encryptor.py', 'decode', temp_file, temp1_file, '120']
         subprocess.run(params, stdout=subprocess.PIPE)
 
         with open(temp1_file, 'rb') as f:

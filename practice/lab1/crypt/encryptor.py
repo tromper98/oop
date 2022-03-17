@@ -15,23 +15,6 @@ from dataclasses import dataclass
 # 0 << 2: 2
 
 
-def shuffle_bits(byte: int) -> int:
-    result: int = 0
-    result += (byte << 2 & 0b00011100)
-    result += (byte << 3 & 0b11000000)
-    result += (byte >> 5 & 0b00000011)
-    result += (byte >> 2 & 0b00100000)
-    return result
-
-
-def shuffle_bits_backward(byte: int) -> int:
-    result: int = 0
-    result += (byte >> 2 & 0b00000111)
-    result += (byte >> 3 & 0b00011000)
-    result += (byte << 5 & 0b01100000)
-    result += (byte << 2 & 0b10000000)
-    return result
-
 @dataclass()
 class ProgramArguments:
     def __init__(self, action: str, input_file: str, output_file: str, key: int):
@@ -51,28 +34,36 @@ def parse_command_line() -> ProgramArguments:
     args = parser.parse_args()
     return ProgramArguments(args.action, args.input_file, args.output_file, args.key)
 
+def shuffle_bits(byte: int) -> int:
+    result: int = 0
+    result += (byte << 2 & 0b00011100)
+    result += (byte << 3 & 0b11000000)
+    result += (byte >> 5 & 0b00000011)
+    result += (byte >> 2 & 0b00100000)
+    return result
+
+
+def shuffle_bits_backward(byte: int) -> int:
+    result: int = 0
+    result += (byte >> 2 & 0b00000111)
+    result += (byte >> 3 & 0b00011000)
+    result += (byte << 5 & 0b01100000)
+    result += (byte << 2 & 0b10000000)
+    return result
+
 
 def file_iterator(input_file: str) -> Iterator[int]:
     input_file = os.path.abspath(input_file)
     with open(input_file, 'rb') as file:
         while chunk := file.read(512): #В двоичном файле уточнить существование строк
             for byte in chunk:
-                yield int(byte)
+                yield byte
 
 
 def save_to_file(file_path: str, data_iterator: Iterator[int]):
     with open(file_path, 'wb') as file:
-        for data in data_iterator:
-            file.write(bytes(data))
-
-
-# def xor_byte_and_key(byte: int, key: int) -> bitarray:
-#     #Неудачное имя
-#     byte_as_bit = bitarray()
-#     byte_as_bit.frombytes(byte)
-#     key_as_bit = bitarray()
-#     key_as_bit.frombytes(key.to_bytes(1, byteorder='little'))
-#     return byte_as_bit ^ key_as_bit
+        for number in data_iterator:
+            file.write(number.to_bytes(length=1, byteorder='little'))
 
 
 #Переделать Обработку байтов
