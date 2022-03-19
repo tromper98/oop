@@ -24,7 +24,6 @@ class ProgramArguments:
         self.output_file = output_file
 
 
-#Лучше назвать coordinate
 class Coord:
     def __init__(self, x: int, y: int):
         self.x = x
@@ -96,7 +95,6 @@ def find_cell_neighbours(labyrinth: List[List[int]], cell: Coord) -> List[Coord]
     return neighbours_cells
 
 
-# Кортеж может служчить источником ошибок. Легко перепутать строки со столбцами
 def start_wave(labyrinth: List[List[int]], start_cell: Coord, finish_cell: Coord) -> List[List[int]]:
 
     def _find_unchecked_cell_neighbours(cell: Coord) -> List[Coord]:
