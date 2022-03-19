@@ -56,7 +56,7 @@ def shuffle_bits_backward(byte: int) -> int:
 def file_iterator(input_file: str) -> Iterator[int]:
     input_file = os.path.abspath(input_file)
     with open(input_file, 'rb') as file:
-        while chunk := file.read(512): #В двоичном файле уточнить существование строк
+        while chunk := file.read(512):
             for byte in chunk:
                 yield byte
 
@@ -67,7 +67,6 @@ def save_to_file(file_path: str, data_iterator: Iterator[int]):
             file.write(number.to_bytes(length=1, byteorder='little'))
 
 
-#Переделать Обработку байтов
 def crypt_number(number: int, key: int) -> int:
     xor_byte: int = number ^ key
     return shuffle_bits(xor_byte)
@@ -88,7 +87,7 @@ def decode_data(data: Iterable, key: int) -> Iterator[int]:
         yield decode_number(byte, key)
 
 
-def main():
+def main() -> None:
     args: ProgramArguments = parse_command_line()
 
     if not os.path.isfile(args.input_file):
