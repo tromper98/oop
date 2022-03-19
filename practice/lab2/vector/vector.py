@@ -1,29 +1,33 @@
 import sys
-from typing import List, Callable, Optional
+from typing import List
 
 
 def get_numbers_from_input() -> List[float]:
-    numbers: list = input("Enter numbers: ").split()
-    return [round(float(n), 3) for n in numbers]
+    numbers: List[str] = input("Enter numbers: ").split()
+    return [float(n) for n in numbers]
 
-
-def calculate_result(numbers: List[float]) -> List[float]:
-    # Multiply each not even number to average value of all even numbers
-    even_numbers: List[float] = []
+#Нет смысла возвращать список.
+#Имя функции дожно соответствовать поведению например process_list
+def process_list(numbers: List[float]) -> None:
+    # Multiply each not even number to average value of all even numbers in list
+    #Избавиться от массива четных чисел
+    sum_even: float = 0
+    count_even: int = 0
     for number in numbers:
         if number % 2 == 0:
-            even_numbers.append(number)
+            sum_even += number
+            count_even += 1
 
-    if even_numbers:
-        avg: float = sum(even_numbers) / len(even_numbers)
+    if count_even:
+        avg = sum_even / count_even
         for i in range(len(numbers)):
             if numbers[i] % 3 == 0:
                 numbers[i] *= avg
-    return numbers
 
 
 def print_array(array: List[float]):
-    output: str = ','.join(str(n) for n in array)
+    array.sort()
+    output: str = ','.join(str(round(n, 3)) for n in array)
     print(output)
 
 
@@ -33,8 +37,8 @@ def main():
         print('List is empty')
         sys.exit(1)
 
-    result: List[float] = calculate_result(numbers)
-    print_array(result)
+    process_list(numbers)
+    print_array(numbers)
 
 
 if __name__ == '__main__':
