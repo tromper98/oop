@@ -53,3 +53,10 @@ def test_empty_html_decode():
     source = ''
     result = html_decode(source)
     assert source == result
+
+
+def test_html_decode_with_special_symbol():
+    source = '&Test text&amp; with <some html symbols&gt;'
+    result = html_decode(source)
+    expected = '&Test text& with <some html symbols>'
+    assert result == expected

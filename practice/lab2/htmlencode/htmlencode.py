@@ -1,7 +1,4 @@
-from typing import Dict
-
-from argparse import ArgumentParser
-from dataclasses import dataclass
+from typing import Dict, Optional
 
 HTML_SYMBOLS: Dict[str, str] = {
     '"': '&quot;',
@@ -11,30 +8,12 @@ HTML_SYMBOLS: Dict[str, str] = {
     '&': '&amp;'
 }
 
-
-@dataclass()
-class ProgramArguments:
-    def __init__(self, action: str, text: str):
-        self.action = action
-        self.text = text
-
-
-def get_symbol_by_html_code(html_code: str) -> str:
+#Программа должна брать данные из input
+def get_html_code(html_code: str) -> Optional[str]:
     for key, value in HTML_SYMBOLS.items():
         if value == html_code:
             return key
-
-
-def parse_args() -> ProgramArguments:
-    parser = ArgumentParser()
-    parser.add_argument('action',
-                        help='encode - encode text to html;\n decode - decode html to text',
-                        type=str,
-                        choices=['encode', 'decode'])
-    parser.add_argument('text', help='text with be encoded or decoded', type=str)
-
-    args = parser.parse_args()
-    return ProgramArguments(args.action, args.text)
+    return
 
 
 def html_encode(text: str) -> str:
@@ -45,34 +24,55 @@ def html_encode(text: str) -> str:
 
 
 def html_decode(text: str) -> str:
+    def decode_html_code() -> Optional[str]:
+        pos: int = text.find(';', i)
+        if pos == -1:
+            return None
+        else:
+            html_code: str = text[i: pos + 1]
+            decoded_html: Optional[str] = get_html_code(html_code)
+            return decoded_html
+
     decoded_text: str = ''
-    html_code: str = ''
-    is_html_code = False
-    for symbol in text:
+    i: int = 0
+    while i < len(text):
+        symbol: str = text[i]
+
         if symbol == '&':
-            is_html_code = True
+            pos: int = text.find(';', i)
+            decoded_html: Optional[str] = decode_html_code()
+            if decoded_html:
+                decoded_text += decoded_html
+                i = pos + 1
+            else:
+                decoded_text += symbol
+                i += 1
 
-        if symbol == ';':
-            if is_html_code:
-                is_html_code = False
-                symbol = get_symbol_by_html_code(html_code + ';')
-                html_code = ''
-
-        if is_html_code:
-            html_code += symbol
         else:
             decoded_text += symbol
+            i += 1
+
     return decoded_text
 
 
-def main():
-    args: ProgramArguments = parse_args()
+def choose_action() -> str:
+    action: str = ''
+    while action not in ('encode', 'decode'):
+        action = input('Choose action encode or decode html string: ')
+        action = action.lstrip().rstrip()
+    return action
 
-    if args.action == 'encode':
-        result = html_encode(args.text)
-    else:
-        result = html_decode(args.text)
-    print(result)
+
+def main():
+    text: str = ' '
+    while text:
+        text = input('Enter text: ')
+        action = choose_action()
+        if action == 'encode':
+            result = html_encode(text)
+        else:
+            result = html_decode(text)
+        print(result)
 
 
 if __name__ == '__main__':
