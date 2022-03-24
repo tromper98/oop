@@ -20,7 +20,7 @@ def test_find_prime_number_20_upper_bound():
     upper_bound = 20
     res = find_prime_numbers(upper_bound)
     expected = [2, 3, 5, 7, 11, 13, 17, 19]
-    assert res == expected
+    assert res == set(expected)
 
 
 def test_find_prime_number_1000_upper_bound():
@@ -50,10 +50,9 @@ def test_find_prime_number_1000_upper_bound():
 
 
 def test_find_prime_numbers_1_upper_bound():
-    upper_bound = '1'
-    command = ['python', 'primenumbers.py', upper_bound]
-    res = subprocess.run(command, stdout=subprocess.PIPE)
-    assert res.returncode == 1
+    upper_bound = 1
+    res = find_prime_numbers(upper_bound)
+    assert res == set()
 
 
 def test_count_prime_numbers_100_millions_upper_bound():
