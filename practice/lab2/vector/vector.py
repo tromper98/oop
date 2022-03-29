@@ -1,4 +1,3 @@
-import sys
 from typing import List
 
 
@@ -6,11 +5,9 @@ def get_numbers_from_input() -> List[float]:
     numbers: List[str] = input("Enter numbers: ").split()
     return [float(n) for n in numbers]
 
-#Нет смысла возвращать список.
-#Имя функции дожно соответствовать поведению например process_list
+
 def process_list(numbers: List[float]) -> None:
     # Multiply each not even number to average value of all even numbers in list
-    #Избавиться от массива четных чисел
     sum_even: float = 0
     count_even: int = 0
     for number in numbers:
@@ -33,9 +30,6 @@ def print_array(array: List[float]):
 
 def main():
     numbers = get_numbers_from_input()
-    if len(numbers) == 0:
-        print('List is empty')
-        sys.exit(1)
 
     process_list(numbers)
     print_array(numbers)
