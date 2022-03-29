@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from typing import List, Set
-import math
+from typing import List, Set, Iterable
+
 
 def parse_upper_bound_from_command_line() -> int:
     parser = ArgumentParser()
@@ -13,14 +13,6 @@ def parse_upper_bound_from_command_line() -> int:
     return args.upper_bound
 
 
-def is_prime(number: int) -> bool:
-    if number % 2 == 0 and number > 2:
-        return False
-    for i in range(3, int(math.sqrt(number)) + 1, 2):
-        if number % i == 0:
-            return False
-    return True
-
 #Убрать Optional
 def find_prime_numbers(upper_bound: int) -> Set[int]:
 
@@ -31,13 +23,22 @@ def find_prime_numbers(upper_bound: int) -> Set[int]:
 
     if upper_bound < 2:
         return set()
+
+    upper_bound += 1
     sieve: List[bool] = [True] * upper_bound
     tag_not_prime_numbers()
 
     prime_numbers: Set[int] = set([2] + [i for i in range(3, upper_bound, 2) if sieve[i]])
-    if is_prime(upper_bound):
-        prime_numbers.add(upper_bound)
     return prime_numbers
+
+
+def print_array(array: Iterable[int]) -> None:
+    print('(', end='')
+    for i, number in enumerate(array):
+        print(number, end=', ')
+        if i % 10 == 0 and i > 0:
+            print('')
+    print(')')
 
 
 def main():
@@ -46,7 +47,7 @@ def main():
 #Не выводится последнее простое число, если оно равно upper_bound
 #При upper_bound = 15 падает тест
     prime_numbers: Set[int] = find_prime_numbers(upper_bound)
-    print(prime_numbers)
+    print_array(prime_numbers)
 
 
 if __name__ == '__main__':

@@ -2,9 +2,17 @@ import pytest
 import subprocess
 from typing import Set
 from primenumbers import *
+import math
 
 
 def easy_prime_number_generator(upper_bound: int) -> Set[int]:
+    def is_prime(number: int) -> bool:
+        if number % 2 == 0 and number > 2:
+            return False
+        for i in range(3, int(math.sqrt(number)) + 1, 2):
+            if number % i == 0:
+                return False
+        return True
     prime_numbers = set()
 
     if upper_bound < 2:
