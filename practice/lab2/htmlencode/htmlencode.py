@@ -1,6 +1,6 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
-HTML_SYMBOLS: Dict[str, str] = {
+HTML_CODES: Dict[str, str] = {
     '"': '&quot;',
     '’': '&apos;',
     '<': '&lt;',
@@ -8,9 +8,11 @@ HTML_SYMBOLS: Dict[str, str] = {
     '&': '&amp;'
 }
 
+MAX_HTML_CODE_LENGTH = 10
+
 #Программа должна брать данные из input
 def get_html_code(html_code: str) -> Optional[str]:
-    for key, value in HTML_SYMBOLS.items():
+    for key, value in HTML_CODES.items():
         if value == html_code:
             return key
     return
@@ -19,31 +21,24 @@ def get_html_code(html_code: str) -> Optional[str]:
 def html_encode(text: str) -> str:
     encoded_html: str = ''
     for symbol in text:
-        encoded_html += HTML_SYMBOLS.get(symbol) if HTML_SYMBOLS.get(symbol) else symbol
+        encoded_html += HTML_CODES.get(symbol) if HTML_CODES.get(symbol) else symbol
     return encoded_html
 
 
 def html_decode(text: str) -> str:
-    def decode_html_code() -> Optional[str]:
-        pos: int = text.find(';', i)
-        if pos == -1:
-            return None
-        else:
-            html_code: str = text[i: pos + 1]
-            decoded_html: Optional[str] = get_html_code(html_code)
-            return decoded_html
-
     decoded_text: str = ''
     i: int = 0
     while i < len(text):
         symbol: str = text[i]
 
         if symbol == '&':
-            pos: int = text.find(';', i)
-            decoded_html: Optional[str] = decode_html_code()
-            if decoded_html:
-                decoded_text += decoded_html
-                i = pos + 1
+            substring: str = text[i: i+MAX_HTML_CODE_LENGTH]
+            pos: int = substring.find(';')
+            if pos != -1:
+                html_code: str = substring[: pos + 1]
+                decoded_html_code: Optional[str] = get_html_code(html_code)
+                decoded_text += decoded_html_code
+                i += len(html_code)
             else:
                 decoded_text += symbol
                 i += 1
