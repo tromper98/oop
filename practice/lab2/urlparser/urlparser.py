@@ -15,10 +15,8 @@ class ParsedURL:
         self.document = document
 
 
-
 def parse_url(url: str) -> ParsedURL:
     substring: str = url[0:8]
-
     if '://' not in substring:
         protocol: str = ''
     else:
@@ -55,7 +53,7 @@ def validate_url(parsed_url: ParsedURL) -> bool:
         if not parsed_url.port.isdigit():
             return False
 
-        if 1 > int(parsed_url.port) or int(parsed_url.port) < 65355:
+        if int(parsed_url.port) < 1 or int(parsed_url.port) > 65355:
             return False
 
     return True
