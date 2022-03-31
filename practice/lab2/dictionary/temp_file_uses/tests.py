@@ -5,7 +5,7 @@ import pytest
 import os
 from dictionary import *
 
-DATA_DIR = os.path.abspath('data')
+DATA_DIR = os.path.abspath('../data')
 
 
 def test_parse_dict_string():
@@ -38,3 +38,4 @@ def test_create_temp_file():
     finally:
         os.remove(file_path)
         os.remove(temp_file_path)
+
