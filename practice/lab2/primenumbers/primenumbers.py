@@ -13,7 +13,6 @@ def parse_upper_bound_from_command_line() -> int:
     return args.upper_bound
 
 
-#Убрать Optional
 def find_prime_numbers(upper_bound: int) -> Set[int]:
 
     def tag_not_prime_numbers() -> None:
@@ -43,9 +42,6 @@ def print_array(array: Iterable[int]) -> None:
 
 def main():
     upper_bound = parse_upper_bound_from_command_line()
-#Правильно выводить пустой список, когда < 2
-#Не выводится последнее простое число, если оно равно upper_bound
-#При upper_bound = 15 падает тест
     prime_numbers: Set[int] = find_prime_numbers(upper_bound)
     print_array(prime_numbers)
 
