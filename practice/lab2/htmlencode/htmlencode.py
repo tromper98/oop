@@ -38,8 +38,8 @@ def html_decode(text: str) -> str:
             pos: int = substring.find(';')
 
             if pos != -1:
-                html_code: str = substring[: pos + 1]
-                decoded_html_code: Optional[str] = get_html_code(html_code)
+                html_code = substring[: pos + 1]
+                decoded_html_code = get_html_code(html_code)
 
         if decoded_html_code:
             decoded_text += decoded_html_code
