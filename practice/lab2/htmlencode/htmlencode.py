@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 HTML_CODES: Dict[str, str] = {
     '"': '&quot;',
@@ -10,7 +10,7 @@ HTML_CODES: Dict[str, str] = {
 
 MAX_HTML_CODE_LENGTH = 10
 
-#Программа должна брать данные из input
+
 def get_html_code(html_code: str) -> Optional[str]:
     for key, value in HTML_CODES.items():
         if value == html_code:
@@ -30,19 +30,20 @@ def html_decode(text: str) -> str:
     i: int = 0
     while i < len(text):
         symbol: str = text[i]
+        decoded_html_code: Optional[str] = None
+        html_code: Optional[str] = None
 
         if symbol == '&':
             substring: str = text[i: i+MAX_HTML_CODE_LENGTH]
             pos: int = substring.find(';')
+
             if pos != -1:
                 html_code: str = substring[: pos + 1]
                 decoded_html_code: Optional[str] = get_html_code(html_code)
-                decoded_text += decoded_html_code
-                i += len(html_code)
-            else:
-                decoded_text += symbol
-                i += 1
 
+        if decoded_html_code:
+            decoded_text += decoded_html_code
+            i += len(html_code)
         else:
             decoded_text += symbol
             i += 1

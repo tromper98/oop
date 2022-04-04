@@ -60,3 +60,10 @@ def test_html_decode_with_special_symbol():
     result = html_decode(source)
     expected = '&Test text& with <some html symbols>'
     assert result == expected
+
+
+def test_html_decode_with_non_html_symbol():
+    source = '&html;Test text&amp; &;with &lt;html symbols&>;'
+    result = html_decode(source)
+    expected = '&html;Test text& &;with <html symbols&>;'
+    assert result == expected
