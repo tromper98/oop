@@ -1,29 +1,34 @@
 from typing import Dict, List, Iterable, Iterator, Tuple, Optional, Union
 from argparse import ArgumentParser
+import re
 
 
 class Dictionary:
-    def __init__(self):
+    def __init__(self, dictionary: Dict[str, List[str]]):
         self.is_updated = False
-        self._dict: Dict[str, str] = dict()
+        self._dict: Dict[str, List[str]] = dictionary
 
     def add_translate(self, word: str, translate: str) -> None:
-        self._dict[word] = translate
+        if self._has_translate(word):
+            self._dict[word].append(translate)
+        else:
+            self._dict[word] = [translate]
         self.is_updated = True
 
     def get_translate(self, word: str) -> Optional[str]:
         if not self._has_translate(word):
             return None
-
-        return self._dict[word]
+        for key, translate in self._dict.items():
+            if word.lower() == key.lower():
+                return ', '.join(translate)
 
     def _has_translate(self, word: str) -> bool:
-        return word in self._dict.keys()
+        return word.lower() in [key.lower() for key in self._dict.keys()]
 
     def save_to_file(self, file_path: str):
         with open(file_path, 'w', encoding='utf-8') as file:
             for word in self._dict.keys():
-                row: str = word + ' : ' + self._dict[word] + '\n'
+                row: str = f"{word}  : {', '.join(self._dict[word])} \n"
                 file.write(row)
 
 
@@ -35,25 +40,46 @@ def parse_dict_file_path() -> str:
     return args.file_path
 
 
-def parse_file_row(string: str) -> Tuple[str, str]:
+def parse_file_row(string: str) -> Tuple[str, List[str]]:
     sep_position = string.find(':')
-    word: str = string[:sep_position].lstrip().rstrip()
+    word: str = string[:sep_position].rstrip().lstrip()
     translate: str = string[sep_position + 1:].lstrip().rstrip()
-    return word, translate
+    return word, translate.split(', ')
 
 
-def get_dict_from_file(file_path: str) -> Dictionary:
-    dictionary = Dictionary()
+def get_dict_from_file(file_path: str) -> Dict[str, List[str]]:
+    dictionary: Dict[str, List[str]] = dict()
     with open(file_path, 'r', encoding='utf-8') as file:
         for row in file:
             word, translate = parse_file_row(row)
-            dictionary.add_translate(word, translate)
-    dictionary.is_updated = False
+            dictionary[word] = translate
     return dictionary
 
 
-def get_translate(dictionary: Dict[str, str], expr: str) -> Optional[str]:
-    return dictionary[expr]
+def get_en_dictionary(file_path: str) -> Dictionary:
+    dictionary: Dict[str, List[str]] = get_dict_from_file(file_path)
+    return Dictionary(dictionary)
+
+
+def get_ru_dictionary(file_path: str) -> Dictionary:
+    dictionary: Dict[str, List[str]] = get_dict_from_file(file_path)
+    ru_dict: Dict[str, List[str]] = dict()
+    for translate, words in dictionary.items():
+        for word in words:
+            ru_dict[word] = [translate]
+    return Dictionary(ru_dict)
+
+
+def get_translate(phrase: str, en_dict: Dictionary, ru_dict: Dictionary) -> Optional[str]:
+    translate: str = en_dict.get_translate(phrase)
+    if translate:
+        return translate
+
+    translate = ru_dict.get_translate(phrase)
+    if translate:
+        return translate
+
+    return None
 
 
 def close_dictionary(dictionary: Dictionary, file_path: str) -> None:
@@ -79,23 +105,24 @@ def ask_translate(phrase: str) -> str:
 
 def main() -> None:
     file_path: str = parse_dict_file_path()
-    dictionary: Dictionary = get_dict_from_file(file_path)
+    en_dictionary: Dictionary = get_en_dictionary(file_path)
+    ru_dictionary: Dictionary = get_ru_dictionary(file_path)
 
     while True:
-        phrase: str = input()
+        phrase: str = input().lstrip().rstrip()
 
         if phrase == '...':
-            close_dictionary(dictionary, file_path)
+            close_dictionary(en_dictionary, file_path)
             break
 
         if phrase:
-            translate: Optional[str] = dictionary.get_translate(phrase.lower())
+            translate: Optional[str] = get_translate(phrase, en_dictionary, ru_dictionary)
             if translate:
                 print(translate)
             else:
                 new_translate: str = ask_translate(phrase)
                 if new_translate:
-                    dictionary.add_translate(phrase, new_translate)
+                    en_dictionary.add_translate(phrase, new_translate)
 
 
 if __name__ == '__main__':
