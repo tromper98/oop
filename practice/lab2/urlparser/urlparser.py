@@ -1,61 +1,80 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 PROTOCOLS: Dict[str, int] = {
     'http': 80,
     'https': 443,
     'ftp': 21}
 
+MAX_PROTOCOL_LENGTH: int = 8
+
 
 class ParsedURL:
-    def __init__(self, url: str, protocol: str, host: str, port: str, document: str):
-        self.url = url
+    #Почему port - str?
+    def __init__(self, protocol: str, host: str, port: int, document: str):
         self.protocol = protocol
         self.host = host
         self.port = port
         self.document = document
 
+    @property
+    def url(self) -> str:
+        url: str = f'{self.protocol}://{self.host}:{self.port}'
+        url += f'/{self.document}' if self.document else ''
+        return url
 
-def parse_url(url: str) -> ParsedURL:
-    substring: str = url[0:8]
-    if '://' not in substring:
+
+def parse_url(url: str) -> Optional[ParsedURL]:
+    prefix: str = url[0:MAX_PROTOCOL_LENGTH] #Магическое число, переменную можно назвать prefix
+    if '://' not in prefix:
         protocol: str = ''
     else:
-        protocol: str = substring[:substring.find(':')]
+        protocol: str = prefix[:prefix.find(':')].lower()
 
-    sub_url = url[len(protocol) + 3:]
+    if protocol not in PROTOCOLS.keys():
+        return
 
-    slash_pos = sub_url.find('/')
-    if slash_pos == -1:
-        host: str = sub_url
+    path: str = url[len(protocol) + len('://'):] #Не понятно что такое sub_url и что такое 3
+
+    host_end: int = path.find(':') #Не понятно о каком слэше идет речь
+    port_end: int = path.find('/')
+
+    if port_end == -1:
+        port_end = len(path)
+
+    if host_end != -1:
+        host: str = path[:host_end]
+        port: Optional[str] = path[host_end + 1: port_end]
     else:
-        host: str = sub_url[:slash_pos]
+        host = path[:port_end]
+        port = PROTOCOLS.get(protocol)
 
-    colon_pos: int = host.find(':')
-    if colon_pos == -1:
-        port: str = ''
-    else:
-        port = host[colon_pos + 1:]
-        host: str = host[:colon_pos]
+    if len(host) == 0:
+        return
 
-    document: Optional[str] = sub_url[slash_pos + 1:] if slash_pos != -1 else ''
+    if not validate_port(port):
+        return
 
-    return ParsedURL(url, protocol,  host, port, document)
+    document: Optional[str] = path[port_end + 1:]
+
+    return ParsedURL(protocol,  host, int(port), document)
 
 
-def validate_url(parsed_url: ParsedURL) -> bool:
-    if parsed_url.protocol.lower() not in PROTOCOLS.keys():
-        return False
-
-    if not parsed_url.host:
-        return False
-
-    if parsed_url.port:
-        if not parsed_url.port.isdigit():
+#Валидация должна быть частью парсинга либо валидацию поместить в конструктор ParsedURL
+def validate_port(port: Union[str, int]) -> bool:
+    if isinstance(port, str):
+        if not port.isdigit():
             return False
 
-        if int(parsed_url.port) < 1 or int(parsed_url.port) > 65355:
+        if port.startswith('0'):
             return False
 
+        port = int(port)
+
+    if port < 1 or port > 65355:
+        return False
+
+    #Ошибки там, где их не тестируют
+    #Не писать код, если для него не написан тест
     return True
 
 
@@ -73,9 +92,8 @@ def main():
     while True:
         url: str = input('Enter URL: ')
         if url:
-            parsed_url: ParsedURL = parse_url(url)
-            is_url: bool = validate_url(parsed_url)
-            if is_url:
+            parsed_url: Optional[ParsedURL] = parse_url(url)
+            if parsed_url:
                 print_parsed_url(parsed_url)
             else:
                 print('Invalid URL')
@@ -85,3 +103,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+#Порт 001 должен быть невалидным
+#Порт 65535 должен быть валидным
+#Неправильно определил c Https
