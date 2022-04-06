@@ -1,6 +1,5 @@
-from typing import Dict, List, Iterable, Iterator, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional
 from argparse import ArgumentParser
-import re
 
 
 class Dictionary:
