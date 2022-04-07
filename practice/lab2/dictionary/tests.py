@@ -26,7 +26,7 @@ def test_add_translate():
                 'text': ['текст'],
                 'script': ['скрипт'],
                 'python': ['питон']}
-    assert dictionary._dict == expected
+    assert dictionary._en_dict == expected
 
 
 def test_extend_translate():
@@ -38,7 +38,7 @@ def test_extend_translate():
     expected = {'data': ['данные', 'информация'],
                 'text': ['текст'],
                 'script': ['скрипт']}
-    assert dictionary._dict == expected
+    assert dictionary._en_dict == expected
 
 
 def test_get_translate():
@@ -79,8 +79,7 @@ def test_get_upper_case_translate():
 
 def test_get_en_and_ru_dicts():
     file_path = './data/test.txt'
-    en_dict = get_en_dictionary(file_path)
-    ru_dict = get_ru_dictionary(file_path)
+    dictionary = get_en_dictionary(file_path)
 
     en_expected = {
         'test': ['тест'],
@@ -91,14 +90,13 @@ def test_get_en_and_ru_dicts():
         'тест': ['test'],
         'данные': ['data'],
         'путь': ['path']}
-    assert en_dict._dict == en_expected
-    assert ru_dict._dict == ru_excepted
+    assert dictionary._en_dict == en_expected
+    assert dictionary._ru_dict == ru_excepted
 
 
 def test_multi_translates_dict():
     file_path = './data/test2.txt'
-    en_dict = get_en_dictionary(file_path)
-    ru_dict = get_ru_dictionary(file_path)
+    dictionary = get_en_dictionary(file_path)
 
     en_expected = {
         'data': ['данные', 'информация', 'сведения'],
@@ -116,5 +114,30 @@ def test_multi_translates_dict():
         'алгоритм': ['script']
     }
 
-    assert en_dict._dict == en_expected
-    assert ru_dict._dict == ru_expected
+    assert dictionary._en_dict == en_expected
+    assert dictionary._ru_dict == ru_expected
+
+
+def test_append_translates_dict():
+    file_path = './data/test2.txt'
+    dictionary = get_en_dictionary(file_path)
+    dictionary.add_translate('test', 'тестирование')
+    en_expected = {
+        'data': ['данные', 'информация', 'сведения'],
+        'test': ['тест', 'проверка', 'тестирование'],
+        'script': ['скрипт', 'алгоритм']
+    }
+
+    ru_expected = {
+        'данные': ['data'],
+        'информация': ['data'],
+        'сведения': ['data'],
+        'тест': ['test'],
+        'проверка': ['test'],
+        'скрипт': ['script'],
+        'алгоритм': ['script'],
+        'тестирование': ['test']
+    }
+
+    assert dictionary._en_dict == en_expected
+    assert dictionary._ru_dict == ru_expected

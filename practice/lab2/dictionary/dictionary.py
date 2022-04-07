@@ -5,29 +5,42 @@ from argparse import ArgumentParser
 class Dictionary:
     def __init__(self, dictionary: Dict[str, List[str]]):
         self.is_updated = False
-        self._dict: Dict[str, List[str]] = dictionary
+        self._en_dict: Dict[str, List[str]] = dictionary
+        self._ru_dict: Dict[str, List[str]] = self._get_ru_dictionary()
 
     def add_translate(self, word: str, translate: str) -> None:
         if self._has_translate(word):
-            self._dict[word].append(translate)
+            self._en_dict[word].append(translate)
         else:
-            self._dict[word] = [translate]
+            self._en_dict[word] = [translate]
+
+        self._ru_dict[translate] = [word]
         self.is_updated = True
 
     def get_translate(self, word: str) -> Optional[str]:
-        if not self._has_translate(word):
-            return None
-        for key, translate in self._dict.items():
+        for key, translate in self._en_dict.items():
             if word.lower() == key.lower():
                 return ', '.join(translate)
 
+        for key, translate in self._en_dict.items():
+            if word.lower() == key.lower():
+                return ', '.join(translate)
+        return
+
     def _has_translate(self, word: str) -> bool:
-        return word.lower() in [key.lower() for key in self._dict.keys()]
+        return word.lower() in [key.lower() for key in self._en_dict.keys()]
+
+    def _get_ru_dictionary(self) -> Dict[str, List[str]]:
+        ru_dict: Dict[str, List[str]] = dict()
+        for translate, words in self._en_dict.items():
+            for word in words:
+                ru_dict[word] = [translate]
+        return ru_dict
 
     def save_to_file(self, file_path: str):
         with open(file_path, 'w', encoding='utf-8') as file:
-            for word in self._dict.keys():
-                row: str = f"{word}  : {', '.join(self._dict[word])} \n"
+            for word in self._en_dict.keys():
+                row: str = f"{word}  : {', '.join(self._en_dict[word])} \n"
                 file.write(row)
 
 
@@ -43,7 +56,7 @@ def parse_file_row(string: str) -> Tuple[str, List[str]]:
     sep_position = string.find(':')
     word: str = string[:sep_position].rstrip().lstrip()
     translate: str = string[sep_position + 1:].lstrip().rstrip()
-    return word, translate.split(', ')
+    return word, translate.split(',')
 
 
 def get_dict_from_file(file_path: str) -> Dict[str, List[str]]:
@@ -69,18 +82,6 @@ def get_ru_dictionary(file_path: str) -> Dictionary:
     return Dictionary(ru_dict)
 
 
-def get_translate(phrase: str, en_dict: Dictionary, ru_dict: Dictionary) -> Optional[str]:
-    translate: str = en_dict.get_translate(phrase)
-    if translate:
-        return translate
-
-    translate = ru_dict.get_translate(phrase)
-    if translate:
-        return translate
-
-    return None
-
-
 def close_dictionary(dictionary: Dictionary, file_path: str) -> None:
     if dictionary.is_updated:
         is_save = ask_user_save_dict()
@@ -104,24 +105,23 @@ def ask_translate(phrase: str) -> str:
 
 def main() -> None:
     file_path: str = parse_dict_file_path()
-    en_dictionary: Dictionary = get_en_dictionary(file_path)
-    ru_dictionary: Dictionary = get_ru_dictionary(file_path)
+    dictionary: Dictionary = get_en_dictionary(file_path)
 
     while True:
         phrase: str = input().lstrip().rstrip()
 
         if phrase == '...':
-            close_dictionary(en_dictionary, file_path)
+            close_dictionary(dictionary, file_path)
             break
 
         if phrase:
-            translate: Optional[str] = get_translate(phrase, en_dictionary, ru_dictionary)
+            translate: Optional[str] = dictionary.get_translate(phrase)
             if translate:
                 print(translate)
             else:
                 new_translate: str = ask_translate(phrase)
                 if new_translate:
-                    en_dictionary.add_translate(phrase, new_translate)
+                    dictionary.add_translate(phrase, new_translate)
 
 
 if __name__ == '__main__':
