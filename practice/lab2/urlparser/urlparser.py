@@ -1,11 +1,12 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 
 PROTOCOLS: Dict[str, int] = {
     'http': 80,
     'https': 443,
     'ftp': 21}
 
-MAX_PROTOCOL_LENGTH: int = 8
+MAX_PREFIX_LENGTH: int = 8
+PART_BETWEEN_PROTOCOL_AND_HOST_LENGTH: int = 3
 
 
 class ParsedURL:
@@ -24,7 +25,7 @@ class ParsedURL:
 
 
 def parse_url(url: str) -> Optional[ParsedURL]:
-    prefix: str = url[0:MAX_PROTOCOL_LENGTH] #Магическое число, переменную можно назвать prefix
+    prefix: str = url[0:MAX_PREFIX_LENGTH] #подумать над названием переменной
     if '://' not in prefix:
         protocol: str = ''
     else:
@@ -33,7 +34,7 @@ def parse_url(url: str) -> Optional[ParsedURL]:
     if protocol not in PROTOCOLS.keys():
         return
 
-    path: str = url[len(protocol) + len('://'):] #Не понятно что такое sub_url и что такое 3
+    path: str = url[len(protocol) + len('://'):] #:// make a constant
 
     host_end: int = path.find(':') #Не понятно о каком слэше идет речь
     port_end: int = path.find('/')
@@ -44,6 +45,9 @@ def parse_url(url: str) -> Optional[ParsedURL]:
     if host_end != -1:
         host: str = path[:host_end]
         port: Optional[str] = path[host_end + 1: port_end]
+
+        if not validate_port(port):
+            return
     else:
         host = path[:port_end]
         port = PROTOCOLS.get(protocol)
@@ -51,26 +55,19 @@ def parse_url(url: str) -> Optional[ParsedURL]:
     if len(host) == 0:
         return
 
-    if not validate_port(port):
-        return
-
     document: Optional[str] = path[port_end + 1:]
 
     return ParsedURL(protocol,  host, int(port), document)
 
 
-#Валидация должна быть частью парсинга либо валидацию поместить в конструктор ParsedURL
-def validate_port(port: Union[str, int]) -> bool:
-    if isinstance(port, str):
-        if not port.isdigit():
-            return False
+def validate_port(port: str) -> bool:
+    if not port.isdigit():
+        return False
 
-        if port.startswith('0'):
-            return False
+    if port.startswith('0'):
+        return False
 
-        port = int(port)
-
-    if port < 1 or port > 65355:
+    if int(port) < 1 or int(port) > 65355:
         return False
 
     #Ошибки там, где их не тестируют
