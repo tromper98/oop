@@ -1,11 +1,9 @@
 import pytest
-import subprocess
-from typing import Set
 from primenumbers import *
 import math
 
 
-def easy_prime_number_generator(upper_bound: int) -> Set[int]:
+def find_prime_numbers_slow(upper_bound: int) -> Set[int]:
     def is_prime(number: int) -> bool:
         if number % 2 == 0 and number > 2:
             return False
@@ -74,5 +72,5 @@ def test_prime_numbers_bruteforce():
     upper_bound = 1000
     for i in range(1, upper_bound):
         res = find_prime_numbers(i)
-        excepted = easy_prime_number_generator(i)
+        excepted = find_prime_numbers_slow(i)
         assert res == excepted
