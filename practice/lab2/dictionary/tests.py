@@ -4,16 +4,16 @@ from dictionary import *
 
 def test_get_dict_from_file():
     file_path = './data/test.txt'
-    result = get_dict_from_file(file_path)
+    result = Dictionary.from_file(file_path)
     expected = {'test': ['тест'], 'data': ['данные'], 'path': ['путь']}
-    assert result == expected
+    assert result._en_dict == expected
 
 
 def test_get_dict_from_empty_file():
     file_path = './data/empty.txt'
-    result = get_dict_from_file(file_path)
-    expected = dict()
-    assert result == expected
+    result = Dictionary.from_file(file_path)
+    expected = Dictionary(dict())
+    assert result._en_dict == expected._en_dict
 
 
 def test_add_translate():
@@ -79,7 +79,7 @@ def test_get_upper_case_translate():
 
 def test_get_en_and_ru_dicts():
     file_path = './data/test.txt'
-    dictionary = get_en_dictionary(file_path)
+    dictionary = Dictionary.from_file(file_path)
 
     en_expected = {
         'test': ['тест'],
@@ -96,7 +96,7 @@ def test_get_en_and_ru_dicts():
 
 def test_multi_translates_dict():
     file_path = './data/test2.txt'
-    dictionary = get_en_dictionary(file_path)
+    dictionary = Dictionary.from_file(file_path)
 
     en_expected = {
         'data': ['данные', 'информация', 'сведения'],
@@ -120,7 +120,7 @@ def test_multi_translates_dict():
 
 def test_append_translates_dict():
     file_path = './data/test2.txt'
-    dictionary = get_en_dictionary(file_path)
+    dictionary = Dictionary.from_file(file_path)
     dictionary.add_translate('test', 'тестирование')
     en_expected = {
         'data': ['данные', 'информация', 'сведения'],
@@ -141,3 +141,15 @@ def test_append_translates_dict():
 
     assert dictionary._en_dict == en_expected
     assert dictionary._ru_dict == ru_expected
+
+
+def test_get_new_translate_from_dict():
+    file_path = './data/test2.txt'
+    dictionary = Dictionary.from_file(file_path)
+    dictionary.add_translate('script', 'порядок действий')
+
+    ru_excepted = ', '.join(['скрипт', 'алгоритм', 'порядок действий'])
+    en_expected = 'script'
+
+    assert dictionary.get_translate('script') == ru_excepted
+    assert dictionary.get_translate('порядок действий') == en_expected

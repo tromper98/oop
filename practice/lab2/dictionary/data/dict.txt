@@ -1,6 +1,6 @@
-data : данные
-science : наука
-cat : кот
-man : человек
-dog : собака
-The Red Square : Красная площадь
+data:данные
+science:наука
+cat:кот,кошка
+man:человек
+dog:собака
+The Red Square:Красная площадь
