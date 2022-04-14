@@ -12,7 +12,6 @@ class Gear:
     def code(self):
         return self._code
 
-
     @property
     def min_speed(self):
         return self._min_speed

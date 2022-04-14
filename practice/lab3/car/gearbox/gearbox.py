@@ -1,5 +1,5 @@
 from typing import List
-from Gear import *
+from .gear import *
 
 
 class Gearbox:

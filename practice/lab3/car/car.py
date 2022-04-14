@@ -1,15 +1,15 @@
-from practice.lab3.car.gearbox.Gear import *
+from gearbox import Gearbox
 
 
 class Car:
-    speed: int
-    gear: Gear
-    engine: bool
+    _speed: float
+    _gearbox: Gearbox
+    _engine: bool
 
     def __init__(self):
-        self.speed = 0
-        self.gear = NeutralGear()
-        self.engine = False
+        self._speed = 0
+        self._gearbox = Gearbox()
+        self._engine = False
 
     def engine_on(self):
         if self.engine:

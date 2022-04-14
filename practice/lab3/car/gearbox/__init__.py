@@ -1,1 +1,1 @@
-from Gearbox import Gearbox
+from .gearbox import Gearbox

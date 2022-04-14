@@ -1,4 +1,4 @@
-from gear import Gear
+from .gear import Gear
 
 
 class ReverseGear(Gear):
