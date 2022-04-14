@@ -1,0 +1,6 @@
+It is %WEEK_DAY% my %USER_NAME%
+It is %WEEK_DAY% my %USER_NAME%
+It is %WEEK_DAY% my %USER_NAME%
+It is %WEEK_DAY% my %USER_NAME%
+It is %WEEK_DAY% my %USER_NAME%
+It is %WEEK_DAY% my %USER_NAME%

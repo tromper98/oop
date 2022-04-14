@@ -1,0 +1,1 @@
+Hello %USER_NAME%. Today is %WEEK_DAY%
