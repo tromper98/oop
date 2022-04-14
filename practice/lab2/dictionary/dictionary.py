@@ -11,7 +11,7 @@ class Dictionary:
         self._en_dict: Dict[str, List[str]] = dictionary
         self._ru_dict: Dict[str, List[str]] = self._create_ru_dict()
 
-#add_translation
+    # add_translation
     def add_translation(self, word: str, translation: str) -> None:
         if not self._has_cyrillic(word):
             self._add_translation_to_dict(self._en_dict, word, translation)
@@ -21,7 +21,7 @@ class Dictionary:
             self._add_translation_to_dict(self._en_dict, translation, word)
         self.is_updated = True
 
-#get_translation
+    # get_translation
     def get_translation(self, word: str) -> Optional[str]:
         if self._has_translation(self._en_dict, word):
             return self._get_translation_from_dict(self._en_dict, word)
@@ -32,13 +32,13 @@ class Dictionary:
 
     def _create_ru_dict(self) -> Dict[str, List[str]]:
         ru_dict: Dict[str, List[str]] = dict()
-        #tranlsation
+        # tranlsation
         for translation, words in self._en_dict.items():
             for word in words:
                 ru_dict[word] = [translation]
         return ru_dict
 
-#translation
+    # translation
     def _add_translation_to_dict(self, dictionary: Dict[str, List[str]], word: str, translation: str) -> None:
         if self._has_translation(dictionary, word):
             keyword: str = self._get_dict_key(dictionary, word)
@@ -61,7 +61,7 @@ class Dictionary:
 
     @staticmethod
     def _get_translation_from_dict(dictionary: Dict[str, List[str]], search_word: str) -> str:
-        #key переименовать
+        # key переименовать
         for word, translation in dictionary.items():
             if search_word.lower() == word.lower():
                 return ', '.join(translation)
@@ -89,7 +89,8 @@ class Dictionary:
                 file.write(row)
 
 
-def parse_dict_file_path() -> str:
+# Лучше parse_command_line
+def parse_command_line() -> str:
     parser = ArgumentParser()
     parser.add_argument('file_path', help='file path to dict file', type=str)
 
@@ -97,14 +98,16 @@ def parse_dict_file_path() -> str:
     return args.file_path
 
 
-def close_dictionary(dictionary: Dictionary, file_path: str) -> None:
+# Возможно неудачное имя
+def try_to_save_dictionary(dictionary: Dictionary, file_path: str) -> None:
     if dictionary.is_updated:
-        is_save = ask_user_save_dict()
+        is_save = user_wants_to_save_dictionary()
         if is_save:
             dictionary.save_to_file(file_path)
 
 
-def ask_user_save_dict() -> bool:
+# Лучше назвать user_wants_to_save_dict
+def user_wants_to_save_dictionary() -> bool:
     answer = ''
     while answer not in ('yes', 'no'):
         answer = input('Сохранить изменения в словаре? (yes/no) ').lower()
@@ -113,13 +116,15 @@ def ask_user_save_dict() -> bool:
     return False
 
 
-def ask_translation(phrase: str) -> str:
+# ask_for_translation
+def ask_for_translation(phrase: str) -> str:
     print(f'Неизвестное слово "{phrase}". Введите перевод или пустую строку для отказа.')
     return input().lstrip().rstrip()
 
 
-def add_translation_in_dict(dictionary: Dictionary, phrase: str) -> None:
-    new_translation: str = ask_translation(phrase)
+# try_to_add_translation_to_dictionary
+def try_to_add_translation_in_dictionary(dictionary: Dictionary, phrase: str) -> None:
+    new_translation: str = ask_for_translation(phrase)
     if new_translation == '':
         print(f'Слово {new_translation} проигнорировано')
         return
@@ -128,25 +133,19 @@ def add_translation_in_dict(dictionary: Dictionary, phrase: str) -> None:
     print(f'Слово {phrase} сохранено в словаре как {new_translation}')
 
 
-def process_phrase(dictionary: Dictionary, phrase: str) -> None:
-    translation: Optional[str] = dictionary.get_translation(phrase)
-
-    if translation:
-        print(translation)
-    else:
-        add_translation_in_dict(dictionary, phrase)
-
-
-def open_dict_from_file(file_path: str) -> Optional[Dictionary]:
+# read_dictionary_from_file
+def read_dictionary_from_file(file_path: str) -> Optional[Dictionary]:
     if os.path.exists(file_path):
         return Dictionary.from_file(file_path)
 
-    return Dictionary.create_empty()
+    return None
 
 
 def main() -> None:
-    file_path: str = parse_dict_file_path()
-    dictionary = open_dict_from_file(file_path)
+    file_path: str = parse_command_line()
+    dictionary: Dictionary = read_dictionary_from_file(file_path)
+    if not dictionary:
+        dictionary: Dictionary = Dictionary.create_empty()
 
     if not dictionary:
         return
@@ -154,15 +153,20 @@ def main() -> None:
     while True:
         phrase: str = input().lstrip().rstrip()
         if phrase == '...':
-            close_dictionary(dictionary, file_path)
+            try_to_save_dictionary(dictionary, file_path)
             break
-        process_phrase(dictionary, phrase)
+        translation: Optional[str] = dictionary.get_translation(phrase)
+
+        if translation:
+            print(translation)
+        else:
+            try_to_add_translation_in_dictionary(dictionary, phrase)
 
 
 if __name__ == '__main__':
     main()
-#как создать новый словарь?
-#the red square
+# как создать новый словарь?
+# the red square
 """
 Красная площадь
 красный квадрат

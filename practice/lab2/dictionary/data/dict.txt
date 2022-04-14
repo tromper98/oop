@@ -3,4 +3,5 @@ science:наука
 cat:кот,кошка
 man:человек
 dog:собака
-The Red Square:Красная площадь
+The Red Square:Красная площадь,красный квадрат
+hello:привет
