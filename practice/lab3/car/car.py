@@ -13,6 +13,15 @@ class Car:
         self._engine = False
         self._direction = 0
 
+    def _update_direction(self) -> None:
+        if self._speed == 0:
+            self._direction = 0
+
+        if self._speed > 0 and self._gearbox.is_reverse_gear:
+            self._direction = -1
+
+        self._direction = 1
+
     def engine_on(self) -> bool:
         if not self._engine:
             self._engine = True
@@ -30,8 +39,7 @@ class Car:
 
     def set_gear(self, new_gear: int) -> bool:
         is_turned: bool = self._gearbox.change_gear(self._speed, new_gear)
-        if is_turned and self._gearbox.is_reverse_gear:
-            self._direction = -1
+        self._update_direction()
 
         if not is_turned:
             return False
@@ -43,7 +51,9 @@ class Car:
 
         if min_speed <= new_speed <= max_speed:
             self._speed = new_speed
+            self._update_direction()
             return True
+
         return False
 
     @property
