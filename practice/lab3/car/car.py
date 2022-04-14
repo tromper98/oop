@@ -1,3 +1,4 @@
+from typing import List, Tuple, Optional
 from .gearbox import Gearbox
 
 
@@ -86,3 +87,61 @@ class Car:
         --- End Car Info ---
         """
         return report
+
+
+def parse_action(action: str) -> Optional[Tuple[str, int]]:
+    parsed_action: List[str] = action.split(' ')
+    if len(parsed_action) > 2:
+        print('Too much parameters were given')
+        return None
+
+    if not parsed_action[2].isdigit():
+        print('Action parameter must be a number')
+        return None
+    return parsed_action[0], int(parsed_action[1])
+
+
+def exec_action(car: Car, action: str, param: int) -> None:
+    if action == 'info':
+        car.info()
+        return
+
+    if action == 'engine on':
+        car.engine_on()
+        return
+
+    if action == 'engine off':
+        car.engine_off()
+        return
+
+    if action == 'set speed':
+        car.set_speed(param)
+
+    if action == 'set gear':
+        car.set_gear(param)
+
+
+def get_action(actions: List[str]) -> str:
+    action: str = ''
+    while action not in actions:
+        action = input('Enter a command for car: ')
+
+    return action.lstrip().rstrip()
+
+
+def main():
+    actions: List[str] = ['info', 'engineOn', 'engineOff', 'setSpeed', 'setGear', 'exit']
+    car = Car()
+    user_input = ''
+    while user_input:
+        user_input = get_action(actions)
+        action, param = parse_action(user_input)
+
+        if action == 'exit':
+            break
+
+        exec_action(car, action, param)
+
+
+if __name__ == '__main__':
+    main()
