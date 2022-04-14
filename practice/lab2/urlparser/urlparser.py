@@ -39,7 +39,7 @@ def parse_url(url: str) -> Optional[ParsedURL]:
     host_end: int = path.find(':') #Не понятно о каком слэше идет речь
     port_end: int = path.find('/')
 
-    if host_end > port_end != -1:
+    if host_end > port_end and port_end != -1:
         host_end = -1
 
     if port_end == -1:

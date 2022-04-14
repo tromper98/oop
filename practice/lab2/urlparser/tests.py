@@ -122,3 +122,15 @@ def test_url_capitalize_protocol():
         ''
         )
     assert assert_parsed_urls(parsed_url, excepted)
+
+
+def test_url_where_colon_in_docs():
+    url = 'HTtp://localhost/ddd:33'
+    parsed_url = parse_url(url)
+    expected = ParsedURL(
+        'http',
+        'localhost',
+        80,
+        'ddd:33'
+    )
+    assert assert_parsed_urls(parsed_url, expected)
