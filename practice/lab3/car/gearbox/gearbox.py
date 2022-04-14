@@ -38,6 +38,14 @@ class Gearbox:
     def gear(self) -> Gear:
         return self._current_gear
 
+    @property
+    def is_neutral_gear(self) -> bool:
+        return isinstance(self._current_gear, NeutralGear)
+
+    @property
+    def is_reverse_gear(self) -> bool:
+        return isinstance(self._current_gear, ReverseGear)
+
     def change_gear(self, speed: float, new_gear_code: int) -> bool:
         if not self._min_gear_code <= new_gear_code <= self._max_gear_code:
             print(f'Invalid gear. There is no {new_gear_code} gear')
@@ -84,4 +92,3 @@ class Gearbox:
         self._current_gear = new_gear
         print(f'Gear changed successfully. New gear - {self._current_gear.code}')
         return True
-
