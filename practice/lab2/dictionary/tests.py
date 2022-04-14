@@ -16,12 +16,12 @@ def test_get_dict_from_empty_file():
     assert result._en_dict == expected._en_dict
 
 
-def test_add_translate():
+def test_add_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    dictionary.add_translate('python', 'питон')
+    dictionary.add_translation('python', 'питон')
     expected = {'data': ['данные'],
                 'text': ['текст'],
                 'script': ['скрипт'],
@@ -29,51 +29,51 @@ def test_add_translate():
     assert dictionary._en_dict == expected
 
 
-def test_extend_translate():
+def test_extend_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    dictionary.add_translate('data', 'информация')
+    dictionary.add_translation('data', 'информация')
     expected = {'data': ['данные', 'информация'],
                 'text': ['текст'],
                 'script': ['скрипт']}
     assert dictionary._en_dict == expected
 
 
-def test_get_translate():
+def test_get_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    result = dictionary.get_translate('text')
+    result = dictionary.get_translation('text')
     assert 'текст' == result
 
 
-def test_none_get_translate():
+def test_none_get_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    result = dictionary.get_translate('python')
+    result = dictionary.get_translation('python')
     assert result is None
 
 
-def test_get_capitalize_translate():
+def test_get_capitalize_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    result = dictionary.get_translate('Script')
+    result = dictionary.get_translation('Script')
     assert 'скрипт' == result
 
 
-def test_get_upper_case_translate():
+def test_get_upper_case_translation():
     dictionary = Dictionary(
         {'data': ['данные'],
          'text': ['текст'],
          'script': ['скрипт']})
-    result = dictionary.get_translate('SCRIPT')
+    result = dictionary.get_translation('SCRIPT')
     assert 'скрипт' == result
 
 
@@ -94,7 +94,7 @@ def test_get_en_and_ru_dicts():
     assert dictionary._ru_dict == ru_excepted
 
 
-def test_multi_translates_dict():
+def test_multi_translations_dict():
     file_path = './data/test2.txt'
     dictionary = Dictionary.from_file(file_path)
 
@@ -118,10 +118,10 @@ def test_multi_translates_dict():
     assert dictionary._ru_dict == ru_expected
 
 
-def test_append_translates_dict():
+def test_append_translations_dict():
     file_path = './data/test2.txt'
     dictionary = Dictionary.from_file(file_path)
-    dictionary.add_translate('test', 'тестирование')
+    dictionary.add_translation('test', 'тестирование')
     en_expected = {
         'data': ['данные', 'информация', 'сведения'],
         'test': ['тест', 'проверка', 'тестирование'],
@@ -143,13 +143,21 @@ def test_append_translates_dict():
     assert dictionary._ru_dict == ru_expected
 
 
-def test_get_new_translate_from_dict():
+def test_get_new_translation_from_dict():
     file_path = './data/test2.txt'
     dictionary = Dictionary.from_file(file_path)
-    dictionary.add_translate('script', 'порядок действий')
+    dictionary.add_translation('script', 'порядок действий')
 
     ru_excepted = ', '.join(['скрипт', 'алгоритм', 'порядок действий'])
     en_expected = 'script'
 
-    assert dictionary.get_translate('script') == ru_excepted
-    assert dictionary.get_translate('порядок действий') == en_expected
+    assert dictionary.get_translation('script') == ru_excepted
+    assert dictionary.get_translation('порядок действий') == en_expected
+
+
+def test_get_key_from_dict():
+    file_path = './data/test2.txt'
+    dictionary = Dictionary.from_file(file_path)
+
+    result = Dictionary._get_dict_key(dictionary._en_dict, 'SCript')
+    assert result == 'script'
