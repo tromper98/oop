@@ -45,6 +45,11 @@ class Gearbox:
 
         new_gear: Gear = self._get_gear_by_code(new_gear_code)
 
+        if isinstance(new_gear, NeutralGear):
+            self._current_gear = new_gear
+            print(f'Gear changed successfully. New gear - {self._current_gear.code}')
+            return True
+
         if isinstance(new_gear, ReverseGear):
             if speed == 0:
                 self._current_gear = new_gear
