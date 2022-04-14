@@ -11,3 +11,12 @@ class Gear:
     @property
     def code(self):
         return self._code
+
+
+    @property
+    def min_speed(self):
+        return self._min_speed
+
+    @property
+    def max_speed(self):
+        return self._max_speed
