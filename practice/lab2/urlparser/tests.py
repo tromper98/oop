@@ -94,13 +94,13 @@ def test_url_with_port_1():
     assert assert_parsed_urls(parsed_url, excepted)
 
 
-def test_url_with_port_65355():
-    url = 'ftp://www.download.com:65355/docs/text.zip'
+def test_url_with_port_65535():
+    url = 'ftp://www.download.com:65535/docs/text.zip'
     parsed_url = parse_url(url)
     excepted = ParsedURL(
         'ftp',
         'www.download.com',
-        65355,
+        65535,
         'docs/text.zip'
         )
     assert assert_parsed_urls(parsed_url, excepted)

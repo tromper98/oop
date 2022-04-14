@@ -6,7 +6,7 @@ PROTOCOLS: Dict[str, int] = {
     'ftp': 21}
 
 MAX_PREFIX_LENGTH: int = 8
-PART_BETWEEN_PROTOCOL_AND_HOST_LENGTH: int = 3
+PROTOCOL_HOST_DELIMITER_LENGTH: int = 3
 
 
 class ParsedURL:
@@ -39,6 +39,9 @@ def parse_url(url: str) -> Optional[ParsedURL]:
     host_end: int = path.find(':') #Не понятно о каком слэше идет речь
     port_end: int = path.find('/')
 
+    if host_end > port_end != -1:
+        host_end = -1
+
     if port_end == -1:
         port_end = len(path)
 
@@ -67,7 +70,7 @@ def validate_port(port: str) -> bool:
     if port.startswith('0'):
         return False
 
-    if int(port) < 1 or int(port) > 65355:
+    if int(port) < 1 or int(port) > 65535:
         return False
 
     #Ошибки там, где их не тестируют
@@ -103,3 +106,5 @@ if __name__ == '__main__':
 #Порт 001 должен быть невалидным
 #Порт 65535 должен быть валидным
 #Неправильно определил c Https
+#Enter URL: HTtp://localhost/ddd:33
+#Порт должен быть 65535

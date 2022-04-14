@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional
-from .gearbox import Gearbox
+from gearbox import Gearbox
 
 
 class Car:
@@ -17,9 +17,11 @@ class Car:
     def _update_direction(self) -> None:
         if self._speed == 0:
             self._direction = 0
+            return
 
         if self._speed > 0 and self._gearbox.is_reverse_gear:
             self._direction = -1
+            return
 
         self._direction = 1
 
@@ -47,6 +49,13 @@ class Car:
         return True
 
     def set_speed(self, new_speed: float) -> True:
+        if self._gearbox.is_neutral_gear:
+            if new_speed <= self._speed:
+                self._speed = new_speed
+                return True
+
+            return False
+
         min_speed: float = self._gearbox.gear.min_speed
         max_speed: float = self._gearbox.gear.max_speed
 
@@ -77,7 +86,7 @@ class Car:
     def gear(self) -> int:
         return self._gearbox.gear.code
 
-    def info(self) -> str:
+    def info(self) -> None:
         report: str = f"""
         --- Car Info ---
         Engine: {'On' if self.is_turned_on else 'Off'}
@@ -86,19 +95,7 @@ class Car:
         Gear: {self.gear}
         --- End Car Info ---
         """
-        return report
-
-
-def parse_action(action: str) -> Optional[Tuple[str, int]]:
-    parsed_action: List[str] = action.split(' ')
-    if len(parsed_action) > 2:
-        print('Too much parameters were given')
-        return None
-
-    if not parsed_action[2].isdigit():
-        print('Action parameter must be a number')
-        return None
-    return parsed_action[0], int(parsed_action[1])
+        print(report)
 
 
 def exec_action(car: Car, action: str, param: int) -> None:
@@ -106,41 +103,78 @@ def exec_action(car: Car, action: str, param: int) -> None:
         car.info()
         return
 
-    if action == 'engine on':
-        car.engine_on()
+    if action == 'engineOn':
+        result: bool = car.engine_on()
         return
 
-    if action == 'engine off':
-        car.engine_off()
+    if action == 'engineOff':
+        result = car.engine_off()
         return
 
-    if action == 'set speed':
-        car.set_speed(param)
+    if action == 'setSpeed':
+        result = car.set_speed(param)
+        return
 
-    if action == 'set gear':
-        car.set_gear(param)
+    if action == 'setGear':
+        result = car.set_gear(param)
+        return
 
 
-def get_action(actions: List[str]) -> str:
-    action: str = ''
-    while action not in actions:
-        action = input('Enter a command for car: ')
+def parse_action(action: str) -> Optional[Tuple[str, Optional[int]]]:
+    parsed_action: List[str] = action.split(' ')
+    if len(parsed_action) > 2:
+        print('Too much parameters were given')
+        return None
 
-    return action.lstrip().rstrip()
+    if len(parsed_action) == 1:
+        return parsed_action[0], None
+
+    try:
+        param: int = int(parsed_action[1])
+    except ValueError:
+        print('Action parameter must be a number')
+        return None
+
+    return parsed_action[0], param
+
+
+def validate_action(action: str, param: Optional[int], parametrize_action: List[str]) -> bool:
+    if action not in parametrize_action:
+        return True
+
+    if param is not None:
+        return True
+
+    print(f'Invalid parameter: {param} for {action}')
+    return False
+
+
+def get_action(actions: List[str]) -> Tuple[str, Optional[int]]:
+    while True:
+        print(f'Choose one command: {", ".join(actions)}')
+        user_input: str = input(f'Enter a command for car: ').lstrip().rstrip()
+        action, param = parse_action(user_input)
+
+        if action in actions:
+            break
+
+        print('Invalid command')
+
+    return action, param
 
 
 def main():
     actions: List[str] = ['info', 'engineOn', 'engineOff', 'setSpeed', 'setGear', 'exit']
-    car = Car()
-    user_input = ''
-    while user_input:
-        user_input = get_action(actions)
-        action, param = parse_action(user_input)
+    parametrize_actions: List[str] = ['setSpeed', 'setGear']
+    car: Car = Car()
+    while True:
+        action, param = get_action(actions)
 
         if action == 'exit':
             break
 
-        exec_action(car, action, param)
+        if validate_action(action, param, parametrize_actions):
+            exec_action(car, action, param)
 
 
 if __name__ == '__main__':
