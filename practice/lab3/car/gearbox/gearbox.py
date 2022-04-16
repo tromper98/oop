@@ -53,42 +53,40 @@ class Gearbox:
 
         new_gear: Gear = self._get_gear_by_code(new_gear_code)
 
+        can_change: bool = False
+
         if isinstance(new_gear, NeutralGear):
+            can_change = True
+
+        elif self.is_neutral_gear:
+            can_change = self.__try_change_from_neutral(speed, new_gear)
+
+        elif self.is_reverse_gear:
+            can_change = self.__try_change_from_reverse(speed)
+
+        elif isinstance(new_gear, ReverseGear):
+            can_change = self.__try_change_to_reverse(speed, new_gear)
+
+        elif new_gear.min_speed <= speed <= new_gear.max_speed:
+            can_change = True
+
+        if can_change:
             self._current_gear = new_gear
-            print(f'Gear changed successfully. New gear - {self._current_gear.code}')
+            print(f'Gear changed successfully to gear {self._current_gear.code}')
             return True
 
-        if isinstance(new_gear, ReverseGear):
-            if speed == 0:
-                self._current_gear = new_gear
-                print(f'Gear changed successfully. New gear - {self._current_gear.code}')
-                return True
-
-            print(f"Can't change gear from {self._current_gear} to {new_gear}")
-            return False
-
-        if isinstance(self._current_gear, ReverseGear) and new_gear.code == 1:
-            if speed == 0:
-                self._current_gear = new_gear
-                print(f'Gear changed successfully. New gear - {self._current_gear.code}')
-                return True
-
-            print(f"Can't change gear from {self._current_gear} to {new_gear}")
-            return False
-
-        if isinstance(self._current_gear, NeutralGear) and new_gear.code == 1:
-            if speed == 0:
-                self._current_gear = new_gear
-                print(f'Gear changed successfully. New gear - {self._current_gear.code}')
-                return True
-
-            print(f"Can't change gear from {self._current_gear} to {new_gear}")
-            return False
-
         if not new_gear.min_speed <= speed <= new_gear.max_speed:
-            print(f'Invalid speed for new gear. Speed must by in [{new_gear.min_speed}, {new_gear.max_speed}]')
+            print(f'Invalid speed for gear {new_gear.code} . Speed must by in [{new_gear.min_speed}, {new_gear.max_speed}]')
             return False
 
-        self._current_gear = new_gear
-        print(f'Gear changed successfully. New gear - {self._current_gear.code}')
-        return True
+        print(f"Can't change gear from {self._current_gear.code} to {new_gear.code}")
+        return False
+
+    def __try_change_from_reverse(self, speed: float) -> bool:
+        return True if speed == 0 else False
+
+    def __try_change_from_neutral(self, speed: float, new_gear: Gear) -> bool:
+        return True if new_gear.min_speed <= speed <= new_gear.max_speed else False
+
+    def __try_change_to_reverse(self, speed: float, new_gear: Gear):
+        return True if speed == 0 and new_gear.code == 1 else False

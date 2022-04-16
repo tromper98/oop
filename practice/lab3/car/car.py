@@ -80,7 +80,7 @@ class Car:
 
     @property
     def speed(self) -> float:
-        return abs(self._speed)
+        return self._speed
 
     @property
     def gear(self) -> int:

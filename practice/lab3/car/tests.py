@@ -1,5 +1,5 @@
 import pytest
-from gearbox import Gearbox
+from car import Car, Gearbox
 
 
 def test_change_gear_from_neutral_to_one():
@@ -14,14 +14,14 @@ def test_change_gear_from_neutral_to_reverse():
     assert res is True
 
 
-def test_change_gear_from_reverse_to_one():
+def test_change_gear_from_reverse_to_one_when_stop():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
     res = gearbox.change_gear(0, 1)
     assert res is True
 
 
-def test_change_gear_from_reverse_to_one_none_zero_speed():
+def test_fail_change_gear_from_reverse_to_one_moving_backwards():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
     res = gearbox.change_gear(-10, 1)
@@ -35,14 +35,14 @@ def test_change_gear_from_reverse_to_neutral_none_zero_speed():
     assert res is True
 
 
-def test_change_gear_from_reverse_to_five_none_zero_speed():
+def test_fail_change_gear_from_reverse_to_five():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
-    res = gearbox.change_gear(-10, 5)
+    res = gearbox.change_gear(100, 5)
     assert res is False
 
 
-def test_change_gears():
+def test_consistent_change_gears():
     gearbox = Gearbox()
     gearbox.change_gear(0, 1)
     gearbox.change_gear(30, 3)
@@ -50,3 +50,51 @@ def test_change_gears():
     gearbox.change_gear(90, 5)
     assert gearbox.gear.code == 5
 
+
+def test_fail_engine_off_while_moving():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    car.set_speed(20)
+    result = car.engine_off()
+    assert result is False
+
+
+def test_change_direction_when_start_moving():
+    car1 = Car()
+    car1.engine_on()
+    car1.set_gear(1)
+    car1.set_speed(20)
+    car1_direction = car1.direction
+
+    car2 = Car()
+    car2.set_gear(-1)
+    car2.set_speed(10)
+    car2_direction = car2.direction
+    assert car1_direction == 'Forward'
+    assert car2_direction == 'Reverse'
+
+
+def test_change_direction_to_stop():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    car.set_speed(30)
+    car.set_gear(2)
+    car.set_speed(50)
+    car.set_speed(20)
+    car.set_gear(1)
+    car.set_speed(0)
+    assert car.direction == 'Stop'
+
+
+def test_fail_increase_speed_on_neutral():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    car.set_speed(25)
+    car.set_gear(2)
+    car.set_speed(40)
+    car.set_gear(0)
+    result = car.set_speed(50)
+    assert result is False
