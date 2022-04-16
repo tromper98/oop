@@ -36,12 +36,16 @@ class Calculator:
 
             result = self.__perform_operation(operation, new_value, second_value)
 
+            if not result:
+                return False
+
             new_value = result
 
         self._add_variable(new_var_name, new_value)
         return True
 
-    def __perform_operation(self, operation: str, first_value: float, second_value: float) -> float:
+    @staticmethod
+    def __perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
         if operation == '+':
             return first_value + second_value
 
@@ -50,6 +54,10 @@ class Calculator:
 
         if operation == '*':
             return first_value * second_value
+
+        if second_value == 0:
+            print('Error. Division by zero')
+            return None
 
         return first_value / second_value
 

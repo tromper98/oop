@@ -82,3 +82,13 @@ def test_fail_calculate_variable_not_declared():
 
     result = calc._calculate_variable('res', variables, operations)
     assert result is False
+
+
+def test_fail_calculate_variable_divided_by_zero():
+    calc = Calculator()
+    calc._add_variable('x1', 45.09)
+    calc._add_variable('x2', 0)
+    operations = ['/']
+    variable = ['x1', 'x2']
+    result = calc._calculate_variable('res', variable, operations)
+    assert result is False
