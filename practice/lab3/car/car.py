@@ -152,7 +152,7 @@ def validate_action(action: str, param: Optional[int], parametrize_action: List[
 def get_action(actions: List[str]) -> Tuple[str, Optional[int]]:
     while True:
         print(f'Choose one command: {", ".join(actions)}')
-        user_input: str = input(f'Enter a command for car: ').lstrip().rstrip()
+        user_input: str = input(f'\nEnter a command for car: ').lstrip().rstrip()
         action, param = parse_action(user_input)
 
         if action in actions:
