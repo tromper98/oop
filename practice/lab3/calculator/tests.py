@@ -56,3 +56,29 @@ def test_fail_get_not_declared_variable_value():
     calc._add_variable('x2', 50.25)
     result = calc.get_variable_value('y1')
     assert result is None
+
+
+def test_calculate_new_variable():
+    calc = Calculator()
+    calc._add_variable('x1', 10)
+    calc._add_variable('x2', 30)
+    calc._add_variable('x3', 5)
+    calc._add_variable('x4', 29)
+    operations = ['+', '-', '*']
+    variables = ['x1', 'x2', 'x3', 'x4']
+    calc._calculate_variable('res', variables, operations)
+    result = calc.get_variable_value('res')
+    expected = 1015
+    assert result == expected
+
+
+def test_fail_calculate_variable_not_declared():
+    calc = Calculator()
+    calc._add_variable('x1', 45.09)
+    calc._add_variable('x2', 25.10)
+    calc._add_variable('x3', 30)
+    operations = ['+', '-', '*']
+    variables = ['x1', 'x2', 'x3', 'z2']
+
+    result = calc._calculate_variable('res', variables, operations)
+    assert result is False

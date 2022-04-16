@@ -27,24 +27,21 @@ class Calculator:
         return True
 
     def _calculate_variable(self, new_var_name: str,  variables: List[str], operations: List[str]) -> bool:
-        new_value: float = 0
+        new_value: Optional[float] = self.get_variable_value(variables[0])
+
         for i, operation in enumerate(operations):
-            result = self.__perform_operation(operation, variables[i], variables[i+1])
-            if not result:
+            second_value = self.get_variable_value(variables[i+1])
+            if not new_value or not second_value:
                 return False
 
-            new_value += result
+            result = self.__perform_operation(operation, new_value, second_value)
+
+            new_value = result
 
         self._add_variable(new_var_name, new_value)
         return True
 
-    def __perform_operation(self, operation: str, first_var: str, second_var: str) -> Optional[float]:
-        first_value: float = self.get_variable_value(first_var)
-        second_value: float = self.get_variable_value(second_var)
-
-        if not first_value or not second_value:
-            return None
-
+    def __perform_operation(self, operation: str, first_value: float, second_value: float) -> float:
         if operation == '+':
             return first_value + second_value
 
