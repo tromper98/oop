@@ -3,14 +3,14 @@ from function import Function
 
 
 class Calculator:
-    _variables: Dict[str, float]
+    _variables: Dict[str, Optional[float]]
     _functions: List[Function]
 
     def __init__(self):
         self._variables = {}
         self._functions = []
 
-    def _add_variable(self, variable: str, value: float) -> bool:
+    def _add_variable(self, variable: str, value: Optional[float]) -> bool:
         if not self._has_variable(variable):
             self._variables[variable] = value
             return True

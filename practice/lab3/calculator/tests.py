@@ -17,6 +17,14 @@ def test_add_new_variables():
     tester.assertDictEqual(calc._variables, expected)
 
 
+def test_add_new_variable_with_none_value():
+    calc = Calculator()
+    calc._add_variable('x1', None)
+
+    res = calc.get_variable_value('x1')
+    assert res is None
+
+
 def test_update_variable_value():
     calc = Calculator()
     calc._add_variable('x1', 10.35)
