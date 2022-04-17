@@ -50,13 +50,27 @@ class Calculator:
         if not self._has_variable(variable):
             print(f'Variable "{variable}" does not exist')
 
-        value: Optional[float] = self._get_variable_value(variable)
-        print(value)
+        result: Optional[float] = self._get_variable_value(variable)
+        print(result)
 
     def print_all_variables(self) -> None:
-        for variable in self._variables:
-            value = self._get_variable_value(variable)
-            print(value)
+        for variable, value in sorted(self._variables.items()):
+            print(f'{variable}: {value}')
+
+    def print_function(self, func_name: str) -> None:
+        if not self._has_function(func_name):
+            print(f'Function  "{func_name}" does not exist')
+
+        function: Function = self._get_function_by_name(func_name)
+        result: Optional[float] = self._calculate_function_result(function)
+        print(result)
+
+    def print_all_functions(self) -> None:
+        ordered_func_names: List[str] = sorted([function.name for function in self._functions])
+        for func_name in ordered_func_names:
+            function = self._get_function_by_name(func_name)
+            result = self._calculate_function_result(function)
+            print(f'{func_name}: {result}')
 
     def _calculate_function_result(self, function: Function) -> Optional[float]:
         result: Optional[float] = self._get_variable_value(function.variables[0])
