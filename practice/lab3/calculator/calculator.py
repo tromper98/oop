@@ -29,6 +29,23 @@ class Calculator:
         self._variables[variable] = new_value
         return True
 
+    def create_function(self, func_name: str, variables: List[str], operations: List[str]) -> None:
+        if not self._has_function(func_name):
+            function = Function(func_name, variables, operations)
+            self._functions.append(function)
+            return
+
+        print(f'Can\t create function {func_name} because function with same name already exists')
+
+    def get_function_result(self, func_name: str) -> Optional[float]:
+        if not self._has_function(func_name):
+            print(f'Function {func_name} doesn\'t exist')
+            return
+
+        function = self._get_function_by_name(func_name)
+        result: Optional[float] = self._calculate_function_result(function)
+        return result
+
     def print_variable(self, variable: str) -> None:
         if not self._has_variable(variable):
             print(f'Variable {variable} does not exist')
@@ -41,23 +58,24 @@ class Calculator:
             value = self._get_variable_value(variable)
             print(value)
 
-    def _calculate_variable(self, new_var_name: str,  variables: List[str], operations: List[str]) -> bool:
-        new_value: Optional[float] = self._get_variable_value(variables[0])
+    def _calculate_function_result(self, function: Function) -> Optional[float]:
+        result: Optional[float] = self._get_variable_value(function.variables[0])
+        if not result:
+            return None
 
-        for i, operation in enumerate(operations):
-            second_value = self._get_variable_value(variables[i + 1])
-            if not new_value or not second_value:
-                return False
+        for i, operation in enumerate(function.operations):
+            second_value = self._get_variable_value(function.variables[i + 1])
+            if not second_value:
+                return None
 
-            result = self.__perform_operation(operation, new_value, second_value)
+            operation_result = self.__perform_operation(operation, result, second_value)
 
-            if not result:
-                return False
+            if not operation_result:
+                return None
 
-            new_value = result
+            result = operation_result
 
-        self.create_variable(new_var_name, new_value)
-        return True
+        return result
 
     @staticmethod
     def __perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
@@ -83,29 +101,35 @@ class Calculator:
 
         return self._variables[variable]
 
+    def _get_function_by_name(self, func_name) -> Function:
+        for function in self._functions:
+            if function.name == func_name:
+                return function
+
     def _has_variable(self, variable: str) -> bool:
         return variable in self._variables.keys()
 
-    def __try_create_variable_from_number(self, variable: str, value: float) -> bool:
+    def _has_function(self, func_name: str) -> bool:
+        return func_name in [function.name for function in self._functions]
+
+    def __try_create_variable_from_number(self, variable: str, value: float) -> None:
         if not self._has_variable(variable):
             self._variables[variable] = value
-            return True
+            return
 
-        print(f'Can\'t add variable "{variable}" because variable with same name has already been declared')
-        return False
+        print(f'Can\'t add variable "{variable}" because variable with same name has already exist')
 
-    def __try_create_variable_from_other_variable(self, new_variable: str, other_variable: str) -> bool:
+    def __try_create_variable_from_other_variable(self, new_variable: str, other_variable: str) -> None:
         if self._has_variable(other_variable):
             value = self._get_variable_value(other_variable)
             self._variables[new_variable] = value
-            return True
+            return
 
         print(f'Can\'t add variable "{new_variable}" because {other_variable} was not declared')
-        return False
 
-    def __try_create_variable_with_none_value(self, variable) -> bool:
+    def __try_create_variable_with_none_value(self, variable) -> None:
         if not self._has_variable(variable):
             self._variables[variable] = None
-            return True
+            return
 
-        print(f'Can\' create variable "{variable}" because variable with same name has already been declared')
+        print(f'Can\' create variable "{variable}" because variable with same name has already exist')
