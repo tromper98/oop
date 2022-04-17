@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from function import Function
 
 
@@ -10,13 +10,16 @@ class Calculator:
         self._variables = {}
         self._functions = []
 
-    def _add_variable(self, variable: str, value: Optional[float]) -> bool:
-        if not self._has_variable(variable):
-            self._variables[variable] = value
-            return True
+    def create_variable(self, variable: str, value: Optional[Union[float, str]] = None) -> None:
+        if isinstance(value, (float, int)):
+            self.__try_create_variable_from_number(variable, value)
+            return
 
-        print(f'Can\'t add variable "{variable}" because same variable because it has already been declared')
-        return False
+        if isinstance(value, str):
+            self.__try_create_variable_from_other_variable(variable, value)
+            return
+
+        self.__try_create_variable_with_none_value(variable)
 
     def update_variable(self, variable: str, new_value: float) -> bool:
         if not self._has_variable(variable):
@@ -53,7 +56,7 @@ class Calculator:
 
             new_value = result
 
-        self._add_variable(new_var_name, new_value)
+        self.create_variable(new_var_name, new_value)
         return True
 
     @staticmethod
@@ -82,3 +85,27 @@ class Calculator:
 
     def _has_variable(self, variable: str) -> bool:
         return variable in self._variables.keys()
+
+    def __try_create_variable_from_number(self, variable: str, value: float) -> bool:
+        if not self._has_variable(variable):
+            self._variables[variable] = value
+            return True
+
+        print(f'Can\'t add variable "{variable}" because variable with same name has already been declared')
+        return False
+
+    def __try_create_variable_from_other_variable(self, new_variable: str, other_variable: str) -> bool:
+        if self._has_variable(other_variable):
+            value = self._get_variable_value(other_variable)
+            self._variables[new_variable] = value
+            return True
+
+        print(f'Can\'t add variable "{new_variable}" because {other_variable} was not declared')
+        return False
+
+    def __try_create_variable_with_none_value(self, variable) -> bool:
+        if not self._has_variable(variable):
+            self._variables[variable] = None
+            return True
+
+        print(f'Can\' create variable "{variable}" because variable with same name has already been declared')
