@@ -21,7 +21,7 @@ def test_add_new_variable_with_none_value():
     calc = Calculator()
     calc._add_variable('x1', None)
 
-    res = calc.get_variable_value('x1')
+    res = calc._get_variable_value('x1')
     assert res is None
 
 
@@ -54,7 +54,7 @@ def test_get_variable_value():
     calc._add_variable('x1', 100.50)
 
     expected = 100.50
-    result = calc.get_variable_value('x1')
+    result = calc._get_variable_value('x1')
     assert result == expected
 
 
@@ -62,7 +62,7 @@ def test_fail_get_not_declared_variable_value():
     calc = Calculator()
     calc._add_variable('x1', 100.50)
     calc._add_variable('x2', 50.25)
-    result = calc.get_variable_value('y1')
+    result = calc._get_variable_value('y1')
     assert result is None
 
 
@@ -75,7 +75,7 @@ def test_calculate_new_variable():
     operations = ['+', '-', '*']
     variables = ['x1', 'x2', 'x3', 'x4']
     calc._calculate_variable('res', variables, operations)
-    result = calc.get_variable_value('res')
+    result = calc._get_variable_value('res')
     expected = 1015
     assert result == expected
 

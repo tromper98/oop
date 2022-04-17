@@ -26,11 +26,23 @@ class Calculator:
         self._variables[variable] = new_value
         return True
 
+    def print_variable(self, variable: str) -> None:
+        if not self._has_variable(variable):
+            print(f'Variable {variable} does not exist')
+
+        value: Optional[float] = self._get_variable_value(variable)
+        print(value)
+
+    def print_all_variables(self) -> None:
+        for variable in self._variables:
+            value = self._get_variable_value(variable)
+            print(value)
+
     def _calculate_variable(self, new_var_name: str,  variables: List[str], operations: List[str]) -> bool:
-        new_value: Optional[float] = self.get_variable_value(variables[0])
+        new_value: Optional[float] = self._get_variable_value(variables[0])
 
         for i, operation in enumerate(operations):
-            second_value = self.get_variable_value(variables[i+1])
+            second_value = self._get_variable_value(variables[i + 1])
             if not new_value or not second_value:
                 return False
 
@@ -61,7 +73,7 @@ class Calculator:
 
         return first_value / second_value
 
-    def get_variable_value(self, variable: str) -> Optional[float]:
+    def _get_variable_value(self, variable: str) -> Optional[float]:
         if not self._has_variable(variable):
             print(f'"{variable}" the variable was not declared')
             return None
