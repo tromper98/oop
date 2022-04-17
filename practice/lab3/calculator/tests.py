@@ -97,7 +97,7 @@ def test_fail_get_not_declared_variable_value():
     assert result is None
 
 
-def test_calculate_new_variable():
+def test_calculate_function():
     calc = Calculator()
     calc.create_variable('x1', 10)
     calc.create_variable('x2', 30)
@@ -111,7 +111,7 @@ def test_calculate_new_variable():
     assert result == expected
 
 
-def test_fail_calculate_variable_not_declared():
+def test_fail_create_function_with_variable_not_declared():
     calc = Calculator()
     calc.create_variable('x1', 45.09)
     calc.create_variable('x2', 25.10)
@@ -123,7 +123,7 @@ def test_fail_calculate_variable_not_declared():
     assert result is None
 
 
-def test_fail_calculate_variable_divided_by_zero():
+def test_fail_calculate_function_with_variable_divided_by_zero():
     calc = Calculator()
     calc.create_variable('x1', 45.09)
     calc.create_variable('x2', 0)
@@ -132,3 +132,15 @@ def test_fail_calculate_variable_divided_by_zero():
     calc.create_function('res', variable, operations)
     result = calc.get_function_result('res')
     assert result is None
+
+
+def test_create_function_with_already_exist_name():
+    calc = Calculator()
+    calc.create_variable('x1', 10)
+    calc.create_variable('x2', 5)
+    calc.create_variable('x3', 150)
+    calc.create_function('res', ['x1', 'x2'], ['+'])
+    calc.create_function('res', ['x1', 'x3'], ['*'])
+    result = calc.get_function_result('res')
+    expected = 15
+    assert result == expected

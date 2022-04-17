@@ -35,11 +35,11 @@ class Calculator:
             self._functions.append(function)
             return
 
-        print(f'Can\t create function {func_name} because function with same name already exists')
+        print(f'Can\'t create function "{func_name}" because function with same name already exists')
 
     def get_function_result(self, func_name: str) -> Optional[float]:
         if not self._has_function(func_name):
-            print(f'Function {func_name} doesn\'t exist')
+            print(f'Function "{func_name}" doesn\'t exist')
             return
 
         function = self._get_function_by_name(func_name)
@@ -48,7 +48,7 @@ class Calculator:
 
     def print_variable(self, variable: str) -> None:
         if not self._has_variable(variable):
-            print(f'Variable {variable} does not exist')
+            print(f'Variable "{variable}" does not exist')
 
         value: Optional[float] = self._get_variable_value(variable)
         print(value)
