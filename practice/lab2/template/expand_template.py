@@ -29,20 +29,22 @@ class Node:
         self.suffix_link = None
 
 
-class AhoTree:
+class AhoKorasikTree:
     def __init__(self, patterns: List[str]):
         self._root = self._init_tree(patterns)
 
-    def get_patterns(self, row: str) -> List[Tuple[int, str]]:
+    #row - заменить
+    #find_all_patterns
+    def find_all_patterns(self, template: str) -> List[Tuple[int, str]]:
         node: Node = self._root
         patterns = []
-        for i in range(len(row)):
-            while node is not None and row[i] not in node.next_nodes:
+        for i in range(len(template)):
+            while node is not None and template[i] not in node.next_nodes:
                 node: Node = node.suffix_link
             if node is None:
                 node = self._root
                 continue
-            node = node.next_nodes[row[i]]
+            node = node.next_nodes[template[i]]
             for pattern in node.patterns:
                 data = [(i - len(pattern) + 1, pattern)]
                 patterns.extend(data)
@@ -52,7 +54,8 @@ class AhoTree:
         root: Node = self._create_tree(patterns)
         return self._fill_tree(root)
 
-    def _create_tree(self, patterns: List[str]) -> Node:
+    @staticmethod
+    def _create_tree(patterns: List[str]) -> Node:
         root: Node = Node()
 
         for pattern in patterns:
@@ -63,7 +66,8 @@ class AhoTree:
             node.patterns.append(pattern)
         return root
 
-    def _fill_tree(self, root: Node) -> Node:
+    @staticmethod
+    def _fill_tree(root: Node) -> Node:
         nodes: List[Node] = [node for node in root.next_nodes.values()]
 
         while len(nodes) > 0:
@@ -81,7 +85,7 @@ class AhoTree:
         return root
 
 
-def parse_params():
+def parse_command_line():
     parser = ArgumentParser()
     parser.add_argument('input_file', help='file path to input file', type=str)
     parser.add_argument('output_file', help='file path to output file', type=str)
@@ -96,35 +100,34 @@ def file_iterator(file_path: str) -> Iterable:
         for row in file:
             yield row
 
-
-def expand_template(row: str, params: Dict[str, str]) -> str:
-    def get_longest_replacement(pos: int, replacements: List[Tuple[int, str]]) -> Optional[str]:
+#row переименовать в template
+def expand_template(template: str, params: Dict[str, str], tree: AhoKorasikTree) -> str:
+    #Должно быть понятно что вернет функция
+    def get_longest_replacement(pos: int) -> Optional[str]:
+        #Многократно проходим по элементам. Ускорить реализацию
         possible_patterns: List[str] = [pattern for i, pattern in replacements if i == pos]
         if len(possible_patterns) == 0:
             return None
         return max(possible_patterns, key=len)
 
-    patterns = [key for key in params.keys()]
-    aho_tree: AhoTree = AhoTree(patterns)
-
-    replacements: List[Tuple[int, str]] = aho_tree.get_patterns(row)
+    replacements: List[Tuple[int, str]] = tree.find_all_patterns(template)
     replacement_positions: Set[int] = set([pos for pos, _ in replacements])
     i: int = 0
-    output_row: str = ''
-    while i < len(row):
+    expanded_template: str = '' #result_str или expanded_template
+    while i < len(template):
         if i not in replacement_positions:
-            output_row += row[i]
+            expanded_template += template[i]
             i += 1
             continue
 
-        replacement: str = get_longest_replacement(i, replacements)
-        output_row += params[replacement]
+        replacement: str = get_longest_replacement(i)
+        expanded_template += params[replacement]
         i += len(replacement)
-    return output_row
+    return expanded_template
 
 
 def main():
-    args: ProgramArguments = parse_params()
+    args: ProgramArguments = parse_command_line()
 
     if not args.params:
         print('Not enough params were given')
@@ -134,10 +137,13 @@ def main():
         print(f'File {args.input_file} doesn\'t found')
         return
 
+    patterns = [key for key in args.params.keys()]
+    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
+
     with open(args.output_file, 'w', encoding='utf-8') as file:
         for row in file_iterator(args.input_file):
-            new_row = expand_template(row, args.params)
-            file.write(new_row)
+            expanded_template: str = expand_template(row, args.params, aho_korasik_tree)
+            file.write(expanded_template)
 
 
 if __name__ == '__main__':
