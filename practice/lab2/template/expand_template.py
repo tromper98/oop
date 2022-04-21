@@ -45,12 +45,11 @@ class Replacements:
         while self._replacements[first_pos][0] != template_pos:
             first_pos += 1
 
-        last_pos: int = first_pos + 1
-        for i in range(first_pos, self._replacements_len):
-            pos, _ = self._replacements[i]
-            if pos != template_pos or pos == self._replacements_len:
-                last_pos = i
+        last_pos: int = first_pos
+        while last_pos < self._replacements_len:
+            if self._replacements[last_pos][0] != template_pos:
                 break
+            last_pos += 1
 
         self._current_replacement_pos = last_pos
         return [replacement for _, replacement in self._replacements[first_pos: last_pos]]
