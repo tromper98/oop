@@ -29,34 +29,39 @@ class Node:
         self.suffix_link = None
 
 
-class ReplacementsList:
-    replacements: List[Tuple[int, str]]
+class Replacements:
+    _replacements: List[Tuple[int, str]]
     _current_replacement_pos: int
     _replacements_len: int
 
     def __init__(self, replacements: List[Tuple[int, str]]) -> None:
-        self.replacements = replacements
+        self._replacements = replacements
         self._current_replacement_pos = 0
         self._replacements_len = len(replacements)
 
-    def get_replacements_for_position(self, template_pos: int) -> List[str]:
+    def _get_replacements_for_position(self, template_pos: int) -> List[str]:
         first_pos: int = self._current_replacement_pos
 
-        while self.replacements[first_pos][0] != template_pos:
+        while self._replacements[first_pos][0] != template_pos:
             first_pos += 1
 
         last_pos: int = first_pos + 1
         for i in range(first_pos, self._replacements_len):
-            pos, _ = self.replacements[i]
+            pos, _ = self._replacements[i]
             if pos != template_pos or pos == self._replacements_len:
                 last_pos = i
                 break
 
         self._current_replacement_pos = last_pos
-        return [replacement for _, replacement in self.replacements[first_pos: last_pos]]
+        return [replacement for _, replacement in self._replacements[first_pos: last_pos]]
+
+    def get_replacement(self, template_pos: int) -> str:
+        possible_patterns: List[str] = self._get_replacements_for_position(template_pos)
+        return max(possible_patterns, key=len)
 
     def get_replacements_positions(self) -> Set[int]:
-        return set([pos for pos, _ in self.replacements])
+        return set([pos for pos, _ in self._replacements])
+
 
 class AhoKorasikTree:
     def __init__(self, patterns: List[str]):
@@ -132,10 +137,8 @@ def file_iterator(file_path: str) -> Iterable:
 
 #row переименовать в template
 def expand_template(template: str, params: Dict[str, str], pattern_tree: AhoKorasikTree) -> str:
-
-    replacements: ReplacementsList = ReplacementsList(pattern_tree.find_all_patterns(template))
+    replacements: Replacements = Replacements(pattern_tree.find_all_patterns(template))
     replacement_positions: Set[int] = replacements.get_replacements_positions()
-
     current_template_pos: int = 0
 
     expanded_template: str = '' #result_str или expanded_template
@@ -145,8 +148,7 @@ def expand_template(template: str, params: Dict[str, str], pattern_tree: AhoKora
             current_template_pos += 1
             continue
 
-        possible_patterns: List[str] = replacements.get_replacements_for_position(current_template_pos)
-        replacement: str = max(possible_patterns, key=len)
+        replacement: str = replacements.get_replacement(current_template_pos)
 
         expanded_template += params[replacement]
         current_template_pos += len(replacement)
