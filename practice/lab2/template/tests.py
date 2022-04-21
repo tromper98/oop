@@ -8,10 +8,7 @@ def test_expand_template():
     params = {'%time%': 'morning', '%person%': 'William Gibson'}
     expected = 'Good morning, William Gibson.'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -20,10 +17,7 @@ def test_expand_template_some_patterns():
     params = {'%time%': 'morning', 'empty': 'none'}
     expected = 'morning, morning, morning'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -32,10 +26,7 @@ def test_expand_template_expand_longest_pattern():
     params = {'a': 'b', 'aa': 'cc', 'aaa': 'ddd', 'aaaa': 'eeee', 'aaaaa': 'fffff'}
     expected = 'fffff'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -44,16 +35,13 @@ def test_expand_template_empty_params():
     params = {'': 'ded'}
     expected = 'acac'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
 def test_expand_template_from_file():
     input_file: str = './data/test.txt'
-    output_file: str ='./data/result.txt'
+    output_file: str = './data/result.txt'
 
     params = ['python', 'expand_template.py', input_file, output_file,
               '-l', '%WEEK_DAY%', 'wednesday', '%USER_NAME%', 'dudes']
@@ -80,12 +68,9 @@ def test_expand_most_possible_template():
         'CC': '[cc]'
     }
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
+    assert (expand_template(row, params) == "-[aa][bb][cc][cc][c][a][b][c]+")
 
-    assert (expand_template(row, params, aho_korasik_tree) == "-[aa][bb][cc][cc][c][a][b][c]+")
 
-#Лучше назвать test_expanded_text_is_not_expand
 def test_expanded_test_is_not_expand():
     row = "Hello, %USER_NAME%. Today is {WEEK_DAY}."
     params = {
@@ -93,8 +78,34 @@ def test_expanded_test_is_not_expand():
         '{WEEK_DAY}': 'Friday. {WEEK_DAY}'
     }
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    assert (expand_template(row, params, aho_korasik_tree) ==
+    assert (expand_template(row, params) ==
             "Hello, Super %USER_NAME% {WEEK_DAY}. Today is Friday. {WEEK_DAY}.")
+
+
+def test_expand_template_some_patterns_from_file():
+    input_file: str = './data/template2.txt'
+    output_file: str = './data/result.txt'
+
+    params = ['python', 'expand_template.py', input_file, output_file, '-l',
+              '%warm%', 'тепло',
+              '%wet%', 'сыро',
+              '%cold%', 'холодно',
+              '%green%', 'зелено',
+              'мама', 'mother',
+              'маман', 'big mother']
+
+    expected = 'Летом - тепло\n' + \
+               'Осенью - сыро\n' + \
+               'Зимой - холодно\n' + \
+               'Весной - зелено\n' + \
+               'big mother'
+
+    res = subprocess.run(params, stdout=subprocess.PIPE)
+    result = ''
+    with open(output_file, 'r', encoding='utf-8') as file:
+        for row in file:
+            result += row
+    try:
+        assert result == expected
+    finally:
+        os.remove(output_file)
