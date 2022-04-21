@@ -29,6 +29,35 @@ class Node:
         self.suffix_link = None
 
 
+class ReplacementsList:
+    replacements: List[Tuple[int, str]]
+    _current_replacement_pos: int
+    _replacements_len: int
+
+    def __init__(self, replacements: List[Tuple[int, str]]) -> None:
+        self.replacements = replacements
+        self._current_replacement_pos = 0
+        self._replacements_len = len(replacements)
+
+    def get_replacements_for_position(self, template_pos: int) -> List[str]:
+        first_pos: int = self._current_replacement_pos
+
+        while self.replacements[first_pos][0] != template_pos:
+            first_pos += 1
+
+        last_pos: int = first_pos + 1
+        for i in range(first_pos, self._replacements_len):
+            pos, _ = self.replacements[i]
+            if pos != template_pos or pos == self._replacements_len:
+                last_pos = i
+                break
+
+        self._current_replacement_pos = last_pos
+        return [replacement for _, replacement in self.replacements[first_pos: last_pos]]
+
+    def get_replacements_positions(self) -> Set[int]:
+        return set([pos for pos, _ in self.replacements])
+
 class AhoKorasikTree:
     def __init__(self, patterns: List[str]):
         self._root = self._init_tree(patterns)
@@ -37,7 +66,7 @@ class AhoKorasikTree:
     #find_all_patterns
     def find_all_patterns(self, template: str) -> List[Tuple[int, str]]:
         node: Node = self._root
-        patterns = []
+        patterns: List[Tuple[int, str]] = []
         for i in range(len(template)):
             while node is not None and template[i] not in node.next_nodes:
                 node: Node = node.suffix_link
@@ -46,9 +75,9 @@ class AhoKorasikTree:
                 continue
             node = node.next_nodes[template[i]]
             for pattern in node.patterns:
-                data = [(i - len(pattern) + 1, pattern)]
+                data: List[Tuple[int, str]] = [(i - len(pattern) + 1, pattern)]
                 patterns.extend(data)
-        return patterns
+        return sorted(patterns, key=lambda x: x[0])
 
     def _init_tree(self, patterns: List[str]) -> Node:
         root: Node = self._create_tree(patterns)
@@ -100,29 +129,27 @@ def file_iterator(file_path: str) -> Iterable:
         for row in file:
             yield row
 
-#row переименовать в template
-def expand_template(template: str, params: Dict[str, str], tree: AhoKorasikTree) -> str:
-    #Должно быть понятно что вернет функция
-    def get_longest_replacement(pos: int) -> Optional[str]:
-        #Многократно проходим по элементам. Ускорить реализацию
-        possible_patterns: List[str] = [pattern for i, pattern in replacements if i == pos]
-        if len(possible_patterns) == 0:
-            return None
-        return max(possible_patterns, key=len)
 
-    replacements: List[Tuple[int, str]] = tree.find_all_patterns(template)
-    replacement_positions: Set[int] = set([pos for pos, _ in replacements])
-    i: int = 0
+#row переименовать в template
+def expand_template(template: str, params: Dict[str, str], pattern_tree: AhoKorasikTree) -> str:
+
+    replacements: ReplacementsList = ReplacementsList(pattern_tree.find_all_patterns(template))
+    replacement_positions: Set[int] = replacements.get_replacements_positions()
+
+    current_template_pos: int = 0
+
     expanded_template: str = '' #result_str или expanded_template
-    while i < len(template):
-        if i not in replacement_positions:
-            expanded_template += template[i]
-            i += 1
+    while current_template_pos < len(template):
+        if current_template_pos not in replacement_positions:
+            expanded_template += template[current_template_pos]
+            current_template_pos += 1
             continue
 
-        replacement: str = get_longest_replacement(i)
+        possible_patterns: List[str] = replacements.get_replacements_for_position(current_template_pos)
+        replacement: str = max(possible_patterns, key=len)
+
         expanded_template += params[replacement]
-        i += len(replacement)
+        current_template_pos += len(replacement)
     return expanded_template
 
 
