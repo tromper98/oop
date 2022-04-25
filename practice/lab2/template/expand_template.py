@@ -153,19 +153,25 @@ def parse_command_line():
     args = parser.parse_args()
     return ProgramArguments(args.input_file, args.output_file, args.l)
 
-
-def file_iterator(file_path: str) -> Iterable:
-    with open(file_path, 'r', encoding='utf-8') as file:
-        for row in file:
-            yield row
-
-
 #сделать внутренную функцию
 #Можно создать класс TemplateExpander с методом expand
 def expand_template(template: str, params: Dict[str, str]) -> str:
     template_expander: TemplateExpander = TemplateExpander(params)
     expanded_template: str = template_expander.expand(template)
     return expanded_template
+
+
+def get_data_from_file(file_path: str) -> str:
+    data: str = ''
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = file.read()
+    return data
+
+
+def save_data_to_file(file_path: str, data: str) -> str:
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(data)
+    return data
 
 
 def main():
@@ -179,13 +185,9 @@ def main():
         print(f'File {args.input_file} doesn\'t found')
         return
 
-    patterns = [key for key in args.params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    with open(args.output_file, 'w', encoding='utf-8') as file:
-        for row in file_iterator(args.input_file):
-            expanded_template: str = expand_template(row, args.params)
-            file.write(expanded_template)
+    data = get_data_from_file(args.input_file)
+    expanded_template: str = expand_template(data, args.params)
+    save_data_to_file(args.output_file, expanded_template)
 
 
 if __name__ == '__main__':
