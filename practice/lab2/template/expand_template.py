@@ -66,8 +66,6 @@ class AhoKorasikTree:
     def __init__(self, patterns: List[str]):
         self._root = self._init_tree(patterns)
 
-    #row - заменить
-    #find_all_patterns
     def find_all_patterns(self, template: str) -> List[Tuple[int, str]]:
         node: Node = self._root
         patterns: List[Tuple[int, str]] = []
@@ -118,6 +116,34 @@ class AhoKorasikTree:
         return root
 
 
+class TemplateExpander:
+    _ahokorasiktree: AhoKorasikTree
+    _params: Dict[str, str]
+
+    def __init__(self, params: Dict[str, str]):
+        self._params = params
+        patterns = [key for key in params.keys()]
+        self._ahokorasik_tree = AhoKorasikTree(patterns)
+
+    def expand(self, template: str) -> str:
+        replacements: Replacements = Replacements(self._ahokorasik_tree.find_all_patterns(template))
+        replacement_positions: Set[int] = replacements.get_replacements_positions()
+        current_template_pos: int = 0
+
+        expanded_template: str = ''
+        while current_template_pos < len(template):
+            if current_template_pos not in replacement_positions:
+                expanded_template += template[current_template_pos]
+                current_template_pos += 1
+                continue
+
+            replacement: str = replacements.get_replacement(current_template_pos)
+
+            expanded_template += self._params[replacement]
+            current_template_pos += len(replacement)
+        return expanded_template
+
+
 def parse_command_line():
     parser = ArgumentParser()
     parser.add_argument('input_file', help='file path to input file', type=str)
@@ -134,23 +160,11 @@ def file_iterator(file_path: str) -> Iterable:
             yield row
 
 
-#row переименовать в template
-def expand_template(template: str, params: Dict[str, str], pattern_tree: AhoKorasikTree) -> str:
-    replacements: Replacements = Replacements(pattern_tree.find_all_patterns(template))
-    replacement_positions: Set[int] = replacements.get_replacements_positions()
-    current_template_pos: int = 0
-
-    expanded_template: str = '' #result_str или expanded_template
-    while current_template_pos < len(template):
-        if current_template_pos not in replacement_positions:
-            expanded_template += template[current_template_pos]
-            current_template_pos += 1
-            continue
-
-        replacement: str = replacements.get_replacement(current_template_pos)
-
-        expanded_template += params[replacement]
-        current_template_pos += len(replacement)
+#сделать внутренную функцию
+#Можно создать класс TemplateExpander с методом expand
+def expand_template(template: str, params: Dict[str, str]) -> str:
+    template_expander: TemplateExpander = TemplateExpander(params)
+    expanded_template: str = template_expander.expand(template)
     return expanded_template
 
 
@@ -170,7 +184,7 @@ def main():
 
     with open(args.output_file, 'w', encoding='utf-8') as file:
         for row in file_iterator(args.input_file):
-            expanded_template: str = expand_template(row, args.params, aho_korasik_tree)
+            expanded_template: str = expand_template(row, args.params)
             file.write(expanded_template)
 
 

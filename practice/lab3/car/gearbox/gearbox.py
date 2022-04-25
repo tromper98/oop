@@ -9,7 +9,7 @@ class Gearbox:
     _max_gear_code: int
 
     def __init__(self):
-        self._gears = self._get_gears()
+        self._gears = self._get_gears() #вызов статического метода через имя класса
         self._current_gear = NeutralGear()
         self._min_gear_code = self._get_min_gear_code()
         self._max_gear_code = self._get_max_gear_code()
@@ -38,7 +38,7 @@ class Gearbox:
     def gear(self) -> Gear:
         return self._current_gear
 
-    @property
+    @property #is_on_neutral_gear
     def is_neutral_gear(self) -> bool:
         return isinstance(self._current_gear, NeutralGear)
 
@@ -46,6 +46,7 @@ class Gearbox:
     def is_reverse_gear(self) -> bool:
         return isinstance(self._current_gear, ReverseGear)
 
+#Есть риск неправильного использования, так как ожидается модуль скорости
     def change_gear(self, speed: float, new_gear_code: int) -> bool:
         if not self._min_gear_code <= new_gear_code <= self._max_gear_code:
             print(f'Invalid gear. There is no {new_gear_code} gear')
@@ -63,7 +64,7 @@ class Gearbox:
 
         elif self.is_reverse_gear:
             can_change = self.__try_change_from_reverse(speed)
-
+#Сомнительно введение классов для задней и нейтральной передач
         elif isinstance(new_gear, ReverseGear):
             can_change = self.__try_change_to_reverse(speed, new_gear)
 
@@ -72,7 +73,6 @@ class Gearbox:
 
         if can_change:
             self._current_gear = new_gear
-            print(f'Gear changed successfully to gear {self._current_gear.code}')
             return True
 
         if not new_gear.min_speed <= speed <= new_gear.max_speed:

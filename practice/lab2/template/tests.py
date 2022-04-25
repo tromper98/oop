@@ -8,10 +8,7 @@ def test_expand_template():
     params = {'%time%': 'morning', '%person%': 'William Gibson'}
     expected = 'Good morning, William Gibson.'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -20,10 +17,7 @@ def test_expand_template_some_patterns():
     params = {'%time%': 'morning', 'empty': 'none'}
     expected = 'morning, morning, morning'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -32,10 +26,7 @@ def test_expand_template_expand_longest_pattern():
     params = {'a': 'b', 'aa': 'cc', 'aaa': 'ddd', 'aaaa': 'eeee', 'aaaaa': 'fffff'}
     expected = 'fffff'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -44,10 +35,7 @@ def test_expand_template_empty_params():
     params = {'': 'ded'}
     expected = 'acac'
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    result = expand_template(row, params, aho_korasik_tree)
+    result = expand_template(row, params)
     assert result == expected
 
 
@@ -80,13 +68,9 @@ def test_expand_most_possible_template():
         'CC': '[cc]'
     }
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    assert (expand_template(row, params, aho_korasik_tree) == "-[aa][bb][cc][cc][c][a][b][c]+")
+    assert (expand_template(row, params) == "-[aa][bb][cc][cc][c][a][b][c]+")
 
 
-# Лучше назвать test_expanded_text_is_not_expand
 def test_expanded_test_is_not_expand():
     row = "Hello, %USER_NAME%. Today is {WEEK_DAY}."
     params = {
@@ -94,10 +78,7 @@ def test_expanded_test_is_not_expand():
         '{WEEK_DAY}': 'Friday. {WEEK_DAY}'
     }
 
-    patterns = [key for key in params.keys()]
-    aho_korasik_tree: AhoKorasikTree = AhoKorasikTree(patterns)
-
-    assert (expand_template(row, params, aho_korasik_tree) ==
+    assert (expand_template(row, params) ==
             "Hello, Super %USER_NAME% {WEEK_DAY}. Today is Friday. {WEEK_DAY}.")
 
 

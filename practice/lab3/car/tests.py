@@ -68,6 +68,7 @@ def test_change_direction_when_start_moving():
     car1_direction = car1.direction
 
     car2 = Car()
+    car2.engine_on()
     car2.set_gear(-1)
     car2.set_speed(10)
     car2_direction = car2.direction
@@ -97,4 +98,21 @@ def test_fail_increase_speed_on_neutral():
     car.set_speed(40)
     car.set_gear(0)
     result = car.set_speed(50)
+    assert result is False
+
+
+def test_cannot_engine_off_while_moving():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    car.set_speed(10)
+    result = car.engine_off()
+    assert result is False
+
+
+def test_cannot_engine_off_on_none_neutral_gear():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    result = car.engine_off()
     assert result is False
