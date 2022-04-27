@@ -1,9 +1,12 @@
+from typing import Optional
+
+
 class Gear:
     _code: int
-    _min_speed: int
-    _max_speed: int
+    _min_speed: float
+    _max_speed: float
 
-    def __init__(self, code: int,  min_speed: int, max_speed: int):
+    def __init__(self, code: int,  min_speed: Optional[float], max_speed: Optional[float]):
         self._code = code
         self._min_speed = min_speed
         self._max_speed = max_speed
