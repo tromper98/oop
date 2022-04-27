@@ -1,45 +1,39 @@
 import pytest
 from car import Car, Gearbox
+from practice.lab3.car.gearbox.exeptions import *
 
 
 def test_change_gear_from_neutral_to_one():
     gearbox = Gearbox()
-    res = gearbox.change_gear(0, 1)
-    assert res is True
+    gearbox.change_gear(0, 1)
+    assert gearbox.gear.code == 1
 
 
 def test_change_gear_from_neutral_to_reverse():
     gearbox = Gearbox()
-    res = gearbox.change_gear(0, -1)
-    assert res is True
+    gearbox.change_gear(0, -1)
+    assert gearbox.gear.code == -1
 
 
 def test_change_gear_from_reverse_to_one_when_stop():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
-    res = gearbox.change_gear(0, 1)
-    assert res is True
+    gearbox.change_gear(0, 1)
+    assert gearbox.gear.code == 1
 
 
 def test_fail_change_gear_from_reverse_to_one_moving_backwards():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
-    res = gearbox.change_gear(-10, 1)
-    assert res is False
+    with pytest.raises(InvalidGearSpeed):
+        gearbox.change_gear(-10, 1)
 
 
 def test_change_gear_from_reverse_to_neutral_none_zero_speed():
     gearbox = Gearbox()
     gearbox.change_gear(0, -1)
-    res = gearbox.change_gear(-10, 0)
-    assert res is True
-
-
-def test_fail_change_gear_from_reverse_to_five():
-    gearbox = Gearbox()
-    gearbox.change_gear(0, -1)
-    res = gearbox.change_gear(100, 5)
-    assert res is False
+    gearbox.change_gear(-10, 0)
+    assert gearbox.gear.code == 0
 
 
 def test_consistent_change_gears():
@@ -68,6 +62,7 @@ def test_change_direction_when_start_moving():
     car1_direction = car1.direction
 
     car2 = Car()
+    car2.engine_on()
     car2.set_gear(-1)
     car2.set_speed(10)
     car2_direction = car2.direction
@@ -97,4 +92,21 @@ def test_fail_increase_speed_on_neutral():
     car.set_speed(40)
     car.set_gear(0)
     result = car.set_speed(50)
+    assert result is False
+
+
+def test_cannot_engine_off_while_moving():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    car.set_speed(10)
+    result = car.engine_off()
+    assert result is False
+
+
+def test_cannot_engine_off_on_none_neutral_gear():
+    car = Car()
+    car.engine_on()
+    car.set_gear(1)
+    result = car.engine_off()
     assert result is False
