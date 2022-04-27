@@ -21,3 +21,7 @@ class IncreaseSpeedOnNeutralGearError(CarException):
     def __init__(self):
         super().__init__('Can\'t increase speed in neutral gear')
 
+
+class CarSpeedError(CarException):
+    def __init__(self, min_speed: float, max_speed: float):
+        super().__init__(f'Can\'t change speed beyond gear limits [{min_speed}, {max_speed}]')

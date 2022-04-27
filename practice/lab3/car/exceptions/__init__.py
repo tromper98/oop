@@ -1,2 +1,2 @@
-from .carexceptions import EngineOnError, EngineOffError, GearSwitchingEngineOffError, IncreaseSpeedOnNeutralGearError
-from .gearboxexeptions import InvalidGear, InvalidGearSpeed, NeutralGearIncreaseSpeedError
+from .carexceptions import *
+from .gearboxexeptions import *
