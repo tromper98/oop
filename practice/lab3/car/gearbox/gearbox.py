@@ -1,9 +1,6 @@
 from typing import List
-from .gear import Gear
+from .gear import *
 from practice.lab3.car.exceptions import InvalidGear, InvalidGearSpeed
-
-NEUTRAL_GEAR_CODE = 0
-REVERSE_GEAR_CODE = -1
 
 
 class Gearbox:
