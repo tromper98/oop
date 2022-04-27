@@ -1,6 +1,3 @@
-from ..gear import Gear
-
-
 class GearboxException(Exception):
     pass
 
@@ -11,9 +8,9 @@ class InvalidGear(GearboxException):
 
 
 class InvalidGearSpeed(GearboxException):
-    def __init__(self, gear: Gear, speed: float):
+    def __init__(self, gear, speed: float):
         super().__init__(f'Invalid speed {speed} for gear {gear.code}.'
-                             f'Speed must be in [{gear.min_speed}, {gear.max_speed}]')
+                         f'Speed must be in [{gear.min_speed}, {gear.max_speed}]')
 
 
 class NeutralGearIncreaseSpeedError(GearboxException):

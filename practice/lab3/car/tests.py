@@ -1,6 +1,6 @@
 import pytest
 from car import Car, Gearbox
-from practice.lab3.car.gearbox.exeptions import *
+from practice.lab3.car.exceptions import *
 
 
 def test_change_gear_from_neutral_to_one():

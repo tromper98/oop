@@ -1,6 +1,6 @@
 from typing import List
 from .gear import Gear
-from .exeptions import InvalidGear, InvalidGearSpeed
+from practice.lab3.car.exceptions import InvalidGear, InvalidGearSpeed
 
 NEUTRAL_GEAR_CODE = 0
 REVERSE_GEAR_CODE = -1
