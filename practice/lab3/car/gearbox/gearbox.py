@@ -1,6 +1,6 @@
 from typing import List
 from .gear import *
-from practice.lab3.car.exceptions import InvalidGear, InvalidGearSpeed
+from exceptions import InvalidGear, InvalidGearSpeed
 
 
 class Gearbox:

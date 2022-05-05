@@ -1,6 +1,6 @@
 import pytest
-from car import Car, Gearbox
-from practice.lab3.car.exceptions import *
+from car import Car, Gearbox, REVERSE_DIRECTION, FORWARD_DIRECTION
+from exceptions import *
 
 
 def test_change_gear_from_neutral_to_one():
@@ -50,8 +50,8 @@ def test_fail_engine_off_while_moving():
     car.engine_on()
     car.set_gear(1)
     car.set_speed(20)
-    result = car.engine_off()
-    assert result is False
+    with pytest.raises(EngineOffError):
+        car.engine_off()
 
 
 def test_change_direction_when_start_moving():
@@ -91,8 +91,8 @@ def test_fail_increase_speed_on_neutral():
     car.set_gear(2)
     car.set_speed(40)
     car.set_gear(0)
-    result = car.set_speed(50)
-    assert result is False
+    with pytest.raises(IncreaseSpeedOnNeutralGearError):
+        car.set_speed(50)
 
 
 def test_cannot_engine_off_while_moving():
@@ -100,13 +100,36 @@ def test_cannot_engine_off_while_moving():
     car.engine_on()
     car.set_gear(1)
     car.set_speed(10)
-    result = car.engine_off()
-    assert result is False
+    with pytest.raises(EngineOffError):
+        car.engine_off()
 
 
 def test_cannot_engine_off_on_none_neutral_gear():
     car = Car()
     car.engine_on()
     car.set_gear(1)
-    result = car.engine_off()
-    assert result is False
+    with pytest.raises(EngineOffError):
+        car.engine_off()
+
+
+def test_no_change_direction_when_change_gear_to_neutral():
+    car1 = Car()
+    car1.engine_on()
+    car1.set_gear(1)
+    car1.set_speed(10)
+    car1.set_gear(0)
+
+    car2 = Car()
+    car2.engine_on()
+    car2.set_gear(-1)
+    car2.set_speed(10)
+    car1.set_gear(0)
+
+    assert car1.direction == FORWARD_DIRECTION
+    assert car2.direction == REVERSE_DIRECTION
+
+
+def test_fail_change_gear_when_engine_off():
+    car = Car()
+    with pytest.raises(GearSwitchingEngineOffError):
+        car.set_gear(1)
