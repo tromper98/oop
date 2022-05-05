@@ -91,7 +91,7 @@ class CarController:
 
     def _set_speed(self, params: List[str]) -> None:
         if len(params) != 1:
-            print('Action "setSpeed" have only one parameter')
+            print('Action "setSpeed" have one parameter - speed: float')
             return
 
         new_speed: float = CarController._convert_string_to_number(params[0])
@@ -102,7 +102,7 @@ class CarController:
 
     def _set_gear(self, params: List[str]) -> None:
         if len(params) != 1:
-            print('Action "setGear" have only one parameter')
+            print('Action "setGear" have one parameter - gear_code: int')
             return
 
         new_gear: int = CarController._convert_string_to_number(params[0])
