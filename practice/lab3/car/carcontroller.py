@@ -1,8 +1,6 @@
-from typing import List, Union, Callable
+from typing import List, Union, Callable, Dict, Optional
 from car import Car
 from exceptions import CarException
-
-ACTIONS: List[str] = ['info', 'engineOn', 'engineOff', 'setSpeed', 'setGear', 'exit']
 
 
 class CommandLineParser:
@@ -29,29 +27,20 @@ class CommandLineParser:
 class CarController:
     _car: Car
 
-    def __init__(self) -> None:
-        self._car = Car()
+    # Лучше передать car передавать снаружи
+    def __init__(self, car: Car):
+        self._car = car
+        self._actions: Dict[str, Callable] = self._get_actions()
 
-    def execute_command(self, action: str, params: List[str]) -> None:
-        if action == 'info':
-            self._get_car_info(params)
-            return
+    def execute_command(self, user_input: str) -> Optional[bool]:
+        user_input: str = user_input.lstrip().rstrip()
+        parsed_user_input: List[str] = user_input.split(' ')
+        parser = CommandLineParser.parse_params(parsed_user_input)
 
-        if action == 'engineOn':
-            self._engine_on(params)
-            return
+        if self._has_action(parser.action):
+            return self._actions[parser.action](parser.params)
 
-        if action == 'engineOff':
-            self._engine_off(params)
-            return
-
-        if action == 'setSpeed':
-            self._set_speed(params)
-            return
-
-        if action == 'setGear':
-            self._set_gear(params)
-            return
+        print('Inlavid command')
 
     # Должен возвращать класс, занимающийся вводом/выводом
     def _get_car_info(self, params: List[str]) -> None:
@@ -68,6 +57,15 @@ class CarController:
         --- End Car Info ---
         """
         print(report)
+
+    def _get_help(self, params) -> None:
+        if params:
+            print('Action "help" doesn\'t exists params')
+            return
+
+        action_list: List[str] = [action for action in self._actions.keys()]
+        output: str = ' '.join(action_list)
+        print(output)
 
     def _engine_on(self, params: List[str]) -> None:
         if params:
@@ -111,6 +109,27 @@ class CarController:
         except CarException as e:
             print(e)
 
+    def _exit(self, params: List[str]) -> Optional[bool]:
+        if params:
+            print('Action "exit" doesn\'t exists params')
+            return
+
+        return True
+
+    def _get_actions(self) -> Dict[str, Callable]:
+        actions: Dict[str, Callable] = {
+            'help': self._get_help,
+            'info': self._get_car_info,
+            'engineOn': self._engine_on,
+            'engineOff': self._engine_off,
+            'setSpeed': self._set_speed,
+            'setGear': self._set_gear,
+            'exit': self._exit
+        }
+        return actions
+
+    def _has_action(self, searchable_action: str) -> bool:
+        return searchable_action in [action for action in self._actions.keys()]
 
     @staticmethod
     def _convert_string_to_number(string: str) -> Union[int, float]:
@@ -120,31 +139,36 @@ class CarController:
             print(f'{string} is not a number')
 
 
-def get_user_input() -> List[str]:
-    while True:
-        print(f'Choose command: {", ".join(ACTIONS)}')
-        user_input: str = input(f'\nEnter a command for car: ').lstrip().rstrip()
-        parsed_user_input: List[str] = user_input.split(' ')
-        if parsed_user_input[0] in ACTIONS:
-            break
-
-        print('Invalid command')
-
-    return parsed_user_input
-
-
 def main():
-    car_controller: CarController = CarController()
+    car = Car()
+    car_controller: CarController = CarController(car)
     while True:
-        user_input: List[str] = get_user_input()
-        parser = CommandLineParser.parse_params(user_input)
-
-        if parser.action == 'exit':
+        cmd: str = input('\nEnter a command for car: ')
+        if car_controller.execute_command(cmd):
             break
-
-        car_controller.execute_command(parser.action, parser.params)
 
 
 if __name__ == '__main__':
     main()
 
+# cc = CarController(car, test_print)
+# assert cc.execute_command("setGear 3")
+#
+#
+# while True
+#     cmd = input("Enter command: ")
+#     if not cc.execute_command(cmd):
+#         break
+#
+# prompt = ""
+# def my_input(s):
+#     prompt = s
+#     yield "Info"
+#     prompt = s
+#     yield "EngineOn"
+#     yield "SetGear 1"
+#
+# cc = CarController(car, my_input, my_output)
+# cc.execute_command()
+# assert prompt == "Enter command: "
+# assert

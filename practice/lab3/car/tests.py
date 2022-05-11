@@ -91,7 +91,7 @@ def test_fail_increase_speed_on_neutral():
     car.set_gear(2)
     car.set_speed(40)
     car.set_gear(0)
-    with pytest.raises(IncreaseSpeedOnNeutralGearError):
+    with pytest.raises(ChangeSpeedOnNeutralGearError):
         car.set_speed(50)
 
 
@@ -133,3 +133,20 @@ def test_fail_change_gear_when_engine_off():
     car = Car()
     with pytest.raises(GearSwitchingEngineOffError):
         car.set_gear(1)
+
+
+def test_fail_change_speed_on_neutral_moving_reverse():
+    car = Car()
+    car.engine_on()
+    car.set_gear(-1)
+    car.set_speed(20)
+    car.set_gear(0)
+    with pytest.raises(ChangeSpeedOnNeutralGearError):
+        car.set_speed(-20)
+
+    car2 = Car()
+    car2.engine_on()
+    car2.set_gear(1)
+    car2.set_speed(20)
+    with pytest.raises(CarSpeedError):
+        car2.set_speed(-10)

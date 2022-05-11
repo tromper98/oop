@@ -1,4 +1,3 @@
-from typing import List, Tuple, Optional
 from gearbox import *
 from gearbox.gear import NEUTRAL_GEAR_CODE
 from exceptions import *
@@ -53,14 +52,16 @@ class Car:
         self._update_direction()
 
     def set_speed(self, new_speed: float) -> None:
+
         if not self.is_engine_on:
             raise CarChangeSpeedOnEngineOff()
-
         if self._gearbox.is_on_neutral_gear:
-            if not (0 <= abs(new_speed) <= abs(self.speed)):
-                raise IncreaseSpeedOnNeutralGearError()
+            if not (0 <= new_speed <= self.speed):
+                raise ChangeSpeedOnNeutralGearError(new_speed)
 
             self._speed = new_speed
+            self._update_direction()
+            return
 
         if self._gearbox.is_on_reverse_gear:
             new_speed = -new_speed
@@ -90,7 +91,7 @@ class Car:
 
     @property
     def speed(self) -> float:
-        return self._speed
+        return abs(self._speed)
 
     @property
     def gear(self) -> int:

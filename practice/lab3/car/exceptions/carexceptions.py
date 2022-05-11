@@ -17,14 +17,16 @@ class GearSwitchingEngineOffError(CarException):
         super().__init__('Can\'t change gear when engine turned off')
 
 
-class IncreaseSpeedOnNeutralGearError(CarException):
-    def __init__(self):
-        super().__init__('Can\'t increase speed in neutral gear')
+class ChangeSpeedOnNeutralGearError(CarException):
+    def __init__(self, speed: float):
+        super().__init__(f'Can\'t set speed to {speed} in neutral gear')
 
 
 class CarSpeedError(CarException):
     def __init__(self, min_speed: float, max_speed: float):
-        super().__init__(f'Can\'t change speed beyond gear limits [{min_speed}, {max_speed}]')
+        maximum_speed = max((abs(min_speed), abs(max_speed)))
+        minimum_speed = min((abs(min_speed), abs(max_speed)))
+        super().__init__(f'Can\'t change speed beyond gear limits [{minimum_speed}, {maximum_speed}]')
 
 
 class CarChangeSpeedOnEngineOff(CarException):
