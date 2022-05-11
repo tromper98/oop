@@ -1,5 +1,5 @@
 import os.path
-from typing import List, Dict, Optional, Iterable, Tuple, Set
+from typing import List, Dict, Optional, Tuple, Set
 from argparse import ArgumentParser
 
 
@@ -162,7 +162,6 @@ def expand_template(template: str, params: Dict[str, str]) -> str:
 
 
 def get_data_from_file(file_path: str) -> str:
-    data: str = ''
     with open(file_path, 'r', encoding='utf-8') as file:
         data = file.read()
     return data
