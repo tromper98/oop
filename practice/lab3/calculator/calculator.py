@@ -4,11 +4,11 @@ from function import Function
 
 class Calculator:
     _variables: Dict[str, Optional[float]]
-    _functions: List[Function]
+    _functions: Dict[str, Function]
 
     def __init__(self):
         self._variables = {}
-        self._functions = []
+        self._functions = {}
 
     def create_variable(self, variable: str, value: Optional[Union[float, str]] = None) -> None:
         if isinstance(value, (float, int)):
@@ -31,8 +31,8 @@ class Calculator:
 
     def create_function(self, func_name: str, variables: List[str], operations: List[str]) -> None:
         if not self._has_function(func_name):
-            function = Function(func_name, variables, operations)
-            self._functions.append(function)
+            function = Function(variables, operations)
+            self._functions[func_name] = function
             return
 
         print(f'Can\'t create function "{func_name}" because function with same name already exists')
@@ -42,7 +42,7 @@ class Calculator:
             print(f'Function "{func_name}" doesn\'t exist')
             return
 
-        function = self._get_function_by_name(func_name)
+        function = self._functions[func_name]
         result: Optional[float] = self._calculate_function_result(function)
         return result
 
@@ -61,14 +61,14 @@ class Calculator:
         if not self._has_function(func_name):
             print(f'Function  "{func_name}" does not exist')
 
-        function: Function = self._get_function_by_name(func_name)
+        function: Function = self._functions[func_name]
         result: Optional[float] = self._calculate_function_result(function)
         print(result)
 
     def print_all_functions(self) -> None:
-        ordered_func_names: List[str] = sorted([function.name for function in self._functions])
+        ordered_func_names: List[str] = sorted([func_name for func_name in self._functions.keys()])
         for func_name in ordered_func_names:
-            function = self._get_function_by_name(func_name)
+            function = self._functions[func_name]
             result = self._calculate_function_result(function)
             print(f'{func_name}: {result}')
 
@@ -115,16 +115,11 @@ class Calculator:
 
         return self._variables[variable]
 
-    def _get_function_by_name(self, func_name) -> Function:
-        for function in self._functions:
-            if function.name == func_name:
-                return function
-
     def _has_variable(self, variable: str) -> bool:
         return variable in self._variables.keys()
 
     def _has_function(self, func_name: str) -> bool:
-        return func_name in [function.name for function in self._functions]
+        return func_name in self._functions.keys()
 
     def __try_create_variable_from_number(self, variable: str, value: float) -> None:
         if not self._has_variable(variable):

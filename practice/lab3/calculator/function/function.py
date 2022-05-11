@@ -2,18 +2,12 @@ from typing import List
 
 
 class Function:
-    _name: str
     _variables: List[str]
     _operations: List[str]
 
-    def __init__(self, name: str, variables: List[str], operations: List[str]) -> None:
-        self._name = name
+    def __init__(self, variables: List[str], operations: List[str]) -> None:
         self._variables = variables
         self._operations = operations
-
-    @property
-    def name(self):
-        return self._name
 
     @property
     def variables(self):
