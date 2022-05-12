@@ -2,7 +2,19 @@ import pytest
 from typing import Dict
 from unittest import TestCase
 from calculator import Calculator, Function
+from calculatorcontroller import *
 
+def is_equal_expression(target_expr: Expression, destination_expr: Expression) -> bool:
+    if target_expr.left_operand != destination_expr.left_operand:
+        return False
+
+    if target_expr.right_operands != destination_expr.right_operands:
+        return False
+
+    if target_expr.operation != destination_expr.operation:
+        return False
+
+    return True
 
 def test_create_new_variables():
     calc = Calculator()
@@ -53,7 +65,7 @@ def test_create_new_variable_with_none_value():
 def test_update_variable_value():
     calc = Calculator()
     calc.create_variable('x1', 10.35)
-    calc.update_variable('x1', 50)
+    calc.set_variable('x1', 50)
     expected = {'x1': 50}
 
     tester = TestCase()
@@ -76,7 +88,7 @@ def test_fail_create_existing_variable():
 def test_fail_update_update_not_exist_variable():
     calc = Calculator()
     calc.create_variable('x1', 20)
-    result = calc.update_variable('x2', 40)
+    result = calc.set_variable('x2', 40)
     assert result is False
 
 
@@ -144,3 +156,25 @@ def test_create_function_with_already_exist_name():
     result = calc.get_function_result('res')
     expected = 15
     assert result == expected
+
+
+def test_parse_expr_only_one_operand():
+    expr = 'x1'
+    parsed_expr = Expression.parse_expr(expr)
+    expected = Expression('x1', None, None)
+    assert is_equal_expression(parsed_expr, expected)
+
+
+def test_parse_expr_with_two_operands():
+    expr = 'x1=x2'
+    parsed_expr = Expression.parse_expr(expr)
+    expected = Expression('x1', ['x2'], None)
+    assert is_equal_expression(parsed_expr, expected)
+
+
+def test_parse_expr_with_operation():
+    expr = 'x1=x2+5'
+    parsed_expr = Expression.parse_expr(expr)
+    expected = Expression('x1', ['x2', '5'], '+')
+    assert is_equal_expression(parsed_expr, expected)
+
