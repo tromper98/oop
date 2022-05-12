@@ -27,7 +27,6 @@ class CommandLineParser:
 class CarController:
     _car: Car
 
-    # Лучше передать car передавать снаружи
     def __init__(self, car: Car):
         self._car = car
         self._actions: Dict[str, Callable] = self._get_actions()
@@ -42,7 +41,6 @@ class CarController:
 
         print('Inlavid command')
 
-    # Должен возвращать класс, занимающийся вводом/выводом
     def _get_car_info(self, params: List[str]) -> None:
         if params:
             print('Action "info" doesn\'t exists params')

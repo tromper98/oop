@@ -150,3 +150,20 @@ def test_fail_change_speed_on_neutral_moving_reverse():
     car2.set_speed(20)
     with pytest.raises(CarSpeedError):
         car2.set_speed(-10)
+
+
+def test_set_same_speed_on_neutral_do_not_change_direction():
+    car = Car()
+    car.engine_on()
+    car.set_gear(-1)
+    car.set_speed(20)
+    car.set_gear(0)
+    car.set_speed(20)
+    expected = 'Reverse'
+    result = car.direction
+    assert expected == result
+#setGear -1
+#setSpeed 20
+#setGear 0
+#setSpeed 20
+#result --> Reverse change to Forward

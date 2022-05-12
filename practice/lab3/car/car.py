@@ -1,3 +1,4 @@
+from typing import Tuple
 from gearbox import *
 from gearbox.gear import NEUTRAL_GEAR_CODE
 from exceptions import *
@@ -56,19 +57,18 @@ class Car:
         if not self.is_engine_on:
             raise CarChangeSpeedOnEngineOff()
         if self._gearbox.is_on_neutral_gear:
-            if not (0 <= new_speed <= self.speed):
+            min_speed, max_speed = Car._shuffle_min_max_speed(0, self._speed)
+            if not (min_speed <= new_speed * self._direction <= max_speed):
                 raise ChangeSpeedOnNeutralGearError(new_speed)
 
-            self._speed = new_speed
+            self._speed = new_speed * self._direction
             self._update_direction()
             return
 
         if self._gearbox.is_on_reverse_gear:
             new_speed = -new_speed
 
-        min_speed: float = self._gearbox.gear.min_speed
-        max_speed: float = self._gearbox.gear.max_speed
-
+        min_speed, max_speed = Car._shuffle_min_max_speed(self._gearbox.gear.min_speed, self._gearbox.gear.max_speed)
         if min_speed <= new_speed <= max_speed:
             self._speed = new_speed
             self._update_direction()
@@ -96,3 +96,7 @@ class Car:
     @property
     def gear(self) -> int:
         return self._gearbox.gear.code
+
+    @staticmethod
+    def _shuffle_min_max_speed(min_speed: float, max_speed: float) -> Tuple[float, float]:
+        return min((min_speed, max_speed)), max(min_speed, max_speed)
