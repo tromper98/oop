@@ -29,6 +29,11 @@ class CarSpeedError(CarException):
         super().__init__(f'Can\'t change speed beyond gear limits [{minimum_speed}, {maximum_speed}]')
 
 
+class ChangeFromNeutralToReverseError(CarException):
+    def __init__(self):
+        super().__init__(f'Can\'t change gear from neutral on non zero speed')
+
+
 class CarChangeSpeedOnEngineOff(CarException):
     def __init__(self):
         super().__init__(f'Can\'t change speed if engine off')

@@ -167,3 +167,15 @@ def test_set_same_speed_on_neutral_do_not_change_direction():
 #setGear 0
 #setSpeed 20
 #result --> Reverse change to Forward
+
+
+#даже при движении назад на нейтральной передаче не допускается включать заднюю передачу.
+def test_cannot_set_reverse_gear_when_neutral_and_none_stop():
+    car = Car()
+    car.engine_on()
+    car.set_gear(-1)
+    car.set_speed(20)
+    car.set_gear(0)
+    car.set_speed(10)
+    with pytest.raises(ChangeFromNeutralToReverseError):
+        car.set_gear(-1)
