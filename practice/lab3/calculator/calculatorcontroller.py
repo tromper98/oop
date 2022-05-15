@@ -1,27 +1,38 @@
-from typing import Dict, Callable, List
-
+from typing import Dict, Callable, Optional
 from calculator import Calculator
+from expression import Expression
+from exceptions import *
 
 
 class CommandLineParser:
-    _action: str
-    _params: List[str]
+    _command: str
+    _expr: Expression
 
-    def __init__(self, action: str, params: List[str]) -> None:
-        self._action = action
-        self._params = params
-
-    @property
-    def action(self) -> str:
-        return self._action
+    def __init__(self, command: str, expr: Optional[Expression]) -> None:
+        self._command = command
+        self._expr = expr
 
     @property
-    def params(self) -> List[str]:
-        return self._params
+    def command(self) -> str:
+        return self._command
+
+    @property
+    def expr(self) -> Expression:
+        return self._expr
 
     @staticmethod
-    def parse_params(params: List[str]):
-        return CommandLineParser(params[0], params[1:])
+    def parse_command_line(user_input: str):
+        user_input: str = user_input.lstrip().rstrip()
+        space_pos: int = user_input.find(' ')
+
+        if space_pos == -1:
+            return CommandLineParser(user_input, None)
+
+        command: str = user_input[:space_pos]
+        row_expr: str = user_input[space_pos + 1:]
+        expr = Expression.parse_expr(row_expr)
+
+        return CommandLineParser(command, expr)
 
 
 class CalculatorController:
@@ -33,24 +44,27 @@ class CalculatorController:
         self._actions = self._get_actions()
 
     def execute_command(self, user_input: str) -> bool:
-        user_input: str = user_input.lstrip().rstrip()
-        params: List[str] = user_input.split(' ')
-        parser = CommandLineParser.parse_params(params)
-        if self._has_action(parser.action):
-            return self._actions[parser.action](parser.params)
+        parser = CommandLineParser.parse_command_line(user_input)
+
+        if self._has_action(parser.command):
+            return self._actions[parser.command](parser.expr)
 
         print('Invalid command')
 
-    def _create_var(self, params: List[str]) -> None:
-        if len(params) != 1:
-            print(' "var" has only one parameter: variable name')
+    def _create_var(self, expr: Expression) -> None:
+        if expr.right_operands or expr.operation:
+            print('Command "var" has only one parameter: variable name')
             return
 
-        self._calculator.create_variable(params[0])
+        self._calculator.create_variable(expr.left_operand)
         ...
 
-    def _set_var_value(self, value) -> None:
-        ...
+    def _set_var_value(self, expr: Expression) -> None:
+        if len(expr.right_operands) != 1:
+            print(f'Too much operands for command "let" ')
+            return
+
+        self._calculator.set_variable_value(expr.left_operand, expr.right_operands[0])
 
     def _create_fn(self,) -> None:
         ...

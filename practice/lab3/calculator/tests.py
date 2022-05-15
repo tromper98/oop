@@ -1,10 +1,15 @@
 import pytest
-from typing import Dict
 from unittest import TestCase
-from calculator import Calculator, Function
-from calculatorcontroller import *
+from calculator import Calculator
+from expression import Expression
+from calculatorcontroller import CommandLineParser
+from exceptions import *
+
 
 def is_equal_expression(target_expr: Expression, destination_expr: Expression) -> bool:
+    if target_expr is None and destination_expr is None:
+        return True
+
     if target_expr.left_operand != destination_expr.left_operand:
         return False
 
@@ -16,14 +21,25 @@ def is_equal_expression(target_expr: Expression, destination_expr: Expression) -
 
     return True
 
+
+def is_equal_command_line_parser(target_parser: CommandLineParser, destination_parser: CommandLineParser) -> bool:
+    if target_parser.command != destination_parser.command:
+        return False
+
+    if not is_equal_expression(target_parser.expr, destination_parser.expr):
+        return False
+
+    return True
+
+
 def test_create_new_variables():
     calc = Calculator()
-    calc.create_variable('x1', 10.35)
-    calc.create_variable('x2', 30.50)
+    calc.create_variable('x1')
+    calc.create_variable('x2')
 
     expected = {
-        'x1': 10.35,
-        'x2': 30.50
+        'x1': None,
+        'x2': None
     }
     tester = TestCase()
     tester.assertDictEqual(calc._variables, expected)
@@ -31,8 +47,10 @@ def test_create_new_variables():
 
 def test_create_new_variable_from_other_variable():
     calc = Calculator()
-    calc.create_variable('x1', 10)
-    calc.create_variable('x2', 'x1')
+    calc.create_variable('x1')
+    calc.create_variable('x2')
+    calc.set_variable_value('x1', 10)
+    calc.set_variable_value('x2', 'x1')
 
     expected = {
         'x1': 10,
@@ -44,28 +62,17 @@ def test_create_new_variable_from_other_variable():
 
 def test_fail_create_new_variable_from_non_declared_variable():
     calc = Calculator()
-    calc.create_variable('x1', 10)
-    calc.create_variable('x2', 'x3')
-
-    expected = {
-        'x1': 10
-    }
-    tester = TestCase()
-    tester.assertDictEqual(calc._variables, expected)
-
-
-def test_create_new_variable_with_none_value():
-    calc = Calculator()
-    calc.create_variable('x1', None)
-
-    res = calc._get_variable_value('x1')
-    assert res is None
+    calc.create_variable('x1')
+    calc.create_variable('x2')
+    with pytest.raises(VariableNotFoundError):
+        calc.set_variable_value('x2', 'no_var')
 
 
 def test_update_variable_value():
     calc = Calculator()
-    calc.create_variable('x1', 10.35)
-    calc.set_variable('x1', 50)
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 10)
+    calc.set_variable_value('x1', 50)
     expected = {'x1': 50}
 
     tester = TestCase()
@@ -74,39 +81,33 @@ def test_update_variable_value():
 
 def test_fail_create_existing_variable():
     calc = Calculator()
-    calc.create_variable('x1', 10)
-    calc.create_variable('x1', 20)
-
-    expected = {
-        'x1': 10
-    }
-
-    tester = TestCase()
-    tester.assertDictEqual(calc._variables, expected)
+    calc.create_variable('x1')
+    with pytest.raises(VariableAlreadyExistError):
+        calc.create_variable('x1')
 
 
 def test_fail_update_update_not_exist_variable():
     calc = Calculator()
-    calc.create_variable('x1', 20)
-    result = calc.set_variable('x2', 40)
-    assert result is False
+    calc.create_variable('x1')
+    with pytest.raises(VariableNotFoundError):
+        calc.set_variable_value('x2', 40)
 
 
 def test_get_variable_value():
     calc = Calculator()
-    calc.create_variable('x1', 100.50)
-
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 100.50)
     expected = 100.50
-    result = calc._get_variable_value('x1')
+    result = calc.get_variable_value('x1')
     assert result == expected
 
 
 def test_fail_get_not_declared_variable_value():
     calc = Calculator()
-    calc.create_variable('x1', 100.50)
-    calc.create_variable('x2', 50.25)
-    result = calc._get_variable_value('y1')
-    assert result is None
+    calc.create_variable('x1')
+    calc.create_variable('x2')
+    with pytest.raises(VariableNotFoundError):
+        calc.get_variable_value('y1')
 
 
 def test_calculate_function():
@@ -178,3 +179,23 @@ def test_parse_expr_with_operation():
     expected = Expression('x1', ['x2', '5'], '+')
     assert is_equal_expression(parsed_expr, expected)
 
+
+def test_parse_command_line_one_operand_exist():
+    cmd = 'let x1'
+    parser = CommandLineParser.parse_command_line(cmd)
+    expected = CommandLineParser('let', Expression('x1', None, None))
+    assert is_equal_command_line_parser(parser, expected)
+
+
+def test_parse_command_line_with_expr():
+    cmd = 'fn x1=y+135'
+    parser = CommandLineParser.parse_command_line(cmd)
+    expected = CommandLineParser('fn', Expression('x1', ['y', '135'], '+'))
+    assert is_equal_command_line_parser(parser, expected)
+
+
+def test_parse_command_line_only_command():
+    cmd = 'printvars'
+    parser = CommandLineParser.parse_command_line(cmd)
+    expected = CommandLineParser('printvars', None)
+    assert is_equal_command_line_parser(parser, expected)

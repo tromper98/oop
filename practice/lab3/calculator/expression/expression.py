@@ -7,7 +7,7 @@ class Expression:
     _operation: Optional[str]
     _possible_operators: List[str]
 
-    def __init__(self, left_operand: str, right_operands: Optional[List[str]] = None, operation: Optional[str] = None):
+    def __init__(self, left_operand: str = None, right_operands: Optional[List[str]] = None, operation: Optional[str] = None):
         self._left_operand = left_operand
         self._right_operands = right_operands
         self._operation = operation

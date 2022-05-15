@@ -1,6 +1,6 @@
 from typing import List
 from .gear import *
-from exceptions import InvalidGear, InvalidGearSpeed
+from exceptions import InvalidGear, InvalidGearSpeed, ChangeFromNeutralToReverseError
 
 
 class Gearbox:
@@ -58,9 +58,8 @@ class Gearbox:
             self._current_gear = new_gear
             return
 
-        if new_gear_code == REVERSE_GEAR_CODE and speed == 0:
-            self._current_gear = new_gear
-            return
+        if new_gear_code == REVERSE_GEAR_CODE and speed != 0:
+            raise ChangeFromNeutralToReverseError
 
         if not new_gear.min_speed <= speed <= new_gear.max_speed:
             raise InvalidGearSpeed(new_gear, speed)

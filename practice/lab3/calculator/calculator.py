@@ -1,5 +1,7 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Tuple
 from function import Function
+
+from exceptions import *
 
 
 class Calculator:
@@ -10,37 +12,34 @@ class Calculator:
         self._variables = {}
         self._functions = {}
 
-    def create_variable(self, variable: str, value: Optional[Union[float, str]] = None) -> None:
-        if isinstance(value, (float, int)):
-            self.__try_create_variable_from_number(variable, value)
-            return
-
-        if isinstance(value, str):
-            self.__try_create_variable_from_other_variable(variable, value)
-            return
-
-        self.__try_create_variable_with_none_value(variable)
-
-    def update_variable(self, variable: str, new_value: float) -> bool:
+    def create_variable(self, variable: str) -> None:
         if not self._has_variable(variable):
-            print(f'Can\'t update variable "{variable}" because variable was not declared')
-            return False
-
-        self._variables[variable] = new_value
-        return True
-
-    def create_function(self, func_name: str, variables: List[str], operations: List[str]) -> None:
-        if not self._has_function(func_name):
-            function = Function(variables, operations)
-            self._functions[func_name] = function
+            self._variables[variable] = None
             return
 
-        print(f'Can\'t create function "{func_name}" because function with same name already exists')
+        raise VariableAlreadyExistError(variable)
+
+    def set_variable_value(self, variable: str, source: Union[float, str]) -> None:
+        if not self._has_variable(variable):
+            raise VariableNotFoundError(variable)
+
+        if Calculator._is_number(source):
+            self._set_variable_value_from_number(variable, float(source))
+            return
+
+        self._set_variable_value_from_another_value(variable, source)
+        return
+
+    def create_function(self, func_name: str, operands: List[str], operation: str) -> None:
+        if self._has_function(func_name):
+            raise FunctionAlreadyExistError(func_name)
+
+        function = Function(operands, operation)
+        self._functions[func_name] = function
 
     def get_function_result(self, func_name: str) -> Optional[float]:
         if not self._has_function(func_name):
-            print(f'Function "{func_name}" doesn\'t exist')
-            return
+            raise FunctionNotFoundError(func_name)
 
         function = self._functions[func_name]
         result: Optional[float] = self._calculate_function_result(function)
@@ -50,12 +49,11 @@ class Calculator:
         if not self._has_variable(variable):
             print(f'Variable "{variable}" does not exist')
 
-        result: Optional[float] = self._get_variable_value(variable)
+        result: Optional[float] = self.get_variable_value(variable)
         print(result)
 
-    def print_all_variables(self) -> None:
-        for variable, value in sorted(self._variables.items()):
-            print(f'{variable}: {value}')
+    def get_all_variables(self) -> List[Tuple[str, Optional[float]]]:
+        return [(variable, value) for variable, value in self._variables.items()]
 
     def print_function(self, func_name: str) -> None:
         if not self._has_function(func_name):
@@ -73,12 +71,13 @@ class Calculator:
             print(f'{func_name}: {result}')
 
     def _calculate_function_result(self, function: Function) -> Optional[float]:
-        result: Optional[float] = self._get_variable_value(function.variables[0])
+        result: Optional[float] = None
+        result: Optional[float] = self.get_variable_value(function.operands[0])
         if not result:
             return None
 
-        for i, operation in enumerate(function.operations):
-            second_value = self._get_variable_value(function.variables[i + 1])
+        for i, operation in enumerate(function.operands):
+            second_value = self.get_variable_value(function.operands[i + 1])
             if not second_value:
                 return None
 
@@ -108,10 +107,9 @@ class Calculator:
 
         return first_value / second_value
 
-    def _get_variable_value(self, variable: str) -> Optional[float]:
+    def get_variable_value(self, variable: str) -> Optional[float]:
         if not self._has_variable(variable):
-            print(f'"{variable}" the variable was not declared')
-            return None
+            raise VariableNotFoundError(variable)
 
         return self._variables[variable]
 
@@ -121,24 +119,40 @@ class Calculator:
     def _has_function(self, func_name: str) -> bool:
         return func_name in self._functions.keys()
 
-    def __try_create_variable_from_number(self, variable: str, value: float) -> None:
+    def _set_variable_value_from_number(self, variable: str, number: float) -> None:
         if not self._has_variable(variable):
-            self._variables[variable] = value
-            return
+            raise VariableNotFoundError(variable)
 
-        print(f'Can\'t add variable "{variable}" because variable with same name has already exist')
+        self._variables[variable] = number
 
-    def __try_create_variable_from_other_variable(self, new_variable: str, other_variable: str) -> None:
-        if self._has_variable(other_variable):
-            value = self._get_variable_value(other_variable)
-            self._variables[new_variable] = value
-            return
+    def _set_variable_value_from_another_value(self, target_variable: str, source_variable: str) -> None:
+        if not self._has_variable(target_variable):
+            raise VariableNotFoundError(target_variable)
 
-        print(f'Can\'t add variable "{new_variable}" because {other_variable} was not declared')
+        if not self._has_variable(source_variable):
+            raise VariableNotFoundError(source_variable)
 
-    def __try_create_variable_with_none_value(self, variable) -> None:
-        if not self._has_variable(variable):
-            self._variables[variable] = None
-            return
+        value: float = self.get_variable_value(source_variable)
+        self._variables[target_variable] = value
 
-        print(f'Can\' create variable "{variable}" because variable with same name has already exist')
+    def _is_variable(self, variable_name: str) -> bool:
+        if variable_name in [variable for variable in self._variables.keys()]:
+            return True
+
+        return False
+
+    def _is_function(self, function_name: str) -> bool:
+        if function_name in [function for function in self._functions.keys()]:
+            return True
+
+        return False
+
+    @staticmethod
+    def _is_number(number: Union[str, float]) -> bool:
+        if isinstance(number, (float, int)):
+            return True
+        try:
+            float(number)
+            return True
+        except:
+            return False
