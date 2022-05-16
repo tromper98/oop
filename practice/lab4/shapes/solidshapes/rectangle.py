@@ -9,14 +9,12 @@ class Rectangle(SolidShape):
     _fill_color: int
 
     def __init__(self,
-                 left_top_x: float,
-                 left_top_y: float,
-                 right_bottom_x: float,
-                 right_bottom_y: float,
+                 left_top: Point,
+                 right_bottom: Point,
                  outline_color: int,
                  fill_color: int):
-        self._left_top = Point(left_top_x, left_top_y)
-        self._right_bottom = Point(right_bottom_x, right_bottom_y)
+        self._left_top = left_top
+        self._right_bottom = right_bottom
         self._outline_color = outline_color
         self._fill_color = fill_color
 

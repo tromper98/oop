@@ -10,8 +10,8 @@ class Circle(SolidShape):
     _outline_color: int
     _fill_color: int
 
-    def __init__(self, x: float, y: float, radius: float, outline_color: int, fill_color: int):
-        self._center = Point(x, y)
+    def __init__(self, center: Point, radius: float, outline_color: int, fill_color: int):
+        self._center = center
         self._radius = radius
         self._outline_color = outline_color
         self._fill_color = fill_color
