@@ -1,15 +1,15 @@
 class Point:
-    _x: int
-    _y: int
+    _x: float
+    _y: float
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: float, y: float):
         self._x = x
         self._y = y
 
     @property
-    def x(self) -> int:
+    def x(self) -> float:
         return self._x
 
     @property
-    def y(self) -> int:
+    def y(self) -> float:
         return self._y
