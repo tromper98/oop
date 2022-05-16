@@ -1,7 +1,7 @@
 import math
 
-from ..base.interfaces import SolidShape
-from ..base.point import Point
+from practice.lab4.shapes.base.interfaces import SolidShape
+from practice.lab4.shapes.base.point import Point
 
 
 class Triangle(SolidShape):
