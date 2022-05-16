@@ -13,3 +13,7 @@ class Point:
     @property
     def y(self) -> float:
         return self._y
+
+    @property
+    def to_string(self) -> str:
+        return f'({self._x}, {self._y})'
