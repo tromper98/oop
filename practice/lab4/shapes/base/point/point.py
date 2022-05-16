@@ -17,3 +17,8 @@ class Point:
     @property
     def to_string(self) -> str:
         return f'({self._x}, {self._y})'
+
+    def __eq__(self, other) -> bool:
+        if self.x == other.x and self.y == other.y:
+            return True
+        return False
