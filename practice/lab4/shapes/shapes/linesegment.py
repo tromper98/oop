@@ -23,7 +23,12 @@ class LineSegment(Shape):
             (self._start_point.y + self._end_point.y) ** 2)
 
     def to_string(self) -> str:
-        ...
+        report: str = f"""
+        Line Segment
+        start point: {self._start_point.to_string}
+        end point: {self._end_point.to_string}]
+        """
+        return report
 
     def get_outline_color(self) -> int:
         return self._outline_color

@@ -23,7 +23,12 @@ class Circle(SolidShape):
         return 2 * math.pi * self._radius
 
     def to_string(self) -> str:
-        ...
+        report: str = f"""
+        Circle
+        center: {self._center.to_string}
+        radius: {self._radius}
+        """
+        return report
 
     def get_outline_color(self) -> int:
         return self._outline_color

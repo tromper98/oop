@@ -30,7 +30,12 @@ class Rectangle(SolidShape):
         return height * width
 
     def to_string(self) -> str:
-        ...
+        report = f"""
+        Rectangle:
+        Left top: {self._left_top.to_string}
+        Right top: {self._right_bottom.to_string}
+        """
+        return report
 
     def get_outline_color(self) -> int:
         return self._outline_color
