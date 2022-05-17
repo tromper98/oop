@@ -1,5 +1,4 @@
 import math
-from typing import Optional
 
 from base.interfaces import SolidShape
 from base.point import Point
@@ -9,10 +8,10 @@ from base.exceptions import InvalidCircle, InvalidOutlineColor, InvalidFillColor
 class Circle(SolidShape):
     _center: Point
     _radius: float
-    _outline_color: Optional[int]
-    _fill_color: Optional[int]
+    _outline_color: int
+    _fill_color: int
 
-    def __init__(self, center: Point, radius: float, outline_color: Optional[int], fill_color: Optional[int]):
+    def __init__(self, center: Point, radius: float, outline_color: int, fill_color: int):
         if not Circle.is_valid_circle(radius):
             raise InvalidCircle()
         if not Circle.is_valid_color_number(outline_color):

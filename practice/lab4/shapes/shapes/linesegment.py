@@ -1,5 +1,4 @@
 import math
-from typing import Optional
 
 from base.interfaces import Shape
 from base.point import Point
@@ -9,9 +8,9 @@ from base.exceptions import InvalidOutlineColor
 class LineSegment(Shape):
     _start_point: Point
     _end_point: Point
-    _outline_color: Optional[int]
+    _outline_color: int
 
-    def __init__(self, start_point: Point, end_point: Point, outline_color: Optional[int]):
+    def __init__(self, start_point: Point, end_point: Point, outline_color: int):
         if not LineSegment.is_valid_color_number(outline_color):
             raise InvalidOutlineColor
 

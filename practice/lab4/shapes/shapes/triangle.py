@@ -1,5 +1,4 @@
 import math
-from typing import Optional
 
 from base.interfaces import SolidShape
 from base.point import Point
@@ -10,15 +9,15 @@ class Triangle(SolidShape):
     _vertex1: Point
     _vertex2: Point
     _vertex3: Point
-    _outline_color: Optional[int]
-    _fill_color: Optional[int]
+    _outline_color: int
+    _fill_color: int
 
     def __init__(self,
                  vertex1: Point,
                  vertex2: Point,
                  vertex3: Point,
-                 outline_color: Optional[int],
-                 fill_color: Optional[int]):
+                 outline_color: int,
+                 fill_color: int):
         if not Triangle.is_valid_triangle(vertex1, vertex2, vertex3):
             raise InvalidTriangle()
         if not Triangle.is_valid_color_number(outline_color):

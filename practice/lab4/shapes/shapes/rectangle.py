@@ -1,5 +1,3 @@
-from typing import Optional
-
 from base.interfaces import SolidShape
 from base.point import Point
 from base.exceptions import InvalidRectangle, InvalidOutlineColor, InvalidFillColor
@@ -8,10 +6,10 @@ from base.exceptions import InvalidRectangle, InvalidOutlineColor, InvalidFillCo
 class Rectangle(SolidShape):
     _left_top: Point
     _right_bottom: Point
-    _outline_color: Optional[int]
-    _fill_color: Optional[int]
+    _outline_color: int
+    _fill_color: int
 
-    def __init__(self, left_top: Point, right_bottom: Point, outline_color: Optional[int], fill_color: Optional[int]):
+    def __init__(self, left_top: Point, right_bottom: Point, outline_color: int, fill_color: int):
         if not Rectangle.is_valid_rectangle(left_top, right_bottom):
             raise InvalidRectangle
         if not Rectangle.is_valid_color_number(outline_color):
