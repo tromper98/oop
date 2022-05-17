@@ -20,7 +20,7 @@ class Triangle(SolidShape):
                  outline_color: Optional[int],
                  fill_color: Optional[int]):
         if not Triangle.is_valid_triangle(vertex1, vertex2, vertex3):
-            raise InvalidTriangle(vertex1, vertex2, vertex3)
+            raise InvalidTriangle()
         if not Triangle.is_valid_color_number(outline_color):
             raise InvalidOutlineColor
         if not Triangle.is_valid_color_number(fill_color):
@@ -80,18 +80,15 @@ class Triangle(SolidShape):
 
     @staticmethod
     def is_valid_triangle(vertex1: Point, vertex2: Point, vertex3: Point) -> bool:
-        distance1: float = Triangle.get_distance(vertex1, vertex2)
-        distance2: float = Triangle.get_distance(vertex2, vertex3)
-        distance3: float = Triangle.get_distance(vertex1, vertex3)
 
-        if distance1 + distance2 < distance3:
-            raise False
+        if vertex1 == vertex2:
+            return False
 
-        if distance2 + distance3 < distance1:
-            raise False
+        if vertex1 == vertex3:
+            return False
 
-        if distance1 + distance3 < distance2:
-            raise False
+        if vertex2 == vertex3:
+            return False
 
         return True
 

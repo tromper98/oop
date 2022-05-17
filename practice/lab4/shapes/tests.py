@@ -1,7 +1,9 @@
 import pytest
 
 from base.point import Point
+from base.exceptions import *
 from shapes import *
+
 
 
 def test_circle_to_string():
@@ -58,3 +60,25 @@ def test_line_segment_to_string():
         Perimeter: 14.1421
         """
     assert line_segment.to_string() == expected
+
+
+def test_raise_exception_creating_circle():
+    start_point: Point = Point(100, 100)
+    radius = -100
+    with pytest.raises(InvalidCircle):
+        Circle(start_point, radius, 10, 10)
+
+
+def test_raise_exception_creating_rectangle():
+    left_top = Point(0, 0)
+    right_top = Point(0, 0)
+    with pytest.raises(InvalidRectangle):
+        Rectangle(left_top, right_top, 10, 10)
+
+
+def test_raise_exception_creating_triangle():
+    vertex1 = Point(0, 0)
+    vertex2 = Point(0, 0)
+    vertex3 = Point(100, 0)
+    with pytest.raises(InvalidTriangle):
+        Triangle(vertex1, vertex2, vertex3, 0, 0)
