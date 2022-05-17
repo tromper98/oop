@@ -82,3 +82,26 @@ def test_raise_exception_creating_triangle():
     vertex3 = Point(100, 0)
     with pytest.raises(InvalidTriangle):
         Triangle(vertex1, vertex2, vertex3, 0, 0)
+
+
+def test_raise_exception_invalid_outline_color_rectangle():
+    left_top = Point(5, 5)
+    right_bottom = Point(10, 0)
+    with pytest.raises(InvalidOutlineColor):
+        Rectangle(left_top, right_bottom, -10, 0)
+
+
+def test_raise_exception_invalid_fill_color_circle():
+    center = Point(0, 0)
+    radius = 10
+    fill_color = 2**32 + 1
+    with pytest.raises(InvalidFillColor):
+        Circle(center, radius, 10, fill_color)
+
+
+def test_create_circle_with_max_outline_color_number():
+    center = Point(0, 0)
+    radius = 10
+    fill_color = 2**32
+    with pytest.raises(InvalidFillColor):
+        Circle(center, radius, 10, fill_color)

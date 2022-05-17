@@ -21,9 +21,9 @@ class Triangle(SolidShape):
         if not Triangle.is_valid_triangle(vertex1, vertex2, vertex3):
             raise InvalidTriangle()
         if not Triangle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor
+            raise InvalidOutlineColor(outline_color)
         if not Triangle.is_valid_color_number(fill_color):
-            raise InvalidFillColor
+            raise InvalidFillColor(fill_color)
 
         self._vertex1 = vertex1
         self._vertex2 = vertex2

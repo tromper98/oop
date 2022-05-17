@@ -12,7 +12,7 @@ class LineSegment(Shape):
 
     def __init__(self, start_point: Point, end_point: Point, outline_color: int):
         if not LineSegment.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor
+            raise InvalidOutlineColor(outline_color)
 
         self._start_point = start_point
         self._end_point = end_point

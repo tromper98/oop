@@ -15,9 +15,9 @@ class Circle(SolidShape):
         if not Circle.is_valid_circle(radius):
             raise InvalidCircle()
         if not Circle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor
+            raise InvalidOutlineColor(outline_color)
         if not Circle.is_valid_color_number(fill_color):
-            raise InvalidFillColor
+            raise InvalidFillColor(outline_color)
 
         self._center = center
         self._radius = radius

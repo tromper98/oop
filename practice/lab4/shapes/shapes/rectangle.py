@@ -13,9 +13,9 @@ class Rectangle(SolidShape):
         if not Rectangle.is_valid_rectangle(left_top, right_bottom):
             raise InvalidRectangle
         if not Rectangle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor
+            raise InvalidOutlineColor(outline_color)
         if not Rectangle.is_valid_color_number(fill_color):
-            raise InvalidFillColor
+            raise InvalidFillColor(fill_color)
 
         self._left_top = left_top
         self._right_bottom = right_bottom
