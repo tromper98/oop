@@ -36,8 +36,8 @@ class Circle(SolidShape):
         Circle
         Center: {self.get_center().to_string}
         Radius: {self.get_radius()}
-        Perimeter: {self.get_perimeter()}
-        Area: {self.get_area()}
+        Perimeter: {round(self.get_perimeter(), 4)}
+        Area: {round(self.get_area(), 4)}
         """
         return report
 

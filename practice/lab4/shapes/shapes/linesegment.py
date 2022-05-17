@@ -29,10 +29,10 @@ class LineSegment(Shape):
 
     def to_string(self) -> str:
         report: str = f"""
-        Line Segment
+        Line segment
         Start point: {self.get_start_point().to_string}
         End point: {self.get_end_point().to_string}
-        Perimeter: {self.get_perimeter()}
+        Perimeter: {round(self.get_perimeter(), 4)}
         """
         return report
 

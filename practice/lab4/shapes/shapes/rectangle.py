@@ -30,6 +30,11 @@ class Rectangle(SolidShape):
     def get_width(self) -> float:
         return abs(self._left_top.x - self._right_bottom.x)
 
+    def get_perimeter(self) -> float:
+        height: float = self.get_height()
+        width: float = self.get_width()
+        return 2 * (height + width)
+
     def get_area(self) -> float:
         height: float = self.get_height()
         width: float = self.get_width()
@@ -37,11 +42,11 @@ class Rectangle(SolidShape):
 
     def to_string(self) -> str:
         report = f"""
-        Rectangle:
+        Rectangle
         Left top: {self.get_left_top().to_string}
         Right top: {self.get_right_bottom().to_string}
-        Perimeter: {self.get_perimeter()}
-        Area: {self.get_area()}
+        Perimeter: {round(self.get_perimeter(), 4)}
+        Area: {round(self.get_area(), 4)}
         """
         return report
 

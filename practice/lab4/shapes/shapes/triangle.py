@@ -28,7 +28,7 @@ class Triangle(SolidShape):
 
         self._vertex1 = vertex1
         self._vertex2 = vertex2
-        self._vertex2 = vertex3
+        self._vertex3 = vertex3
         self._outline_color = outline_color
         self._fill_color = fill_color
 
@@ -60,8 +60,8 @@ class Triangle(SolidShape):
         Vertex1: {self.get_vertex1().to_string}
         Vertex2: {self.get_vertex2().to_string}
         Vertex3: {self.get_vertex3().to_string}
-        Perimeter: {self.get_perimeter()}
-        Area: {self.get_area()}
+        Perimeter: {round(self.get_perimeter(), 4)}
+        Area: {round(self.get_area(), 4)}
         """
         return report
 
