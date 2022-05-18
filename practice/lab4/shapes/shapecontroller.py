@@ -11,10 +11,16 @@ class ShapeController:
     _actions: Dict[str, Callable]
     _output_print: Callable
 
-    def __init__(self, output_print: Callable = print):
+    def __init__(self, output: Callable = print):
         self._shapes = []
         self._actions = self._init_actions()
-        self._output_print = output_print
+        self._output_print = output
+
+    def execute_command(self, action: str, params: List[str]) -> bool:
+        if not self._has_action(action):
+            self._output_print('Invalid command')
+
+        return self._actions[action](params)
 
     def _create_rectangle(self, params: List[str]) -> bool:
         if len(params) != 6:
@@ -77,7 +83,7 @@ class ShapeController:
         return True
 
     def _create_line_segment(self, params: List[str]) -> bool:
-        if len(params) != 8:
+        if len(params) != 5:
             self._output_print(f'Need 5 params to create line segment but {len(params)} params were given')
             return True
 
@@ -119,3 +125,6 @@ class ShapeController:
             'exit': self._exit
         }
         return actions
+
+    def _has_action(self, action: str) -> bool:
+        return action in [possible_action for possible_action in self._actions.keys()]
