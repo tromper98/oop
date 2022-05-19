@@ -1,4 +1,5 @@
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, Optional
+import math
 
 from base.interfaces.shape import Shape
 from base.exceptions import ShapeException
@@ -101,11 +102,51 @@ class ShapeController:
 
         return True
 
-    def _get_shape_with_min_perimeter(self):
-        ...
+    def _print_shape_with_min_perimeter(self, params: List[str]) -> bool:
+        if params:
+            print('Method min_perimeter_shape doesn\'t contains params')
+            return True
 
-    def _get_shape_with_max_area(self):
-        ...
+        if len(self._shapes) != 0:
+            print("No shapes has been created")
+            return True
+
+        shape: Shape = self._get_shape_with_min_perimeter()
+        print(shape.to_string())
+        return True
+
+    def _print_shape_with_max_area(self, params: List[str]) -> bool:
+        if params:
+            print('Method max_perimeter_shape doesn\'t contains params')
+            return True
+
+        if len(self._shapes) != 0:
+            print("No shapes has been created")
+            return True
+
+        shape: Shape = self._get_shape_with_max_area()
+        print(shape.to_string())
+        return True
+
+    def _get_shape_with_min_perimeter(self) -> Shape:
+        min_perimeter: float = math.inf
+        selected_shape: Optional[Shape] = None
+        for shape in self._shapes:
+            new_perimeter: float = shape.get_perimeter()
+            if new_perimeter < min_perimeter:
+                selected_shape = shape
+                min_perimeter = new_perimeter
+        return selected_shape
+
+    def _get_shape_with_max_area(self) -> Shape:
+        max_area: float = 0
+        selected_shape: Optional[Shape] = None
+        for shape in self._shapes:
+            new_area: float = shape.get_area()
+            if new_area > max_area:
+                selected_shape = shape
+                max_area = new_area
+        return selected_shape
 
     def _exit(self, params: List[str]) -> bool:
         if params:
@@ -120,8 +161,8 @@ class ShapeController:
             'circle': self._create_circle,
             'triangle': self._create_triangle,
             'line_segment': self._create_line_segment,
-            'max_area_shape': self._get_shape_with_max_area,
-            'min_perimeter_shape': self._get_shape_with_min_perimeter,
+            'max_area_shape': self._print_shape_with_max_area,
+            'min_perimeter_shape': self._print_shape_with_min_perimeter,
             'exit': self._exit
         }
         return actions
