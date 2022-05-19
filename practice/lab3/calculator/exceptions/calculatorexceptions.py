@@ -20,3 +20,8 @@ class FunctionAlreadyExistError(CalculatorException):
 class FunctionNotFoundError(CalculatorException):
     def __init__(self, func_name: str):
         super().__init__(f'Function with name "{func_name}" doesn\'t  exist')
+
+
+class OperandNotFoundError(CalculatorException):
+    def __init__(self, operand: str):
+        super().__init__(f"Operand '{operand}' doesn\'t  exist")
