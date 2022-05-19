@@ -30,7 +30,7 @@ class Calculator:
         self._set_variable_value_from_another_value(variable, source)
         return
 
-    def create_function(self, func_name: str, operands: List[str], operation: str) -> None:
+    def create_function(self, func_name: str, operands: List[str], operation: Optional[str]) -> None:
         if self._has_function(func_name):
             raise FunctionAlreadyExistError(func_name)
 
@@ -71,20 +71,21 @@ class Calculator:
             print(f'{func_name}: {result}')
 
     def _calculate_function_result(self, function: Function) -> Optional[float]:
-        first_operand = function.operands[0]
-        second_operand = function.operands[1]
+        values: List[float] = []
+        for operand in function.operands:
+            value = self._get_operand_result(operand)
+            values.append(value)
 
-        first_value = self._get_operand_result(first_operand)
-        second_value = self._get_operand_result(second_operand)
-        operation = function.operation
-
-        if first_value is None or second_value is None:
+        if None in values:
             return None
 
-        return Calculator.__perform_operation(operation, first_value, second_value)
+        if not function.operation:
+            return values[0]
+
+        return Calculator._perform_operation(function.operation, values[0], values[1])
 
     @staticmethod
-    def __perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
+    def _perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
         if operation == '+':
             return first_value + second_value
 

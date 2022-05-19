@@ -179,6 +179,16 @@ def test_calculate_function_with_other_function():
     assert result == expected
 
 
+def test_calculate_function_with_one_operand():
+    calc = Calculator()
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 100)
+    calc.create_function('res', ['x1'], None)
+    expected = 100
+    result = calc.get_function_result('res')
+    assert result == expected
+
+
 def test_calculate_function_with_already_exist_name():
     calc = Calculator()
     calc.create_variable('x1')

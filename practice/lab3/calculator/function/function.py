@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 
 class Function:
     _operands: List[str]
     _operations: List[str]
 
-    def __init__(self, operands: List[str], operation: str) -> None:
+    def __init__(self, operands: List[str], operation: Optional[str] = None) -> None:
         self._operands = operands
         self._operation = operation
 
