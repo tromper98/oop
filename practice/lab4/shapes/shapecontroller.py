@@ -43,10 +43,11 @@ class ShapeController:
         parsed_user_input: List[str] = user_input.split(' ')
         parser = CommandLineParser.parse_params(parsed_user_input)
 
-        if not self._has_action(parser.action):
-            self._output('Invalid command')
+        if self._has_action(parser.action):
+            return self._actions[parser.action](parser.params)
 
-        return self._actions[parser.action](parser.params)
+        self._output('Invalid command')
+        return True
 
     def _create_rectangle(self, params: List[str]) -> bool:
         if len(params) != 6:
@@ -173,6 +174,16 @@ class ShapeController:
                 max_area = new_area
         return selected_shape
 
+    def _info(self, params: List[str]) -> bool:
+        if params:
+            self._output('Method max_area_shape doesn\'t contains params')
+            return True
+
+        actions: List[str] = [possible_action for possible_action in self._actions.keys()]
+        report = f"Possible commands: \n{', '.join(actions)}"
+        self._output(report)
+        return True
+
     def _exit(self, params: List[str]) -> bool:
         if params:
             self._output('exit doesn\'t exist params')
@@ -188,9 +199,22 @@ class ShapeController:
             'line_segment': self._create_line_segment,
             'max_area_shape': self._print_shape_with_max_area,
             'min_perimeter_shape': self._print_shape_with_min_perimeter,
+            'info': self._info,
             'exit': self._exit
         }
         return actions
 
     def _has_action(self, action: str) -> bool:
         return action in [possible_action for possible_action in self._actions.keys()]
+
+
+def main():
+    controller: ShapeController = ShapeController()
+    while True:
+        cmd: str = input('\nEnter a command: ')
+        if not controller.execute_command(cmd):
+            break
+
+
+if __name__ == '__main__':
+    main()
