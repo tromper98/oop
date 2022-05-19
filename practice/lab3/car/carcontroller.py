@@ -40,6 +40,7 @@ class CarController:
             return self._actions[parser.action](parser.params)
 
         print('Inlavid command')
+        return True
 
     def _get_car_info(self, params: List[str]) -> None:
         if params:
