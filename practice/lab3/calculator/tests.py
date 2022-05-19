@@ -110,53 +110,86 @@ def test_fail_get_not_declared_variable_value():
         calc.get_variable_value('y1')
 
 
-def test_calculate_function():
+def test_calculate_function_with_two_numbers():
     calc = Calculator()
-    calc.create_variable('x1', 10)
-    calc.create_variable('x2', 30)
-    calc.create_variable('x3', 5)
-    calc.create_variable('x4', 29)
-    operations = ['+', '-', '*']
-    variables = ['x1', 'x2', 'x3', 'x4']
-    calc.create_function('res', variables, operations)
+    operation = '+'
+    calc.create_function('res', ['50.05', '1001'], operation)
     result = calc.get_function_result('res')
-    expected = 1015
+    expected = 1051.05
+    assert result == expected
+
+
+def test_calculate_function_with_two_variables():
+    calc = Calculator()
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 10)
+
+    calc.create_variable('x2')
+    calc.set_variable_value('x2', 30)
+
+    operation = '*'
+    variables = ['x1', 'x2']
+    calc.create_function('res', variables, operation)
+    result = calc.get_function_result('res')
+    expected = 300
     assert result == expected
 
 
 def test_fail_create_function_with_variable_not_declared():
     calc = Calculator()
-    calc.create_variable('x1', 45.09)
-    calc.create_variable('x2', 25.10)
-    calc.create_variable('x3', 30)
-    operations = ['+', '-', '*']
-    variables = ['x1', 'x2', 'x3', 'z2']
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 45.09)
+    operations = '+'
+    variables = ['x1', 'z2']
     calc.create_function('res', variables, operations)
-    result = calc.get_function_result('res')
-    assert result is None
+    with pytest.raises(OperandNotFoundError):
+        calc.get_function_result('res')
 
 
 def test_fail_calculate_function_with_variable_divided_by_zero():
     calc = Calculator()
-    calc.create_variable('x1', 45.09)
-    calc.create_variable('x2', 0)
-    operations = ['/']
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 45.09)
+    calc.create_variable('x2')
+    calc.set_variable_value('x2', 0)
+    operation = '/'
     variable = ['x1', 'x2']
-    calc.create_function('res', variable, operations)
-    result = calc.get_function_result('res')
-    assert result is None
+    calc.create_function('res', variable, operation)
+    with pytest.raises(ZeroDivisionError):
+        calc.get_function_result('res')
 
 
-def test_create_function_with_already_exist_name():
+def test_calculate_function_with_other_function():
     calc = Calculator()
-    calc.create_variable('x1', 10)
-    calc.create_variable('x2', 5)
-    calc.create_variable('x3', 150)
-    calc.create_function('res', ['x1', 'x2'], ['+'])
-    calc.create_function('res', ['x1', 'x3'], ['*'])
-    result = calc.get_function_result('res')
-    expected = 15
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 10)
+    calc.create_variable('x2')
+    calc.set_variable_value('x2', 15)
+    calc.create_function('res1', ['x1', 'x2'], '+')
+
+    calc.create_variable('y1')
+    calc.set_variable_value('y1', 50)
+    calc.create_variable('y2')
+    calc.set_variable_value('y2', 5)
+    calc.create_function('res2', ['y1', 'y2'], '/')
+
+    calc.create_function('final', ['res1', 'res2'], '*')
+    expected = 250
+    result = calc.get_function_result('final')
     assert result == expected
+
+
+def test_calculate_function_with_already_exist_name():
+    calc = Calculator()
+    calc.create_variable('x1')
+    calc.set_variable_value('x1', 10)
+    calc.create_variable('x2')
+    calc.set_variable_value('x2', 5)
+    calc.create_variable('x3')
+    calc.set_variable_value('x3', 150)
+    calc.create_function('res', ['x1', 'x2'], '+')
+    with pytest.raises(FunctionAlreadyExistError):
+        calc.create_function('res', ['x1', 'x3'], '*')
 
 
 def test_parse_expr_only_one_operand():

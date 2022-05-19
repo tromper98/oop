@@ -71,24 +71,17 @@ class Calculator:
             print(f'{func_name}: {result}')
 
     def _calculate_function_result(self, function: Function) -> Optional[float]:
-        result: Optional[float] = None
-        result: Optional[float] = self.get_variable_value(function.operands[0])
-        if not result:
+        first_operand = function.operands[0]
+        second_operand = function.operands[1]
+
+        first_value = self._get_operand_result(first_operand)
+        second_value = self._get_operand_result(second_operand)
+        operation = function.operation
+
+        if first_value is None or second_value is None:
             return None
 
-        for i, operation in enumerate(function.operands):
-            second_value = self.get_variable_value(function.operands[i + 1])
-            if not second_value:
-                return None
-
-            operation_result = self.__perform_operation(operation, result, second_value)
-
-            if not operation_result:
-                return None
-
-            result = operation_result
-
-        return result
+        return Calculator.__perform_operation(operation, first_value, second_value)
 
     @staticmethod
     def __perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
@@ -102,8 +95,7 @@ class Calculator:
             return first_value * second_value
 
         if second_value == 0:
-            print('Error. Division by zero')
-            return None
+            raise ZeroDivisionError
 
         return first_value / second_value
 
@@ -134,6 +126,19 @@ class Calculator:
 
         value: float = self.get_variable_value(source_variable)
         self._variables[target_variable] = value
+
+    def _get_operand_result(self, operand: Union[float, str]) -> Optional[float]:
+        if Calculator._is_number(operand):
+            return float(operand)
+
+        if self._is_variable(operand):
+            return self._variables[operand]
+
+        if self._is_function(operand):
+            function: Function = self._functions[operand]
+            return self._calculate_function_result(function)
+
+        raise OperandNotFoundError(operand)
 
     def _is_variable(self, variable_name: str) -> bool:
         if variable_name in [variable for variable in self._variables.keys()]:
