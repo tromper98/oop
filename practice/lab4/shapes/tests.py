@@ -1,4 +1,4 @@
-from typing import List
+import os
 
 import pytest
 
@@ -99,7 +99,7 @@ def is_equal_line_segment(target: LineSegment, expected: LineSegment) -> bool:
     return True
 
 
-def read_to_output_storage(string: str):
+def write_to_output_storage(string: str):
     return OUTPUT_STORAGE.append(string)
 
 
@@ -204,7 +204,7 @@ def test_create_circle_with_max_outline_color_number():
 
 
 def test_create_rectangle_from_shape_controller():
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'rectangle'
     params = ['0', '10', '100', '0', '15', '20']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -213,7 +213,7 @@ def test_create_rectangle_from_shape_controller():
 
 
 def test_create_circle_from_shape_controller():
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'circle'
     params = ['10', '-15', '100.5', '40', '100']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -222,7 +222,7 @@ def test_create_circle_from_shape_controller():
 
 
 def test_create_triangle_from_shape_controller():
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'triangle'
     params = ['0', '0', '10', '10', '20', '-50', '50', '30']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -231,7 +231,7 @@ def test_create_triangle_from_shape_controller():
 
 
 def test_create_line_segment_from_shape_controller():
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'line_segment'
     params = ['0', '0', '100', '200', '36']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -241,7 +241,7 @@ def test_create_line_segment_from_shape_controller():
 
 def test_fail_create_rectangle_with_not_enough_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'rectangle'
     params = ['41', '42', '5', '3']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -251,7 +251,7 @@ def test_fail_create_rectangle_with_not_enough_params():
 
 def test_fail_create_rectangle_with_invalid_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'rectangle'
     params = ['41', '42', '5', '3', 'синий', 'зеленый']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -261,7 +261,7 @@ def test_fail_create_rectangle_with_invalid_params():
 
 def test_fail_create_circle_with_not_enough_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'circle'
     params = ['100', '100', '2000']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -271,7 +271,7 @@ def test_fail_create_circle_with_not_enough_params():
 
 def test_fail_create_circle_with_invalid_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'circle'
     params = ['x1', 'x2', '5', '3', '10']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -281,7 +281,7 @@ def test_fail_create_circle_with_invalid_params():
 
 def test_fail_create_triangle_with_not_enough_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'triangle'
     params = ['0', '0', '10', '19', '35', '49']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -291,7 +291,7 @@ def test_fail_create_triangle_with_not_enough_params():
 
 def test_fail_create_triangle_with_invalid_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'triangle'
     params = ['0', '0', 'vertex2', 'vertex2', '10', '10', '3', '8']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -301,7 +301,7 @@ def test_fail_create_triangle_with_invalid_params():
 
 def test_fail_create_line_segment_with_not_enough_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'line_segment'
     params = ['0', '0', '10', '19', '35', '49']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -311,7 +311,7 @@ def test_fail_create_line_segment_with_not_enough_params():
 
 def test_fail_create_line_segment_with_invalid_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'line_segment'
     params = ['0', '0', '10', '100', 'color']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -321,7 +321,7 @@ def test_fail_create_line_segment_with_invalid_params():
 
 def test_call_print_min_perimeter_shape_with_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'min_perimeter_shape'
     params = ['a', 'b', 'c', 'd']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -331,7 +331,7 @@ def test_call_print_min_perimeter_shape_with_params():
 
 def test_call_print_min_perimeter_without_shapes():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'min_perimeter_shape'
     controller.execute_command(action)
     expected = 'No shapes has been created'
@@ -340,7 +340,7 @@ def test_call_print_min_perimeter_without_shapes():
 
 def test_call_print_max_area_shape_with_params():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'max_area_shape'
     params = ['a', 'b', 'c', 'd']
     controller.execute_command(action + ' ' + ' '.join(params))
@@ -350,8 +350,32 @@ def test_call_print_max_area_shape_with_params():
 
 def test_call_print_max_area_without_shapes():
     OUTPUT_STORAGE.clear()
-    controller: ShapeController = ShapeController(read_to_output_storage)
+    controller: ShapeController = ShapeController(write_to_output_storage)
     action = 'max_area_shape'
     controller.execute_command(action)
     expected = 'No shapes has been created'
     assert OUTPUT_STORAGE[0] == expected
+
+
+def test_get_max_area_shape_from_some_shapes():
+    OUTPUT_STORAGE.clear()
+    input_file: str = './data/shapes1.txt'
+    controller: ShapeController = ShapeController(write_to_output_storage)
+    with open(input_file, 'r', encoding='utf-8') as file:
+        for row in file:
+            controller.execute_command(row)
+    expected = Rectangle(Point(1000.0, 56.0), Point(30.0, 5.0), 7, 1)
+    controller.execute_command('max_area_shape')
+    assert OUTPUT_STORAGE[0] == expected.to_string()
+
+
+def test_get_min_perimeter_shape_from_some_shapes():
+    OUTPUT_STORAGE.clear()
+    input_file: str = './data/shapes1.txt'
+    controller: ShapeController = ShapeController(write_to_output_storage)
+    with open(input_file, 'r', encoding='utf-8') as file:
+        for row in file:
+            controller.execute_command(row)
+    expected = Rectangle(Point(0.0, 0.0), Point(-10.0, 5.0), 24, 4)
+    controller.execute_command('min_perimeter_shape')
+    assert OUTPUT_STORAGE[0] == expected.to_string()
