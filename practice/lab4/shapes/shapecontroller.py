@@ -1,9 +1,9 @@
 from typing import List, Callable, Dict, Optional
 import math
 
-from base.interfaces.shape import Shape
+from shapes.shapeinterfaces.shape import Shape
 from base.exceptions import ShapeException
-from base.point import Point
+from point import Point
 from shapes import *
 
 
@@ -154,6 +154,8 @@ class ShapeController:
         self._output(shape.to_string())
         return True
 
+    #Можно упростить поиск минимального/максимального элемента списка
+    
     def _get_shape_with_min_perimeter(self) -> Shape:
         min_perimeter: float = math.inf
         selected_shape: Optional[Shape] = None
