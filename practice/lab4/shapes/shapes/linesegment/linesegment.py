@@ -1,22 +1,15 @@
-import math
-
-from .shapeinterfaces import Shape
+from .linesegmentimpl import LineSegmentImpl
 from point import Point
 from base.exceptions import InvalidOutlineColor
 
 
-class LineSegment(Shape):
+class LineSegment(LineSegmentImpl):
     _start_point: Point
     _end_point: Point
     _outline_color: int
 
     def __init__(self, start_point: Point, end_point: Point, outline_color: int):
-        if not LineSegment.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor(outline_color)
-
-        self._start_point = start_point
-        self._end_point = end_point
-        self._outline_color = outline_color
+        super().__init__(start_point, end_point, outline_color)
 
     def get_area(self) -> float:
         return 0
