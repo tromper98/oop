@@ -1,6 +1,6 @@
 from typing import Protocol
 
-
+#Переместить Shape и SolidShape в shapes/shapesinterfaces
 class Shape(Protocol):
     def get_area(self) -> float:
         ...

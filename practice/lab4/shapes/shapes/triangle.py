@@ -1,7 +1,7 @@
 import math
 
-from base.interfaces import SolidShape
-from base.point import Point
+from .shapeinterfaces import SolidShape
+from point import Point
 from base.exceptions import InvalidTriangle, InvalidFillColor, InvalidOutlineColor
 
 
@@ -33,18 +33,18 @@ class Triangle(SolidShape):
 
     def get_area(self) -> float:
         half_perimeter: float = self.get_perimeter() / 2
-        distance1: float = Triangle.get_distance(self._vertex1, self._vertex2)
-        distance2: float = Triangle.get_distance(self._vertex2, self._vertex3)
-        distance3: float = Triangle.get_distance(self._vertex1, self._vertex3)
+        distance1: float = self._vertex1.distance_to_point(self._vertex2)
+        distance2: float = self._vertex2.distance_to_point(self._vertex3)
+        distance3: float = self._vertex1.distance_to_point(self._vertex3)
         return math.sqrt(half_perimeter *
                          (half_perimeter - distance1) *
                          (half_perimeter - distance2) *
                          (half_perimeter - distance3))
 
     def get_perimeter(self) -> float:
-        distance1: float = Triangle.get_distance(self._vertex1, self._vertex2)
-        distance2: float = Triangle.get_distance(self._vertex2, self._vertex3)
-        distance3: float = Triangle.get_distance(self._vertex1, self._vertex3)
+        distance1: float = self._vertex1.distance_to_point(self._vertex2)
+        distance2: float = self._vertex2.distance_to_point(self._vertex3)
+        distance3: float = self._vertex1.distance_to_point(self._vertex3)
         return distance1 + distance2 + distance3
 
     def get_outline_color(self) -> int:
@@ -72,10 +72,6 @@ class Triangle(SolidShape):
 
     def get_vertex3(self) -> Point:
         return self._vertex3
-
-    @staticmethod
-    def get_distance(vertex1: Point, vertex2: Point) -> float:
-        return math.sqrt((vertex1.x - vertex2.x) ** 2 + (vertex1.y + vertex2.y) ** 2)
 
     @staticmethod
     def is_valid_triangle(vertex1: Point, vertex2: Point, vertex3: Point) -> bool:

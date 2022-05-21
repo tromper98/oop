@@ -1,7 +1,7 @@
 import math
 
-from base.interfaces import Shape
-from base.point import Point
+from .shapeinterfaces import Shape
+from point import Point
 from base.exceptions import InvalidOutlineColor
 
 
@@ -21,10 +21,9 @@ class LineSegment(Shape):
     def get_area(self) -> float:
         return 0
 
+    #Можно вытащить в метод Point.distance_to_point()
     def get_perimeter(self) -> float:
-        return math.sqrt(
-            (self._start_point.x - self._end_point.x) ** 2 +
-            (self._start_point.y + self._end_point.y) ** 2)
+        return self._start_point.distance_to_point(self._end_point)
 
     def to_string(self) -> str:
         report: str = f"""
