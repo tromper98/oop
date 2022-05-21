@@ -1,28 +1,18 @@
 import math
 
-from base.interfaces import SolidShape
-from base.point import Point
-from base.exceptions import InvalidCircle, InvalidOutlineColor, InvalidFillColor
+from shapes.shapeinterfaces import SolidShape
+from point import Point
+from .circleimpl import CircleImpl
 
 
-class Circle(SolidShape):
+class Circle(CircleImpl):
     _center: Point
     _radius: float
     _outline_color: int
     _fill_color: int
 
     def __init__(self, center: Point, radius: float, outline_color: int, fill_color: int):
-        if not Circle.is_valid_circle(radius):
-            raise InvalidCircle()
-        if not Circle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor(outline_color)
-        if not Circle.is_valid_color_number(fill_color):
-            raise InvalidFillColor(outline_color)
-
-        self._center = center
-        self._radius = radius
-        self._outline_color = outline_color
-        self._fill_color = fill_color
+        super().__init__(center, radius, outline_color, fill_color)
 
     def get_area(self) -> float:
         return math.pi * self._radius ** 2
@@ -52,12 +42,3 @@ class Circle(SolidShape):
     def get_radius(self) -> float:
         return self._radius
 
-    @staticmethod
-    def is_valid_circle(radius: float) -> bool:
-        return False if radius <= 0 else True
-
-    @staticmethod
-    def is_valid_color_number(number: int) -> bool:
-        if 0 <= number <= 2**32:
-            return True
-        return False
