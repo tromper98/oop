@@ -1,5 +1,4 @@
-from typing import List, Callable, Dict, Optional
-import math
+from typing import List, Callable, Dict
 
 from shapes.shapeinterfaces.shape import Shape
 from exceptions import ShapeException

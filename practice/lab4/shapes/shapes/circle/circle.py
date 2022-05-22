@@ -2,9 +2,10 @@ import math
 
 from point import Point
 from .circleimpl import CircleImpl
+from canvas.canvasinterfaces import CanvasDrawable, ICanvas
 
 
-class Circle(CircleImpl):
+class Circle(CircleImpl, CanvasDrawable):
     def __init__(self, center: Point, radius: float, outline_color: int, fill_color: int):
         super().__init__(center, radius, outline_color, fill_color)
 
@@ -36,3 +37,6 @@ class Circle(CircleImpl):
     def get_radius(self) -> float:
         return self._radius
 
+    def draw(self, canvas: ICanvas):
+        canvas.draw_circle(self.get_center(), self.get_radius(), self.get_outline_color())
+        canvas.fill_circle(self.get_center(), self.get_radius(), self.get_fill_color())

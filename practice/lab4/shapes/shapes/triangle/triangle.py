@@ -1,10 +1,12 @@
+from typing import List
 import math
 
 from point import Point
 from .triangleimpl import TriangleImpl
+from canvas.canvasinterfaces import CanvasDrawable, ICanvas
 
 
-class Triangle(TriangleImpl):
+class Triangle(TriangleImpl, CanvasDrawable):
     def __init__(self,
                  vertex1: Point,
                  vertex2: Point,
@@ -54,3 +56,12 @@ class Triangle(TriangleImpl):
 
     def get_vertex3(self) -> Point:
         return self._vertex3
+
+    def draw(self, canvas: ICanvas):
+        points: List[Point] = [self.get_vertex1(), self.get_vertex2(), self.get_vertex3()]
+
+        canvas.draw_line(self.get_vertex1(), self.get_vertex2(), self.get_outline_color())
+        canvas.draw_line(self.get_vertex2(), self.get_vertex3(), self.get_outline_color())
+        canvas.draw_line(self.get_vertex3(), self.get_vertex1(), self.get_outline_color())
+
+        canvas.fill_polygon(points, self.get_fill_color())
