@@ -3,7 +3,7 @@ from typing import Protocol, List
 from point import Point
 
 
-class Canvas(Protocol):
+class ICanvas(Protocol):
     def draw_line(self, start_point: Point, end_point: Point, line_color: int) -> None:
         ...
 

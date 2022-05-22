@@ -1,2 +1,2 @@
-from .canvas import Canvas
+from .icanvas import ICanvas
 from .canvasdrawable import CanvasDrawable

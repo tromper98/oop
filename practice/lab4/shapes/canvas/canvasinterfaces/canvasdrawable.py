@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from .canvas import Canvas
+from .icanvas import ICanvas
 
 
 class CanvasDrawable(Protocol):
-    def draw(self, canvas: Canvas):
+    def draw(self, canvas: ICanvas):
         ...
