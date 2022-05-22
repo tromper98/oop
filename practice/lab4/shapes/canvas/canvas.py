@@ -1,3 +1,5 @@
+from typing import List
+
 from canvasinterfaces import ICanvas
 from point import Point
 
