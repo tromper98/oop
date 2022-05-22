@@ -157,24 +157,12 @@ class ShapeController:
     #Можно упростить поиск минимального/максимального элемента списка
     
     def _get_shape_with_min_perimeter(self) -> Shape:
-        min_perimeter: float = math.inf
-        selected_shape: Optional[Shape] = None
-        for shape in self._shapes:
-            new_perimeter: float = shape.get_perimeter()
-            if new_perimeter < min_perimeter:
-                selected_shape = shape
-                min_perimeter = new_perimeter
-        return selected_shape
+        min_perimeter_shape = min(self._shapes, key=lambda x: x.get_perimeter())
+        return min_perimeter_shape
 
     def _get_shape_with_max_area(self) -> Shape:
-        max_area: float = 0
-        selected_shape: Optional[Shape] = None
-        for shape in self._shapes:
-            new_area: float = shape.get_area()
-            if new_area > max_area:
-                selected_shape = shape
-                max_area = new_area
-        return selected_shape
+        max_area_shape = max(self._shapes, key=lambda x: x.get_area())
+        return max_area_shape
 
     def _info(self, params: List[str]) -> bool:
         if params:
