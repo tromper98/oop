@@ -41,6 +41,9 @@ class Canvas(ICanvas):
                                           stroke=Canvas.convert_int_to_rgb(line_color),
                                           fill=Canvas.convert_int_to_rgb(fill_color)))
 
+    def save(self):
+        self._painter.save()
+
     def _move_origin(self, point: Point) -> Point:
         return Point(self.x + point.x, self.y + self.y)
 

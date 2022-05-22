@@ -1,9 +1,11 @@
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, Union
 
 from shapes.shapeinterfaces.shape import Shape
+from canvas.canvasinterfaces import CanvasDrawable
 from exceptions import ShapeException
 from point import Point
 from shapes import *
+from canvas import Canvas
 
 
 class CommandLineParser:
@@ -28,8 +30,9 @@ class CommandLineParser:
 
 
 class ShapeController:
-    _shapes: List[Shape]
+    _shapes: List[Union[Shape, CanvasDrawable]]
     _actions: Dict[str, Callable]
+    _canvas: Canvas
     _output: Callable
 
     def __init__(self, output: Callable = print):
@@ -129,7 +132,7 @@ class ShapeController:
 
     def _print_shape_with_min_perimeter(self, params: List[str]) -> bool:
         if params:
-            self._output('Method min_perimeter_shape doesn\'t contains params')
+            self._output('Method "min_perimeter_shape" doesn\'t contains params')
             return True
 
         if len(self._shapes) == 0:
@@ -142,7 +145,7 @@ class ShapeController:
 
     def _print_shape_with_max_area(self, params: List[str]) -> bool:
         if params:
-            self._output('Method max_area_shape doesn\'t contains params')
+            self._output('Method "max_area_shape" doesn\'t contains params')
             return True
 
         if len(self._shapes) == 0:
@@ -153,8 +156,17 @@ class ShapeController:
         self._output(shape.to_string())
         return True
 
-    #Можно упростить поиск минимального/максимального элемента списка
-    
+    def _draw_shapes(self, params: List[str]) -> bool:
+        if len(params) != 1:
+            self._output('Method "draw_shapes" contain only one param: file_name')
+            return True
+
+        canvas: Canvas = Canvas(file_name=params[0])
+        for shape in self._shapes:
+                shape.draw(canvas)
+        canvas.save()
+
+    # Можно упростить поиск минимального/максимального элемента списка
     def _get_shape_with_min_perimeter(self) -> Shape:
         min_perimeter_shape = min(self._shapes, key=lambda x: x.get_perimeter())
         return min_perimeter_shape
@@ -188,6 +200,7 @@ class ShapeController:
             'line_segment': self._create_line_segment,
             'max_area_shape': self._print_shape_with_max_area,
             'min_perimeter_shape': self._print_shape_with_min_perimeter,
+            'draw_shapes': self._draw_shapes,
             'info': self._info,
             'exit': self._exit
         }

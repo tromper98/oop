@@ -49,5 +49,5 @@ class Rectangle(RectangleImpl, CanvasDrawable):
         return self._right_bottom
 
     def draw(self, canvas: ICanvas):
-        canvas.draw_rectangle(self.get_left_top(), self.get_width(), self.get_length())
-
+        canvas.draw_rectangle(self.get_left_top(), self.get_width(), self.get_length(),
+                              self.get_fill_color(), self.get_outline_color())
