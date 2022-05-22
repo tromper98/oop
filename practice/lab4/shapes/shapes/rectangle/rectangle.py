@@ -1,6 +1,5 @@
 from .RectangleImpl import RectangleImpl
 from point import Point
-from base.exceptions import InvalidRectangle, InvalidOutlineColor, InvalidFillColor
 
 
 class Rectangle(RectangleImpl):

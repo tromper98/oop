@@ -1,6 +1,6 @@
 from shapes.base import BaseShape
 from point import Point
-from base.exceptions import InvalidRectangle
+from exceptions import InvalidRectangle
 
 
 class RectangleImpl(BaseShape):

@@ -1,4 +1,4 @@
-from base.exceptions import InvalidOutlineColor
+from exceptions import InvalidOutlineColor
 from shapes.shapeinterfaces import Shape
 from point import Point
 

@@ -2,7 +2,7 @@ from typing import List, Callable, Dict, Optional
 import math
 
 from shapes.shapeinterfaces.shape import Shape
-from base.exceptions import ShapeException
+from exceptions import ShapeException
 from point import Point
 from shapes import *
 

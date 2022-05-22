@@ -38,10 +38,12 @@ class CommandLineParser:
 class CalculatorController:
     _calculator: Calculator
     _actions: Dict[str, Callable]
+    _output: Callable
 
-    def __init__(self, calculator: Calculator):
+    def __init__(self, calculator: Calculator, output: Callable = print):
         self._calculator = calculator
         self._actions = self._get_actions()
+        self._output = output
 
     def execute_command(self, user_input: str) -> bool:
         parser = CommandLineParser.parse_command_line(user_input)
@@ -49,25 +51,32 @@ class CalculatorController:
         if self._has_action(parser.command):
             return self._actions[parser.command](parser.expr)
 
-        print('Invalid command')
+        self._output('Invalid command')
+        return True
 
-    def _create_var(self, expr: Expression) -> None:
+    def _create_var(self, expr: Expression) -> bool:
         if expr.right_operands or expr.operation:
-            print('Command "var" has only one parameter: variable name')
-            return
+            self._output('Command "var" has only one parameter: variable_name')
+            return True
 
         self._calculator.create_variable(expr.left_operand)
-        ...
+        return True
 
-    def _set_var_value(self, expr: Expression) -> None:
+    def _set_var_value(self, expr: Expression) -> bool:
         if len(expr.right_operands) != 1:
-            print(f'Too much operands for command "let" ')
-            return
+            self._output(f'Too much operands for command "let" ')
+            return True
 
         self._calculator.set_variable_value(expr.left_operand, expr.right_operands[0])
+        return True
 
-    def _create_fn(self,) -> None:
-        ...
+    def _create_fn(self, expr: Expression) -> bool:
+        if not expr.right_operands:
+            self._output('Can\'t create function without operands')
+            return True
+
+        self._calculator.create_function(expr.left_operand, expr.right_operands, expr.operation)
+        return True
 
     def _print_by_identifier(self, name: str) -> None:
         ...

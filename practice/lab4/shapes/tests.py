@@ -1,7 +1,7 @@
 import pytest
 
 from point import Point
-from base.exceptions import *
+from exceptions import *
 from shapes import *
 
 from shapecontroller import ShapeController

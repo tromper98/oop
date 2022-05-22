@@ -1,7 +1,5 @@
 from typing import Protocol
 
-from base.exceptions import InvalidOutlineColor
-
 
 # Переместить Shape и SolidShape в shapes/shapesinterfaces
 class Shape(Protocol):

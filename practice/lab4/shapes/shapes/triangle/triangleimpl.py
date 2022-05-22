@@ -1,4 +1,4 @@
-from base.exceptions import InvalidTriangle
+from exceptions import InvalidTriangle
 from shapes.base import BaseShape
 from point import Point
 

@@ -1,5 +1,5 @@
 from shapes.base import BaseShape
-from base.exceptions import InvalidCircle
+from exceptions import InvalidCircle
 from point import Point
 
 
