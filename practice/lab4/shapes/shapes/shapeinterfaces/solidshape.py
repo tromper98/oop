@@ -1,4 +1,5 @@
-from .shape import Shape
+from base.exceptions import InvalidFillColor, InvalidOutlineColor
+from shapes.shapeinterfaces.shape import Shape
 
 
 class SolidShape(Shape):

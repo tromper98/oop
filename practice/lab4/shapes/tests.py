@@ -1,8 +1,6 @@
-import os
-
 import pytest
 
-from base.point import Point
+from point import Point
 from base.exceptions import *
 from shapes import *
 

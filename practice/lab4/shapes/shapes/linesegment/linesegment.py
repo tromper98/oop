@@ -1,13 +1,8 @@
 from .linesegmentimpl import LineSegmentImpl
 from point import Point
-from base.exceptions import InvalidOutlineColor
 
 
 class LineSegment(LineSegmentImpl):
-    _start_point: Point
-    _end_point: Point
-    _outline_color: int
-
     def __init__(self, start_point: Point, end_point: Point, outline_color: int):
         super().__init__(start_point, end_point, outline_color)
 

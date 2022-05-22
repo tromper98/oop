@@ -1,6 +1,9 @@
 from typing import Protocol
 
-#Переместить Shape и SolidShape в shapes/shapesinterfaces
+from base.exceptions import InvalidOutlineColor
+
+
+# Переместить Shape и SolidShape в shapes/shapesinterfaces
 class Shape(Protocol):
     def get_area(self) -> float:
         ...
@@ -13,3 +16,9 @@ class Shape(Protocol):
 
     def get_outline_color(self) -> int:
         ...
+
+    @staticmethod
+    def is_valid_color_number(number: int) -> bool:
+        if 0 <= number <= 2 ** 32:
+            return True
+        return False

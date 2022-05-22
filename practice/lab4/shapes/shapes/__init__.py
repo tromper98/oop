@@ -1,4 +1,4 @@
 from shapes.circle.circle import Circle
-from .rectangle import Rectangle
-from .triangle import Triangle
-from .linesegment import LineSegment
+from shapes.rectangle.rectangle import Rectangle
+from shapes.triangle.triangle import Triangle
+from shapes.linesegment.linesegment import LineSegment

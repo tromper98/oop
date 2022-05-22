@@ -1,26 +1,12 @@
-from base.interfaces import SolidShape
-from base.point import Point
+from .RectangleImpl import RectangleImpl
+from point import Point
 from base.exceptions import InvalidRectangle, InvalidOutlineColor, InvalidFillColor
 
 
-class Rectangle(SolidShape):
-    _left_top: Point
-    _right_bottom: Point
-    _outline_color: int
-    _fill_color: int
-
+class Rectangle(RectangleImpl):
     def __init__(self, left_top: Point, right_bottom: Point, outline_color: int, fill_color: int):
-        if not Rectangle.is_valid_rectangle(left_top, right_bottom):
-            raise InvalidRectangle
-        if not Rectangle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor(outline_color)
-        if not Rectangle.is_valid_color_number(fill_color):
-            raise InvalidFillColor(fill_color)
-
-        self._left_top = left_top
-        self._right_bottom = right_bottom
-        self._outline_color = outline_color
-        self._fill_color = fill_color
+        #Устранить дублирование кода
+        super().__init__(left_top, right_bottom, outline_color, fill_color)
 
     def get_height(self) -> float:
         return abs(self._left_top.y - self._right_bottom.y)
@@ -60,14 +46,3 @@ class Rectangle(SolidShape):
     def get_right_bottom(self) -> Point:
         return self._right_bottom
 
-    @staticmethod
-    def is_valid_rectangle(left_top: Point, right_bottom: Point) -> bool:
-        if left_top == right_bottom:
-            return False
-        return True
-
-    @staticmethod
-    def is_valid_color_number(number: int) -> bool:
-        if 0 <= number <= 2**32:
-            return True
-        return False

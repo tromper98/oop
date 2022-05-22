@@ -1,16 +1,10 @@
 import math
 
-from shapes.shapeinterfaces import SolidShape
 from point import Point
 from .circleimpl import CircleImpl
 
 
 class Circle(CircleImpl):
-    _center: Point
-    _radius: float
-    _outline_color: int
-    _fill_color: int
-
     def __init__(self, center: Point, radius: float, outline_color: int, fill_color: int):
         super().__init__(center, radius, outline_color, fill_color)
 

@@ -1,35 +1,17 @@
 import math
 
-from .shapeinterfaces import SolidShape
 from point import Point
-from base.exceptions import InvalidTriangle, InvalidFillColor, InvalidOutlineColor
+from .triangleimpl import TriangleImpl
 
 
-class Triangle(SolidShape):
-    _vertex1: Point
-    _vertex2: Point
-    _vertex3: Point
-    _outline_color: int
-    _fill_color: int
-
+class Triangle(TriangleImpl):
     def __init__(self,
                  vertex1: Point,
                  vertex2: Point,
                  vertex3: Point,
                  outline_color: int,
                  fill_color: int):
-        if not Triangle.is_valid_triangle(vertex1, vertex2, vertex3):
-            raise InvalidTriangle()
-        if not Triangle.is_valid_color_number(outline_color):
-            raise InvalidOutlineColor(outline_color)
-        if not Triangle.is_valid_color_number(fill_color):
-            raise InvalidFillColor(fill_color)
-
-        self._vertex1 = vertex1
-        self._vertex2 = vertex2
-        self._vertex3 = vertex3
-        self._outline_color = outline_color
-        self._fill_color = fill_color
+        super().__init__(vertex1, vertex2, vertex3, outline_color, fill_color)
 
     def get_area(self) -> float:
         half_perimeter: float = self.get_perimeter() / 2
@@ -72,23 +54,3 @@ class Triangle(SolidShape):
 
     def get_vertex3(self) -> Point:
         return self._vertex3
-
-    @staticmethod
-    def is_valid_triangle(vertex1: Point, vertex2: Point, vertex3: Point) -> bool:
-
-        if vertex1 == vertex2:
-            return False
-
-        if vertex1 == vertex3:
-            return False
-
-        if vertex2 == vertex3:
-            return False
-
-        return True
-
-    @staticmethod
-    def is_valid_color_number(number: int) -> bool:
-        if 0 <= number <= 2**32:
-            return True
-        return False

@@ -23,7 +23,7 @@ class Point:
         return f'({self._x}, {self._y})'
 
     def distance_to_point(self, point: Point):
-        math.sqrt(
+        return math.sqrt(
             (self.x - point.x) ** 2 +
             (self.y + point.y) ** 2)
 
