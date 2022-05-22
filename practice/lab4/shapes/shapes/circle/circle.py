@@ -38,5 +38,4 @@ class Circle(CircleImpl, CanvasDrawable):
         return self._radius
 
     def draw(self, canvas: ICanvas):
-        canvas.draw_circle(self.get_center(), self.get_radius(), self.get_outline_color())
-        canvas.fill_circle(self.get_center(), self.get_radius(), self.get_fill_color())
+        canvas.draw_circle(self.get_center(), self.get_radius(), self.get_outline_color(), self.get_fill_color())

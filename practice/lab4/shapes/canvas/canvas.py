@@ -24,12 +24,10 @@ class Canvas(ICanvas):
                                          stroke=Canvas.convert_int_to_rgb(line_color),
                                          fill=Canvas.convert_int_to_rgb(fill_color)))
 
-    def draw_line(self, start_point: Point, end_point: Point, line_color: int, fill_color: int) -> None:
+    def draw_line(self, start_point: Point, end_point: Point, line_color: int) -> None:
         new_start_point = self._move_origin(start_point)
         new_end_point = self._move_origin(end_point)
-        self._painter.add(Drawing.line(new_start_point, new_end_point,
-                                       stroke=Canvas.convert_int_to_rgb(line_color),
-                                       fill=Canvas.convert_int_to_rgb(fill_color)))
+        self._painter.add(Drawing.line(new_start_point, new_end_point, stroke=Canvas.convert_int_to_rgb(line_color)))
 
     def draw_triangle(self, left_up: Point, width: float, length: float, line_color: int, fill_color: int) -> None:
         new_left_up = self._move_origin(left_up)
