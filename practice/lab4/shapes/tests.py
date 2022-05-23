@@ -377,3 +377,13 @@ def test_get_min_perimeter_shape_from_some_shapes():
     expected = Rectangle(Point(0.0, 0.0), Point(-10.0, 5.0), 24, 4)
     controller.execute_command('min_perimeter_shape')
     assert OUTPUT_STORAGE[0] == expected.to_string()
+
+
+def test_draw_shapes():
+    OUTPUT_STORAGE.clear()
+    input_file: str = './data/tree.txt'
+    controller: ShapeController = ShapeController(write_to_output_storage)
+    with open(input_file, 'r', encoding='utf-8') as file:
+        for row in file:
+            controller.execute_command(row)
+    controller.execute_command('draw_shapes ./data/tree.svg')

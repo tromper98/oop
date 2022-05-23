@@ -1,0 +1,9 @@
+rectangle -100 -260 100 -540 0 A52A2A
+triangle -460 -260 460 -260 0 50 0 006400
+triangle -260 -20 260 -20 0 200 0 008000
+triangle -100 180 100 180 0 300 0 32CD32
+circle 640 350 150 DC143C FFFF00
+line_segment 640 390 540 -390 FFFF00
+line_segment 640 390 590 -290 FFFF00
+line_segment 640 390 640 -240 FFFF00
+line_segment 640 390 690 -190 FFFF00

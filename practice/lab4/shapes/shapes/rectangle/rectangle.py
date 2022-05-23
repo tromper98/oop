@@ -50,4 +50,4 @@ class Rectangle(RectangleImpl, CanvasDrawable):
 
     def draw(self, canvas: ICanvas):
         canvas.draw_rectangle(self.get_left_top(), self.get_width(), self.get_length(),
-                              self.get_fill_color(), self.get_outline_color())
+                              self.get_outline_color(),  self.get_fill_color(),)

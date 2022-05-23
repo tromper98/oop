@@ -59,8 +59,8 @@ class ShapeController:
         try:
             left_top: Point = Point(float(params[0]), float(params[1]))
             right_bottom: Point = Point(float(params[2]), float(params[3]))
-            outline_color: int = int(params[4])
-            fill_color: int = int(params[5])
+            outline_color: int = int(params[4], 16)
+            fill_color: int = int(params[5], 16)
             new_rectangle = Rectangle(left_top, right_bottom, outline_color, fill_color)
             self._shapes.append(new_rectangle)
         except ValueError as e:
@@ -78,8 +78,8 @@ class ShapeController:
         try:
             center: Point = Point(float(params[0]), float(params[1]))
             radius: float = float(params[2])
-            outline_color: int = int(params[3])
-            fill_color: int = int(params[4])
+            outline_color: int = int(params[3], 16)
+            fill_color: int = int(params[4], 16)
             new_circle = Circle(center, radius, outline_color, fill_color)
             self._shapes.append(new_circle)
         except ValueError as e:
@@ -99,8 +99,8 @@ class ShapeController:
             vertex1: Point = Point(float(params[0]), float(params[1]))
             vertex2: Point = Point(float(params[2]), float(params[3]))
             vertex3: Point = Point(float(params[4]), float(params[5]))
-            outline_color: int = int(params[6])
-            fill_color: int = int(params[7])
+            outline_color: int = int(params[6], 16)
+            fill_color: int = int(params[7], 16)
             new_triangle = Triangle(vertex1, vertex2, vertex3, outline_color, fill_color)
             self._shapes.append(new_triangle)
         except ValueError as e:
@@ -119,7 +119,7 @@ class ShapeController:
         try:
             start_point: Point = Point(float(params[0]), float(params[1]))
             end_point: Point = Point(float(params[2]), float(params[3]))
-            outline_color: int = int(params[4])
+            outline_color: int = int(params[4], 16)
             new_line_segment = LineSegment(start_point, end_point, outline_color)
             self._shapes.append(new_line_segment)
         except ValueError as e:
