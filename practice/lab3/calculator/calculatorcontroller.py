@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Optional
+from typing import Dict, Callable, Optional, List
 from calculator import Calculator
 from expression import Expression
 from exceptions import *
@@ -78,17 +78,51 @@ class CalculatorController:
         self._calculator.create_function(expr.left_operand, expr.right_operands, expr.operation)
         return True
 
-    def _print_by_identifier(self, name: str) -> None:
-        ...
+    def _print_by_identifier(self, expr: Expression) -> bool:
+        if not expr.left_operand:
+            self._output('Operand name was not passed')
+        if expr.right_operands:
+            self._output('Invalid params were given')
+            return True
 
-    def _print_vars(self) -> None:
-        ...
+        value: Optional[float] = self._calculator.get_operand_by_name(expr.left_operand)
+        if not value:
+            self._output(f'Operand with name {expr.left_operand} doesn\'t exist')
+            return True
 
-    def _print_funcs(self) -> None:
-        ...
+        self._output(f'{expr.left_operand}: {value}')
+        return True
 
-    def _exit(self) -> None:
-        ...
+    def _print_vars(self, expr: Expression) -> bool:
+        if expr.right_operands:
+            self._output('Method "printvars" doesn\'t contains any params')
+            return True
+
+        variables: List[(str, Optional[float])] = self._calculator.get_all_variables()
+        variables.sort(key=lambda tup: tup[0])
+        for var, value in variables:
+            self._output(f'{var}: {value}')
+
+        return True
+
+    def _print_funcs(self, expr: Expression) -> bool:
+        if expr.right_operands:
+            self._output('Method "printfns" doesn\'t contains any params')
+            return True
+
+        funcs: List[(str, Optional[float])] = self._calculator.get_all_functions()
+        funcs.sort(key=lambda tup: tup[0])
+        for func_name, value in funcs:
+            self._output(f'{func_name}: {value}')
+
+        return True
+
+    def _exit(self, expr: Expression) -> bool:
+        if expr.left_operand or expr.operation or expr.right_operands:
+            self._output('Method "exit" doesn\'t contains any params')
+            return True
+
+        return False
 
     def _get_actions(self) -> Dict[str, Callable]:
         actions: Dict[str, Callable] = {
