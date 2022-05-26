@@ -94,24 +94,22 @@ class CalculatorController:
         return True
 
     def _print_vars(self, expr: Expression) -> bool:
-        if expr.right_operands:
+        if expr:
             self._output('Method "printvars" doesn\'t contains any params')
             return True
 
         variables: List[(str, Optional[float])] = self._calculator.get_all_variables()
-        variables.sort(key=lambda tup: tup[0])
         for var, value in variables:
             self._output(f'{var}: {value}')
 
         return True
 
     def _print_funcs(self, expr: Expression) -> bool:
-        if expr.right_operands:
+        if expr:
             self._output('Method "printfns" doesn\'t contains any params')
             return True
 
         funcs: List[(str, Optional[float])] = self._calculator.get_all_functions()
-        funcs.sort(key=lambda tup: tup[0])
         for func_name, value in funcs:
             self._output(f'{func_name}: {value}')
 
