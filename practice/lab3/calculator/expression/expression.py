@@ -33,7 +33,11 @@ class Expression:
         left_operand: str = expr[:equal_pos].lstrip().rstrip()
         right_expr: str = expr[equal_pos + 1:]
         operator: str = Expression._get_operator_pos(right_expr)
-        right_operands: List[str] = right_expr.split(operator)
+        right_operands: List[str] = [operand.lstrip().rstrip() for operand in right_expr.split(operator)]
+
+        if right_operands[0] == '' and operator == '-':
+            negative_number = operator + right_operands[1]
+            right_operands = [negative_number]
 
         return Expression(left_operand, right_operands, operator)
 

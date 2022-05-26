@@ -1,7 +1,12 @@
 from typing import Dict, List, Optional, Union, Tuple
+from trampoline import trampoline
+
+from utils.trampoline import *
 from function import Function
 
 from exceptions import *
+
+POSSIBLE_SYMBOLS = '1234567890abcdefghijklmnopqrstuvwxyz_'
 
 
 class Calculator:
@@ -13,24 +18,37 @@ class Calculator:
         self._functions = {}
 
     def create_variable(self, variable: str) -> None:
+        if not Calculator._is_valid_identifier_name(variable):
+            raise InvalidIdentifierName(variable)
+
         if not self._has_variable(variable):
             self._variables[variable] = None
             return
 
         raise VariableAlreadyExistError(variable)
 
-    def set_variable_value(self, variable: str, source: Union[float, str]) -> None:
-        if not self._has_variable(variable):
-            raise VariableNotFoundError(variable)
+    def set_variable_value(self, variable: str, value: Union[float, str]) -> None:
+        if not Calculator._is_valid_identifier_name(variable):
+            raise InvalidIdentifierName(variable)
 
-        if Calculator._is_number(source):
-            self._set_variable_value_from_number(variable, float(source))
+        if not self._has_variable(variable):
+            self.create_variable(variable)
+
+        if Calculator._is_number(value):
+            self._set_variable_value_from_number(variable, float(value))
             return
 
-        self._set_variable_value_from_another_value(variable, source)
+        self._set_variable_value_from_another_value(variable, value)
         return
 
     def create_function(self, func_name: str, operands: List[str], operation: Optional[str]) -> None:
+        if not Calculator._is_valid_identifier_name(func_name):
+            raise InvalidIdentifierName(func_name)
+
+        for operand in operands:
+            if not self._contains_identifier(operand):
+                raise OperandNotFoundError(operand)
+
         if self._has_function(func_name):
             raise FunctionAlreadyExistError(func_name)
 
@@ -51,19 +69,24 @@ class Calculator:
             raise FunctionNotFoundError(func_name)
 
         function = self._functions[func_name]
-        result: Optional[float] = self._calculate_function_result(function)
+        result = self._calculate_function_result(function)
         return result
 
     def get_all_variables(self) -> List[Tuple[str, Optional[float]]]:
-        return [(variable, value) for variable, value in self._variables.items()]
+        variables = [(variable, value) for variable, value in self._variables.items()]
+        variables.sort(key=lambda tup: tup[0])
+        return variables
 
     def get_all_functions(self) -> List[Tuple[str, Optional[float]]]:
-        return [(func_name, self.get_function_result(func_name)) for func_name in self._functions.keys()]
+        functions = [(func_name, self.get_function_result(func_name)) for func_name in self._functions.keys()]
+        functions.sort(key=lambda tup: tup[0])
+        return functions
 
-    def _calculate_function_result(self, function: Function) -> Optional[float]:
+    @tail_recursive
+    def _calculate_function_result(self, function: Function, result=None) -> Optional[float]:
         values: List[float] = []
         for operand in function.operands:
-            value = self._get_operand_result(operand)
+            value = self._get_operand_result(operand, result)
             values.append(value)
 
         if None in values:
@@ -76,6 +99,7 @@ class Calculator:
 
     @staticmethod
     def _perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
+
         if operation == '+':
             return first_value + second_value
 
@@ -118,19 +142,25 @@ class Calculator:
         value: float = self.get_variable_value(source_variable)
         self._variables[target_variable] = value
 
-    def _get_operand_result(self, operand: Union[float, str]) -> Optional[float]:
-        if Calculator._is_number(operand):
-            return float(operand)
-
+    def _get_operand_result(self, operand: Union[float, str], result=None) -> Optional[float]:
         if self._has_variable(operand):
-            return self._variables[operand]
+            result = self._variables[operand]
+            return result
 
         if self._has_function(operand):
             function: Function = self._functions[operand]
-            return self._calculate_function_result(function)
+            return self._calculate_function_result(function, result)
 
         raise OperandNotFoundError(operand)
 
+    def _contains_identifier(self, identifier_name: str) -> bool:
+        if self._has_variable(identifier_name):
+            return True
+
+        if self._has_function(identifier_name):
+            return True
+
+        return False
 
     @staticmethod
     def _is_number(number: Union[str, float]) -> bool:
@@ -141,3 +171,14 @@ class Calculator:
             return True
         except:
             return False
+
+    @staticmethod
+    def _is_valid_identifier_name(string: str) -> bool:
+        if string[0].isdigit():
+            return False
+
+        for symbol in string:
+            if symbol not in POSSIBLE_SYMBOLS:
+                return False
+        return True
+

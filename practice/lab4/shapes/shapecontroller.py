@@ -32,7 +32,6 @@ class CommandLineParser:
 class ShapeController:
     _shapes: List[Union[Shape, CanvasDrawable]]
     _actions: Dict[str, Callable]
-    _canvas: Canvas
     _output: Callable
 
     def __init__(self, output: Callable = print):
@@ -162,9 +161,9 @@ class ShapeController:
             return True
 
         canvas: Canvas = Canvas(file_name=params[0])
-        for shape in self._shapes:
-                shape.draw(canvas)
+        canvas = self._fill_canvas(canvas)
         canvas.save()
+        return True
 
     # Можно упростить поиск минимального/максимального элемента списка
     def _get_shape_with_min_perimeter(self) -> Shape:
@@ -208,6 +207,11 @@ class ShapeController:
 
     def _has_action(self, action: str) -> bool:
         return action in [possible_action for possible_action in self._actions.keys()]
+
+    def _fill_canvas(self, canvas: Canvas) -> Canvas:
+        for shape in self._shapes:
+            shape.draw(canvas)
+        return canvas
 
 
 def main():
