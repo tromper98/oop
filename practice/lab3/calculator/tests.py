@@ -1,9 +1,17 @@
+import sys
+
 import pytest
 from unittest import TestCase
 from calculator import Calculator
 from expression import Expression
-from calculatorcontroller import CommandLineParser
+from calculatorcontroller import CommandLineParser, CalculatorController
 from exceptions import *
+
+OUTPUT_STORAGE = []
+
+
+def write_to_output_storage(string: str):
+    return OUTPUT_STORAGE.append(string)
 
 
 def is_equal_expression(target_expr: Expression, destination_expr: Expression) -> bool:
@@ -89,8 +97,9 @@ def test_fail_create_existing_variable():
 def test_fail_update_update_not_exist_variable():
     calc = Calculator()
     calc.create_variable('x1')
-    with pytest.raises(VariableNotFoundError):
-        calc.set_variable_value('x2', 40)
+    calc.set_variable_value('x2', 40)
+    expected = 40.0
+    assert calc.get_variable_value('x2') == expected
 
 
 def test_get_variable_value():
@@ -112,8 +121,10 @@ def test_fail_get_not_declared_variable_value():
 
 def test_calculate_function_with_two_numbers():
     calc = Calculator()
+    calc.set_variable_value('x1', 50.05)
+    calc.set_variable_value('x2', 1001)
     operation = '+'
-    calc.create_function('res', ['50.05', '1001'], operation)
+    calc.create_function('res', ['x1', 'x2'], operation)
     result = calc.get_function_result('res')
     expected = 1051.05
     assert result == expected
@@ -141,9 +152,8 @@ def test_fail_create_function_with_variable_not_declared():
     calc.set_variable_value('x1', 45.09)
     operations = '+'
     variables = ['x1', 'z2']
-    calc.create_function('res', variables, operations)
     with pytest.raises(OperandNotFoundError):
-        calc.get_function_result('res')
+        calc.create_function('res', variables, operations)
 
 
 def test_fail_calculate_function_with_variable_divided_by_zero():
@@ -237,8 +247,70 @@ def test_parse_command_line_with_expr():
     assert is_equal_command_line_parser(parser, expected)
 
 
+def test_parse_command_line_expr_with_spaces():
+    cmd = 'fn x1 = y + 135'
+    parser = CommandLineParser.parse_command_line(cmd)
+    expected = CommandLineParser('fn', Expression('x1', ['y', '135'], '+'))
+    assert is_equal_command_line_parser(parser, expected)
+
+
 def test_parse_command_line_only_command():
     cmd = 'printvars'
     parser = CommandLineParser.parse_command_line(cmd)
     expected = CommandLineParser('printvars', None)
     assert is_equal_command_line_parser(parser, expected)
+
+
+def test_calculate_function_sequence():
+    OUTPUT_STORAGE.clear()
+
+    calculator = Calculator()
+    controller = CalculatorController(calculator, output=write_to_output_storage)
+
+    controller.execute_command('let x1 = 5')
+    controller.execute_command('let x2 = 8')
+    controller.execute_command('let x3 = 10')
+    controller.execute_command('let x4 = 4')
+    controller.execute_command('fn f1 = x1 * x3')
+    controller.execute_command('fn f2 = x2 - x4')
+    controller.execute_command('fn f3 = f1 / f2')
+    controller.execute_command('fn res = f3 + x3')
+    expected = 'res: 22.5'
+    controller.execute_command('print res')
+    assert OUTPUT_STORAGE[0] == expected
+
+
+def test_print_vars():
+    OUTPUT_STORAGE.clear()
+
+    calculator = Calculator()
+    controller = CalculatorController(calculator, output=write_to_output_storage)
+    controller.execute_command('var x1')
+    controller.execute_command('var x5')
+    controller.execute_command('var x3')
+    controller.execute_command('var x4')
+    controller.execute_command('var x2')
+
+    controller.execute_command('let x1 = 5')
+    controller.execute_command('let x2 = 10.5')
+    controller.execute_command('let x3 = -8')
+    controller.execute_command('let x4 = 1000')
+
+    controller.execute_command('printvars')
+
+    expected = ['x1: 5.0', 'x2: 10.5', 'x3: -8.0', 'x4: 1000.0', 'x5: None']
+    assert OUTPUT_STORAGE == expected
+
+
+# failed with RecursionError
+def test_calculate_long_function_sequence():
+    OUTPUT_STORAGE.clear()
+    print(sys.getrecursionlimit())
+    calculator = Calculator()
+    controller = CalculatorController(calculator, output=write_to_output_storage)
+    controller.execute_command('let x1 = 1')
+    for i in range(1, 1000):
+        controller.execute_command(f'fn x{i+1} = x{i} + x1')
+    controller.execute_command('print x1000')
+    expected = 'x1000: 1000.0'
+    assert OUTPUT_STORAGE[0] == expected
