@@ -317,7 +317,6 @@ def test_calculate_long_function_sequence():
 
 
 #run time without memorize: after 15 minutes not result
-@pytest.mark.skip
 def test_calculate_fib_sequence():
     OUTPUT_STORAGE.clear()
     calculator = Calculator()

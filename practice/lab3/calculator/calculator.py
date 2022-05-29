@@ -1,9 +1,6 @@
 from typing import Dict, List, Optional, Union, Tuple
-from trampoline import trampoline
 
-from utils.trampoline import *
 from function import Function
-
 from exceptions import *
 
 POSSIBLE_SYMBOLS = '1234567890abcdefghijklmnopqrstuvwxyz_'
@@ -12,10 +9,12 @@ POSSIBLE_SYMBOLS = '1234567890abcdefghijklmnopqrstuvwxyz_'
 class Calculator:
     _variables: Dict[str, Optional[float]]
     _functions: Dict[str, Function]
+    _calculation_memory: Dict[str, Optional[float]]
 
     def __init__(self):
         self._variables = {}
         self._functions = {}
+        self._calculation_memory = {}
 
 # Не проверяется наличие функции с таким именем
     def create_variable(self, variable: str) -> None:
@@ -68,9 +67,9 @@ class Calculator:
         if not self._has_function(func_name):
             raise FunctionNotFoundError(func_name)
 
-        function = self._functions[func_name]
         #Возможно код нерабочий
-        result = self._calculate_function_result(function)
+        self._calculation_memory = {}
+        result = self._calculate_function_result(func_name)
         return result
 
     def get_all_variables(self) -> List[Tuple[str, Optional[float]]]:
@@ -83,19 +82,29 @@ class Calculator:
         functions.sort(key=lambda tup: tup[0])
         return functions
 
-    def _calculate_function_result(self, function: Function) -> Optional[float]:
+    def _calculate_function_result(self, func_name: str) -> Optional[float]:
+        result: float = self._calculation_memory.get(func_name)
+        if result:
+            return result
+
+        function = self._functions[func_name]
         values: List[float] = []
         for operand in function.operands:
             value = self._get_operand_result(operand)
             values.append(value)
 
         if None in values:
+            self._calculation_memory[func_name] = None
             return None
 
         if not function.operation:
-            return values[0]
+            result = values[0]
+            self._calculation_memory[func_name] = result
+            return result
 
-        return Calculator._perform_operation(function.operation, values[0], values[1])
+        result = Calculator._perform_operation(function.operation, values[0], values[1])
+        self._calculation_memory[func_name] = result
+        return result
 
     @staticmethod
     def _perform_operation(operation: str, first_value: float, second_value: float) -> Optional[float]:
@@ -137,8 +146,7 @@ class Calculator:
         if self._has_variable(operand):
             return self._variables[operand]
         else:
-            function: Function = self._functions[operand]
-            return self._calculate_function_result(function)
+            return self._calculate_function_result(operand)
 
     def _contains_identifier(self, identifier_name: str) -> bool:
         if self._has_variable(identifier_name):
