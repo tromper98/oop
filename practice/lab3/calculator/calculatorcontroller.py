@@ -58,8 +58,10 @@ class CalculatorController:
         if expr.right_operands or expr.operation:
             self._output('Command "var" has only one parameter: variable_name')
             return True
-
-        self._calculator.create_variable(expr.left_operand)
+        try:
+            self._calculator.create_variable(expr.left_operand)
+        except CalculatorException as e:
+            print(e)
         return True
 
     def _set_var_value(self, expr: Expression) -> bool:
@@ -67,7 +69,10 @@ class CalculatorController:
             self._output(f'Too much operands for command "let" ')
             return True
 
-        self._calculator.set_variable_value(expr.left_operand, expr.right_operands[0])
+        try:
+            self._calculator.set_variable_value(expr.left_operand, expr.right_operands[0])
+        except CalculatorException as e:
+            print(e)
         return True
 
     def _create_fn(self, expr: Expression) -> bool:
@@ -75,7 +80,10 @@ class CalculatorController:
             self._output('Can\'t create function without operands')
             return True
 
-        self._calculator.create_function(expr.left_operand, expr.right_operands, expr.operation)
+        try:
+            self._calculator.create_function(expr.left_operand, expr.right_operands, expr.operation)
+        except CalculatorException as e:
+            print(e)
         return True
 
     def _print_by_identifier(self, expr: Expression) -> bool:
@@ -84,13 +92,11 @@ class CalculatorController:
         if expr.right_operands:
             self._output('Invalid params were given')
             return True
-
-        value: Optional[float] = self._calculator.get_operand_by_name(expr.left_operand)
-        if not value:
-            self._output(f'Operand with name {expr.left_operand} doesn\'t exist')
-            return True
-
-        self._output(f'{expr.left_operand}: {value}')
+        try:
+            value: Optional[float] = self._calculator.get_operand_by_name(expr.left_operand)
+            self._output(f'{expr.left_operand}: {value}')
+        except CalculatorException as e:
+            print(e)
         return True
 
     def _print_vars(self, expr: Expression) -> bool:
@@ -116,7 +122,7 @@ class CalculatorController:
         return True
 
     def _exit(self, expr: Expression) -> bool:
-        if expr.left_operand or expr.operation or expr.right_operands:
+        if expr:
             self._output('Method "exit" doesn\'t contains any params')
             return True
 
@@ -136,3 +142,16 @@ class CalculatorController:
 
     def _has_action(self, searchable_action: str) -> bool:
         return searchable_action in [action for action in self._actions.keys()]
+
+
+def main():
+    calc = Calculator()
+    controller = CalculatorController(calc)
+    while True:
+        cmd: str = input('\nEnter a command: ')
+        if not controller.execute_command(cmd):
+            break
+
+
+if __name__ == '__main__':
+    main()

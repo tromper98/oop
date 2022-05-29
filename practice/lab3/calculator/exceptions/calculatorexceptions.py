@@ -25,3 +25,13 @@ class FunctionNotFoundError(CalculatorException):
 class OperandNotFoundError(CalculatorException):
     def __init__(self, operand: str):
         super().__init__(f"Operand '{operand}' doesn\'t  exist")
+
+
+class InvalidIdentifierName(CalculatorException):
+    def __init__(self, identifier_name: str):
+        super().__init__(f'Identifier {identifier_name} contains invalid symbols or start by digit')
+
+
+class IdentifierAlreadyExists(CalculatorException):
+    def __init__(self, name: str):
+        super().__init__(f'Function or variable with name {name} already exists')
