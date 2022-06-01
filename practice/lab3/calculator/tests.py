@@ -302,20 +302,6 @@ def test_print_vars():
     assert OUTPUT_STORAGE == expected
 
 
-# failed with RecursionError
-@pytest.mark.skip
-def test_calculate_long_function_sequence():
-    OUTPUT_STORAGE.clear()
-    calculator = Calculator()
-    controller = CalculatorController(calculator, output=write_to_output_storage)
-    controller.execute_command('let x1 = 1')
-    for i in range(1, 1000):
-        controller.execute_command(f'fn x{i+1} = x{i} + x1')
-    controller.execute_command('print x1000')
-    expected = 'x1000: 1000.0'
-    assert OUTPUT_STORAGE[0] == expected
-
-
 #run time without memorize: after 15 minutes not result
 def test_calculate_fib_sequence():
     OUTPUT_STORAGE.clear()
@@ -329,4 +315,19 @@ def test_calculate_fib_sequence():
         controller.execute_command(f'fn fib{i} = fib{i-1} + fib{i-2}')
     controller.execute_command('print fib50')
     expected = 'fib50: 7778742049.0'
+    assert OUTPUT_STORAGE[0] == expected
+
+
+# failed with RecursionError
+def test_calculate_long_function_sequence():
+    OUTPUT_STORAGE.clear()
+    count = 1000000
+
+    calculator = Calculator()
+    controller = CalculatorController(calculator, output=write_to_output_storage)
+    controller.execute_command('let x1 = 1')
+    for i in range(1, count):
+        controller.execute_command(f'fn x{i+1} = x{i} + x1')
+    controller.execute_command(f'print x{count}')
+    expected = f'x{count}: {count}.0'
     assert OUTPUT_STORAGE[0] == expected

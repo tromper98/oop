@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Union, Tuple, Set
 
 from function import Function
 from exceptions import *
@@ -67,10 +67,13 @@ class Calculator:
         if not self._has_function(func_name):
             raise FunctionNotFoundError(func_name)
 
-        #Возможно код нерабочий
         self._calculation_memory = {}
-        result = self._calculate_function_result(func_name)
-        return result
+        functions_stack = self._create_functions_stack(func_name)
+        for i in range(len(functions_stack)):
+            current_function = functions_stack.pop()
+            self._calculate_function_result(current_function)
+
+        return self._calculation_memory[func_name]
 
     def get_all_variables(self) -> List[Tuple[str, Optional[float]]]:
         variables = [(variable, value) for variable, value in self._variables.items()]
@@ -103,7 +106,7 @@ class Calculator:
             return result
 
         result = Calculator._perform_operation(function.operation, values[0], values[1])
-        self._calculation_memory[func_name] = result
+        result = self._calculation_memory[func_name] = result
         return result
 
     @staticmethod
@@ -142,11 +145,12 @@ class Calculator:
         self._variables[target_variable] = value
 
     def _get_operand_result(self, operand: Union[float, str]) -> Optional[float]:
-
         if self._has_variable(operand):
             return self._variables[operand]
-        else:
+        if not self._calculation_memory.get(operand):
             return self._calculate_function_result(operand)
+
+        return self._calculation_memory[operand]
 
     def _contains_identifier(self, identifier_name: str) -> bool:
         if self._has_variable(identifier_name):
@@ -156,6 +160,31 @@ class Calculator:
             return True
 
         return False
+
+    def _create_functions_stack(self, function_name: str) -> List[str]:
+        functions_stack: List[str] = [function_name]
+        current_functions: List[str] = [function_name]
+        new_functions: List[str] = []
+
+        while len(current_functions) != 0:
+            for f_name in current_functions:
+                child_functions = self._get_child_functions(f_name)
+                Calculator._add_difference_to_list(new_functions, child_functions)
+
+            functions_stack.extend(new_functions)
+            current_functions = new_functions.copy()
+            new_functions.clear()
+
+        return functions_stack
+
+    def _get_child_functions(self, function_name: str) -> List[str]:
+        function: Function = self._functions[function_name]
+        child_functions: List[str] = []
+
+        for operand in function.operands:
+            if self._has_function(operand):
+                child_functions.append(operand)
+        return child_functions
 
     @staticmethod
     def _is_number(number: Union[str, float]) -> bool:
@@ -177,3 +206,7 @@ class Calculator:
                 return False
         return True
 
+    @staticmethod
+    def _add_difference_to_list(stack: List[str], new_values: List[str]) -> List[str]:
+        stack.extend(set(new_values).difference(set(stack)))
+        return stack
