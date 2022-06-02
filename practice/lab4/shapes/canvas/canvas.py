@@ -13,16 +13,16 @@ WIDTH = 1080
 class Canvas(ICanvas):
     _painter: Drawing
     _center: Point
+#в холсте должны быть только те методы, которые есть на схеме
 
     def __init__(self, file_name: str):
         self._painter = Drawing(file_name, size=(LENGTH, WIDTH))
         self._center = Point(LENGTH / 2, WIDTH / 2)
 
-    def draw_circle(self, center: Point, radius: float, line_color: int, fill_color: int) -> None:
+    def draw_circle(self, center: Point, radius: float, line_color: int) -> None:
         new_center = self._move_origin(center)
         self._painter.add(self._painter.circle(new_center, radius,
-                                               stroke=Canvas.convert_int_to_rgb(line_color),
-                                               fill=Canvas.convert_int_to_rgb(fill_color)))
+                                               stroke=Canvas.convert_int_to_rgb(line_color)))
 
     def draw_line(self, start_point: Point, end_point: Point, line_color: int) -> None:
         new_start_point = self._move_origin(start_point)
@@ -30,17 +30,13 @@ class Canvas(ICanvas):
         self._painter.add(
             self._painter.line(new_start_point, new_end_point, stroke=Canvas.convert_int_to_rgb(line_color)))
 
-    def draw_rectangle(self, left_up: Point, width: float, length: float, line_color: int, fill_color: int) -> None:
-        new_left_up = self._move_origin(left_up)
-        self._painter.add(self._painter.rect(new_left_up, (width, length),
-                                             stroke=Canvas.convert_int_to_rgb(line_color),
-                                             fill=Canvas.convert_int_to_rgb(fill_color)))
+    def fill_circle(self, center: Point, radius: float, fill_color: int) -> None:
+        new_center = self._move_origin(center)
+        self._painter.add(self._painter.circle(new_center, radius, fill=Canvas.convert_int_to_rgb(fill_color)))
 
-    def draw_polygon(self, points: List[Point], line_color: int, fill_color: int) -> None:
+    def fill_polygon(self, points: List[Point],  fill_color: int) -> None:
         new_points: List[Tuple[float, float]] = [self._move_origin(point) for point in points]
-        self._painter.add(self._painter.polygon(new_points,
-                                                stroke=Canvas.convert_int_to_rgb(line_color),
-                                                fill=Canvas.convert_int_to_rgb(fill_color)))
+        self._painter.add(self._painter.polygon(new_points, fill=Canvas.convert_int_to_rgb(fill_color)))
 
     def save(self):
         self._painter.save()
