@@ -1,0 +1,4 @@
+rectangle -300 0 450 -200 9ACD32 00FFFF
+circle 0 0 200 808080 F0FFF0
+line_segment -500 300 600 -200 0
+triangle -200 -200 -200 500 400 0 87CEFA DEB887

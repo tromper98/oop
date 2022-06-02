@@ -1,9 +1,13 @@
 import pytest
+from unittest import TestCase
+
+from svgwrite import Drawing, rgb
 
 from point import Point
 from exceptions import *
 from shapes import *
 
+from canvas import Canvas
 from shapecontroller import ShapeController
 
 OUTPUT_STORAGE = []
@@ -95,6 +99,24 @@ def is_equal_line_segment(target: LineSegment, expected: LineSegment) -> bool:
         return False
 
     return True
+
+
+def assert_equal_drawing(target: Drawing, expected: Drawing):
+    compared_shapes = tuple(zip(target.elements, expected.elements))
+    for i in range(1, len(compared_shapes)):
+        shapes = compared_shapes[i]
+        target_element, expected_element = shapes[0], shapes[1]
+        target_attrs = target_element.attribs
+        expected_attrs = expected_element.attribs
+        assert target_attrs == expected_attrs
+
+
+def convert_hex_to_rgb(number: str) -> str:
+    number = int(number, 16)
+    blue: int = number & 255
+    green: int = (number >> 8) & 255
+    red: int = (number >> 16) & 255
+    return rgb(red, green, blue)
 
 
 def write_to_output_storage(string: str):
@@ -206,7 +228,7 @@ def test_create_rectangle_from_shape_controller():
     action = 'rectangle'
     params = ['0', '10', '100', '0', '15', '20']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = Rectangle(Point(0, 10), Point(100, 0), 15, 20)
+    expected = Rectangle(Point(0, 10), Point(100, 0), int('15', 16), int('20', 16))
     assert is_equal_rectangle(controller._shapes[0], expected)
 
 
@@ -215,7 +237,7 @@ def test_create_circle_from_shape_controller():
     action = 'circle'
     params = ['10', '-15', '100.5', '40', '100']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = Circle(Point(10, -15), 100.5, 40, 100)
+    expected = Circle(Point(10, -15), 100.5, int('40', 16), int('100', 16))
     assert is_equal_circle(controller._shapes[0], expected)
 
 
@@ -224,7 +246,7 @@ def test_create_triangle_from_shape_controller():
     action = 'triangle'
     params = ['0', '0', '10', '10', '20', '-50', '50', '30']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = Triangle(Point(0, 0), Point(10, 10), Point(20, -50), 50, 30)
+    expected = Triangle(Point(0, 0), Point(10, 10), Point(20, -50), int('50', 16), int('30', 16))
     assert is_equal_triangle(controller._shapes[0], expected)
 
 
@@ -233,7 +255,7 @@ def test_create_line_segment_from_shape_controller():
     action = 'line_segment'
     params = ['0', '0', '100', '200', '36']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = LineSegment(Point(0, 0), Point(100, 200), 36)
+    expected = LineSegment(Point(0, 0), Point(100, 200), int('36', 16))
     assert is_equal_line_segment(controller._shapes[0], expected)
 
 
@@ -253,7 +275,7 @@ def test_fail_create_rectangle_with_invalid_params():
     action = 'rectangle'
     params = ['41', '42', '5', '3', 'синий', 'зеленый']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = "invalid literal for int() with base 10: 'синий'"
+    expected = "invalid literal for int() with base 16: 'синий'"
     assert OUTPUT_STORAGE[0].args[0] == expected
 
 
@@ -313,7 +335,7 @@ def test_fail_create_line_segment_with_invalid_params():
     action = 'line_segment'
     params = ['0', '0', '10', '100', 'color']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = "invalid literal for int() with base 10: 'color'"
+    expected = "invalid literal for int() with base 16: 'color'"
     assert OUTPUT_STORAGE[0].args[0] == expected
 
 
@@ -323,7 +345,7 @@ def test_call_print_min_perimeter_shape_with_params():
     action = 'min_perimeter_shape'
     params = ['a', 'b', 'c', 'd']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = 'Method min_perimeter_shape doesn\'t contains params'
+    expected = 'Method "min_perimeter_shape" doesn\'t contains params'
     assert OUTPUT_STORAGE[0] == expected
 
 
@@ -342,7 +364,7 @@ def test_call_print_max_area_shape_with_params():
     action = 'max_area_shape'
     params = ['a', 'b', 'c', 'd']
     controller.execute_command(action + ' ' + ' '.join(params))
-    expected = 'Method max_area_shape doesn\'t contains params'
+    expected = 'Method "max_area_shape" doesn\'t contains params'
     assert OUTPUT_STORAGE[0] == expected
 
 
@@ -379,7 +401,8 @@ def test_get_min_perimeter_shape_from_some_shapes():
     assert OUTPUT_STORAGE[0] == expected.to_string()
 
 
-def test_draw_shapes():
+@pytest.mark.skip()
+def test_draw_fir_tree():
     OUTPUT_STORAGE.clear()
     input_file: str = './data/tree.txt'
     controller: ShapeController = ShapeController(write_to_output_storage)
@@ -387,3 +410,66 @@ def test_draw_shapes():
         for row in file:
             controller.execute_command(row)
     controller.execute_command('draw_shapes ./data/tree.svg')
+
+
+def test_draw_line():
+    OUTPUT_STORAGE.clear()
+    controller = ShapeController(write_to_output_storage)
+    mock_canvas = Canvas('./data/test/svg')
+    cmd = 'line_segment -200 200 400 500 F0FFF0'
+
+    controller.execute_command(cmd)
+
+    expected = Drawing(size=(1920, 1080))
+    expected.add(expected.line((760.0, 340.0), (1360.0, 40.0), stroke=convert_hex_to_rgb('F0FFF0')))
+    assert_equal_drawing(controller._draw_shapes_on_canvas(mock_canvas)._painter, expected)
+
+
+def test_draw_circle():
+    OUTPUT_STORAGE.clear()
+    controller = ShapeController(write_to_output_storage)
+    mock_canvas = Canvas('./data/test/svg')
+    cmd = 'circle 0 0 250 87CEFA FA4600'
+
+    controller.execute_command(cmd)
+
+    expected = Drawing(size=(1920, 1080))
+    expected.add(expected.circle((960, 540), 250, stroke=convert_hex_to_rgb('87CEFA')))
+    expected.add(expected.circle((960, 540), 250, fill=convert_hex_to_rgb('FA4600')))
+    assert_equal_drawing(controller._draw_shapes_on_canvas(mock_canvas)._painter, expected)
+
+
+def test_draw_rectangle():
+    OUTPUT_STORAGE.clear()
+    controller = ShapeController(write_to_output_storage)
+    mock_canvas = Canvas('./data/test/svg')
+    cmd = 'rectangle -300 0 450 -200 9ACD32 00FFFF'
+
+    controller.execute_command(cmd)
+
+    expected = Drawing(size=(1920, 1080))
+    expected.add(expected.line((660, 540), (1410, 540), stroke=convert_hex_to_rgb('9ACD32')))
+    expected.add(expected.line((1410, 540), (1410, 740), stroke=convert_hex_to_rgb('9ACD32')))
+    expected.add(expected.line((1410, 740), (660, 740), stroke=convert_hex_to_rgb('9ACD32')))
+    expected.add(expected.line((660, 740), (660, 540), stroke=convert_hex_to_rgb('9ACD32')))
+    expected.add(expected.polygon(((640, 540), (1410, 540), (1410, 740), (660, 740)),
+                                  fill=convert_hex_to_rgb('00FFFF')))
+
+    assert_equal_drawing(controller._draw_shapes_on_canvas(mock_canvas)._painter, expected)
+
+
+def test_draw_triangle():
+    OUTPUT_STORAGE.clear()
+    controller = ShapeController(write_to_output_storage)
+    mock_canvas = Canvas('./data/test/svg')
+    cmd = 'triangle -200 -200 -200 500 400 0 87CEFA DEB887'
+
+    controller.execute_command(cmd)
+
+    expected = Drawing(size=(1920, 1080))
+    expected.add(expected.line((760, 740), (760, 40), stroke=convert_hex_to_rgb('87CEFA')))
+    expected.add(expected.line((760, 40), (1360, 540), stroke=convert_hex_to_rgb('87CEFA')))
+    expected.add(expected.line((1360, 540), (760, 740), stroke=convert_hex_to_rgb('87CEFA')))
+    expected.add(expected.polygon(((760, 740), (760, 40), (1360, 540)), fill=convert_hex_to_rgb('DEB887')))
+
+    assert_equal_drawing(controller._draw_shapes_on_canvas(mock_canvas)._painter, expected)
