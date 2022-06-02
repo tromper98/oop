@@ -161,7 +161,7 @@ class ShapeController:
             return True
 
         canvas: Canvas = Canvas(file_name=params[0])
-        canvas = self._fill_canvas(canvas)
+        canvas = self._draw_shapes_on_canvas(canvas)
         canvas.save()
         return True
 
@@ -208,7 +208,7 @@ class ShapeController:
     def _has_action(self, action: str) -> bool:
         return action in [possible_action for possible_action in self._actions.keys()]
 
-    def _fill_canvas(self, canvas: Canvas) -> Canvas:
+    def _draw_shapes_on_canvas(self, canvas: Canvas) -> Canvas:
         for shape in self._shapes:
             shape.draw(canvas)
         return canvas

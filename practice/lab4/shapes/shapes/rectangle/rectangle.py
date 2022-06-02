@@ -49,5 +49,14 @@ class Rectangle(RectangleImpl, CanvasDrawable):
         return self._right_bottom
 
     def draw(self, canvas: ICanvas):
-        canvas.draw_rectangle(self.get_left_top(), self.get_width(), self.get_length(),
-                              self.get_outline_color(),  self.get_fill_color(),)
+        left_top = self.get_left_top()
+        right_top = Point(self.get_left_top().x, self.get_right_bottom().y)
+        right_bottom = self.get_right_bottom()
+        left_bottom = Point(self.get_right_bottom().x, self.get_left_top().y)
+
+        canvas.draw_line(left_top, right_top, self.get_outline_color())
+        canvas.draw_line(right_top, right_bottom, self.get_outline_color())
+        canvas.draw_line(right_bottom, left_bottom, self.get_outline_color())
+        canvas.draw_line(left_bottom, left_top, self.get_outline_color())
+
+        canvas.fill_polygon([left_top, right_top, right_bottom, left_bottom], self.get_fill_color())

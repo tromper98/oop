@@ -59,4 +59,8 @@ class Triangle(TriangleImpl, CanvasDrawable):
 
     def draw(self, canvas: ICanvas):
         points: List[Point] = [self.get_vertex1(), self.get_vertex2(), self.get_vertex3()]
-        canvas.draw_polygon(points, self.get_fill_color(), self.get_fill_color())
+
+        canvas.draw_line(self.get_vertex1(), self.get_vertex2(), self.get_outline_color())
+        canvas.draw_line(self.get_vertex2(), self.get_vertex3(), self.get_outline_color())
+        canvas.draw_line(self.get_vertex3(), self.get_vertex3(), self.get_outline_color())
+        canvas.fill_polygon(points, self.get_fill_color())
