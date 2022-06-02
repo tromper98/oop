@@ -62,5 +62,5 @@ class Triangle(TriangleImpl, CanvasDrawable):
 
         canvas.draw_line(self.get_vertex1(), self.get_vertex2(), self.get_outline_color())
         canvas.draw_line(self.get_vertex2(), self.get_vertex3(), self.get_outline_color())
-        canvas.draw_line(self.get_vertex3(), self.get_vertex3(), self.get_outline_color())
+        canvas.draw_line(self.get_vertex3(), self.get_vertex1(), self.get_outline_color())
         canvas.fill_polygon(points, self.get_fill_color())

@@ -50,9 +50,9 @@ class Rectangle(RectangleImpl, CanvasDrawable):
 
     def draw(self, canvas: ICanvas):
         left_top = self.get_left_top()
-        right_top = Point(self.get_left_top().x, self.get_right_bottom().y)
+        right_top = Point(self.get_right_bottom().x, self.get_left_top().y)
         right_bottom = self.get_right_bottom()
-        left_bottom = Point(self.get_right_bottom().x, self.get_left_top().y)
+        left_bottom = Point(self.get_left_top().x, self.get_right_bottom().y)
 
         canvas.draw_line(left_top, right_top, self.get_outline_color())
         canvas.draw_line(right_top, right_bottom, self.get_outline_color())
