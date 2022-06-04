@@ -16,7 +16,6 @@ class Calculator:
         self._functions = {}
         self._calculation_memory = {}
 
-# Не проверяется наличие функции с таким именем
     def create_variable(self, variable: str) -> None:
         if not Calculator._is_valid_identifier_name(variable):
             raise InvalidIdentifierName(variable)
@@ -39,7 +38,6 @@ class Calculator:
         self._set_variable_value_from_another_value(variable, value)
         return
 
-# Не проверяется наличие переменной с таким же именем
     def create_function(self, func_name: str, operands: List[str], operation: Optional[str]) -> None:
         if not Calculator._is_valid_identifier_name(func_name):
             raise InvalidIdentifierName(func_name)
@@ -120,6 +118,7 @@ class Calculator:
         elif operation == '*':
             return first_value * second_value
 
+#Проверять операцию в калькуляторе
         elif second_value == 0:
             raise ZeroDivisionError
 
