@@ -52,3 +52,25 @@ class Rational:
     def __neg__(self):
         return Rational(self.numerator * -1, self.denominator)
 
+    def __add__(self, other):
+        if isinstance(other, int):
+            new_numerator: int = self.numerator + (other * self.denominator)
+            return Rational(new_numerator, self.denominator)
+
+        if isinstance(other, Rational):
+            new_denominator = self.denominator * other.denominator
+            new_numerator = (self.numerator * other.denominator) + (other.numerator * self.denominator)
+
+            new_rational = Rational(new_numerator, new_denominator)
+            new_rational._normalize_rational()
+            return new_rational
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def _normalize_rational(self):
+        gcd_result = gcd(self.numerator, self.denominator)
+        self._numerator = self._numerator // gcd_result
+        self._denominator = self._denominator // gcd_result
+
+

@@ -64,3 +64,30 @@ def test_unary_minus_return_opposite_rational():
     assert -rational2 == expected_rational2
     assert -rational3 == expected_rational3
     assert -rational4 == expected_rational4
+
+
+def test_rational_to_float():
+    rational1 = Rational()
+    rational2 = Rational(1, 3)
+    rational3 = Rational(-1, 8)
+    rational4 = Rational(0, 9)
+
+    assert rational1.to_float == 0.0
+    assert rational2.to_float == 1 / 3
+    assert rational3.to_float == -1 / 8
+    assert rational4.to_float == 0 / 9
+
+
+def test_add_to_rational():
+    rational1 = Rational(1, 5)
+    rational2 = Rational(-1, 8)
+    rational3 = Rational(10, 9)
+    rational4 = Rational(-8, 4)
+
+    expected_rational1 = Rational(11, 5)
+    expected_rational2 = Rational(47, 8)
+    expected_rational3 = Rational(-8, 9)
+
+    assert rational1 + 2 == expected_rational1
+    assert 6 + rational2 == expected_rational2
+    assert rational3 + rational4 == expected_rational3
