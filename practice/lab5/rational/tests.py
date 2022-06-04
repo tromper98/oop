@@ -91,3 +91,16 @@ def test_add_to_rational():
     assert rational1 + 2 == expected_rational1
     assert 6 + rational2 == expected_rational2
     assert rational3 + rational4 == expected_rational3
+
+
+def test_fail_add_with_incorrect_operand():
+    rational = Rational(1, 5)
+
+    with pytest.raises(InvalidOperandType):
+        rational + 'some string'
+
+    with pytest.raises(InvalidOperandType):
+        rational + 10.05
+
+    with pytest.raises(InvalidOperandType):
+        rational + [10]

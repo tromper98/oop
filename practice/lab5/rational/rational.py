@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Union
 
 from math import gcd
 from exceptions import *
@@ -52,7 +53,7 @@ class Rational:
     def __neg__(self):
         return Rational(self.numerator * -1, self.denominator)
 
-    def __add__(self, other):
+    def __add__(self, other: Union[Rational, int]):
         if isinstance(other, int):
             new_numerator: int = self.numerator + (other * self.denominator)
             return Rational(new_numerator, self.denominator)
@@ -64,6 +65,8 @@ class Rational:
             new_rational = Rational(new_numerator, new_denominator)
             new_rational._normalize_rational()
             return new_rational
+
+        raise InvalidOperandType(other)
 
     def __radd__(self, other):
         return self.__add__(other)
