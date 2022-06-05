@@ -98,9 +98,30 @@ def test_fail_add_with_incorrect_operand():
 
     with pytest.raises(InvalidOperandType):
         rational + 'some string'
-
-    with pytest.raises(InvalidOperandType):
         rational + 10.05
-
-    with pytest.raises(InvalidOperandType):
         rational + [10]
+        'some str' + rational
+        9.5 + rational
+        (566, 24) + rational
+
+
+def test_sub_rational():
+    rational1 = Rational(11, 5)
+    rational2 = Rational(11, 8)
+    rational3 = Rational(8, 9)
+    rational4 = Rational(-3, 4)
+    rational5 = Rational(4, 16)
+    rational6 = Rational(-1, 9)
+    rational7 = Rational(-2, 19)
+
+    expected_rational1 = Rational(1, 5)
+    expected_rational2 = Rational(-3, 8)
+    expected_rational3 = Rational(-1, 9)
+    expected_rational4 = Rational(-1, 1)
+    expected_rational5 = Rational(1, 171)
+
+    assert rational1 - 2 == expected_rational1
+    assert 1 - rational2 == expected_rational2
+    assert rational3 - 1 == expected_rational3
+    assert rational4 - rational5 == expected_rational4
+  #  assert rational6 - rational7 == expected_rational5
