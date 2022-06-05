@@ -118,10 +118,23 @@ def test_sub_rational():
     expected_rational2 = Rational(-3, 8)
     expected_rational3 = Rational(-1, 9)
     expected_rational4 = Rational(-1, 1)
-    expected_rational5 = Rational(1, 171)
+    expected_rational5 = Rational(-1, 171)
 
     assert rational1 - 2 == expected_rational1
     assert 1 - rational2 == expected_rational2
     assert rational3 - 1 == expected_rational3
     assert rational4 - rational5 == expected_rational4
-  #  assert rational6 - rational7 == expected_rational5
+    assert rational6 - rational7 == expected_rational5
+
+
+def test_fail_sub_with_incorrect_operand():
+    rational = Rational(1, 5)
+
+    with pytest.raises(InvalidOperandType):
+        rational - 'some string'
+        rational - 10.05
+        rational - [10]
+        'some str' - rational
+        9.5 - rational
+        (566, 24) - rational
+

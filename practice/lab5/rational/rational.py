@@ -53,7 +53,7 @@ class Rational:
     def __neg__(self):
         return Rational(self.numerator * -1, self.denominator)
 
-    def __add__(self, other: Union[Rational, int]):
+    def __add__(self, other: Union[Rational, int]) -> Rational:
         if isinstance(other, int):
             new_numerator: int = self.numerator + (other * self.denominator)
             return Rational(new_numerator, self.denominator)
@@ -68,38 +68,35 @@ class Rational:
 
         raise InvalidOperandType(other)
 
-    def __radd__(self, other: Union[Rational, int]):
+    def __radd__(self, other: Union[Rational, int]) -> Rational:
         return self.__add__(other)
 
-    def __sub__(self, other):
-        if isinstance(other, int):
-            new_numerator: int = self.numerator - (other * self.denominator)
-            return Rational(new_numerator, self.denominator)
+    def __sub__(self, other) -> Rational:
+        return Rational._sub(self, other)
 
-        if isinstance(other, Rational):
-            new_denominator = self.denominator * other.denominator
-            new_numerator = (self.numerator * other.denominator) - (other.numerator * self.denominator)
-
-            new_rational = Rational(new_numerator, new_denominator)
-            new_rational._normalize_rational()
-            return new_rational
-
-    def __rsub__(self, other):
-        if isinstance(other, int):
-            new_numerator: int = (other * self.denominator) - self.numerator
-            return Rational(new_numerator, self.denominator)
-
-        if isinstance(other, Rational):
-            new_denominator = self.denominator * other.denominator
-            new_numerator = (other.numerator * self.denominator) - (self.numerator * other.denominator)
-
-            new_rational = Rational(new_numerator, new_denominator)
-            new_rational._normalize_rational()
-            return new_rational
+    def __rsub__(self, other) -> Rational:
+        return Rational._sub(other, self)
 
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)
         self._numerator = self._numerator // gcd_result
         self._denominator = self._denominator // gcd_result
 
+    @staticmethod
+    def _sub(first, second) -> Rational:
+        if isinstance(second, int):
+            new_numerator: int = first.numerator - (second * first.denominator)
 
+            new_rational = Rational(new_numerator, first.denominator)
+            new_rational._normalize_rational()
+            return Rational(new_numerator, first.denominator)
+
+        if isinstance(second, Rational):
+            new_denominator = first.denominator * second.denominator
+            new_numerator = (first.numerator * second.denominator) - (second.numerator * first.denominator)
+
+            new_rational = Rational(new_numerator, new_denominator)
+            new_rational._normalize_rational()
+            return new_rational
+
+        raise InvalidOperandType(second)
