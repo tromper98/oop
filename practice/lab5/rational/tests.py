@@ -138,3 +138,45 @@ def test_fail_sub_with_incorrect_operand():
         9.5 - rational
         (566, 24) - rational
 
+
+def test_short_add_sub_rational():
+    rational1 = Rational(4, 5)
+    rational2 = Rational(3, 8)
+    rational3 = Rational(1, 2)
+    rational4 = Rational(17, 50)
+
+    rational1 += Rational(1, 5)
+    rational2 += 10
+    rational3 -= 1
+    rational4 -= Rational(1, 5)
+
+    expected_rational1 = Rational(1, 1)
+    expected_rational2 = Rational(83, 8)
+    expected_rational3 = Rational(-1, 2)
+    expected_rational4 = Rational(7, 50)
+
+    assert rational1 == expected_rational1
+    assert rational2 == expected_rational2
+    assert rational3 == expected_rational3
+    assert rational4 == expected_rational4
+
+
+def test_mul_rational():
+    rational1 = Rational(8, 19)
+    rational2 = Rational(3, 7)
+    rational3 = Rational()
+    rational4 = Rational(-1, 2)
+    rational5 = Rational(7, 13)
+    rational6 = Rational(4, 6)
+
+    expected_rational1 = Rational(24, 19)
+    expected_rational2 = Rational(6, 7)
+    expected_rational3 = Rational(0, 1)
+    expected_rational4 = Rational(-9, 2)
+    expected_rational5 = Rational(14, 39)
+
+    assert rational1 * 3 == expected_rational1
+    assert 2 * rational2 == expected_rational2
+    assert rational3 * 99 == expected_rational3
+    assert rational4 * 9 == expected_rational4
+    assert rational5 * rational6 == expected_rational5
