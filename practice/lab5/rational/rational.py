@@ -100,10 +100,13 @@ class Rational:
         return self.__mul__(other)
 
     def __truediv__(self, other: Union[Rational, int]) -> Rational:
+        if other == 0:
+            raise ZeroDivisionError
+
         return Rational._div(self, other)
 
     def __rtruediv__(self, other: Union[Rational, int]) -> Rational:
-        return Rational._div(other, self)
+        return Rational._div(self, other)
 
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)
@@ -113,9 +116,6 @@ class Rational:
     @staticmethod
     def _sub(first: Union[Rational, int], second: Union[Rational, int]) -> Rational:
         if isinstance(second, int):
-            if second == 0:
-                raise ZeroDivisionError
-
             new_numerator: int = first.numerator - (second * first.denominator)
 
             new_rational = Rational(new_numerator, first.denominator)
@@ -135,6 +135,9 @@ class Rational:
     @staticmethod
     def _div(first: Union[Rational, int], second: Union[Rational, int]) -> Rational:
         if isinstance(second, int):
+            if second == 0:
+                return Rational()
+
             new_denominator: int = first.denominator * second
 
             new_rational = Rational(first.numerator, new_denominator)

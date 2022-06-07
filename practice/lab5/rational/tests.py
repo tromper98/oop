@@ -192,13 +192,14 @@ def test_div_rational():
 
     expected_rational1 = Rational(4, 72)
     expected_rational2 = Rational(-1, 4)
-    expected_rational3 = Rational(0, 1)
-    expected_rational4 = Rational(2, 25)
-    expected_rational5 = Rational(100, 49)
+    expected_rational3 = Rational(2, 25)
+    expected_rational4 = Rational(100, 49)
+    expected_rational5 = Rational(0, 1)
 
     assert rational1 / 8 == expected_rational1
     assert 2 / rational2 == expected_rational2
-    assert rational4 / -5 == expected_rational4
-    assert rational5 / rational6 == expected_rational5
-    with pytest.raises(ZeroDenominatorError):
-        0 / rational3
+    assert rational4 / -5 == expected_rational3
+    assert rational5 / rational6 == expected_rational4
+    assert 0 / rational3 == expected_rational5
+    with pytest.raises(ZeroDivisionError):
+        rational3 / 0
