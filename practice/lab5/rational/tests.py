@@ -225,3 +225,18 @@ def test_imul_isub_rational():
     assert rational2 == expected_rational2
     assert rational3 == expected_rational3
     assert rational4 == expected_rational4
+
+
+def test_not_equal_rational():
+    rational1 = Rational(1, 2)
+    rational2 = Rational(3, 8)
+    rational3 = Rational(3, 6)
+    rational4 = Rational(9, 24)
+    rational5 = Rational()
+    rational6 = Rational(0, 1000)
+
+    assert rational1 != rational2
+    assert not rational1 != rational3
+    assert not rational2 != rational4
+    assert not rational5 != rational6
+    assert rational3 != rational5

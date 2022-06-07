@@ -50,6 +50,9 @@ class Rational:
 
             return True
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __pos__(self):
         return Rational(self.numerator, self.denominator)
 
