@@ -139,7 +139,7 @@ def test_fail_sub_with_incorrect_operand():
         (566, 24) - rational
 
 
-def test_short_add_sub_rational():
+def test_iadd_and_isub_rational():
     rational1 = Rational(4, 5)
     rational2 = Rational(3, 8)
     rational3 = Rational(1, 2)
