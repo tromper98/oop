@@ -93,6 +93,9 @@ class Rational:
         return Rational._mul(self, other, create_new=False)
 
     def __itruediv__(self, other):
+        if other == 0:
+            raise ZeroDivisionError
+
         return Rational._div(self, other, create_new=False)
 
     def _normalize_rational(self):
@@ -206,8 +209,8 @@ class Rational:
             return new_rational
 
         if isinstance(second, Rational):
-            new_denominator: int = first.numerator * second.denominator
-            new_numerator: int = first.denominator * second.numerator
+            new_numerator: int = first.numerator * second.denominator
+            new_denominator: int = first.denominator * second.numerator
 
             if not create_new:
                 first._numerator = new_numerator

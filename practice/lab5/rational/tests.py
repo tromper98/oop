@@ -193,7 +193,7 @@ def test_div_rational():
     expected_rational1 = Rational(4, 72)
     expected_rational2 = Rational(-1, 4)
     expected_rational3 = Rational(2, 25)
-    expected_rational4 = Rational(100, 49)
+    expected_rational4 = Rational(49, 100)
     expected_rational5 = Rational(0, 1)
 
     assert rational1 / 8 == expected_rational1
@@ -203,3 +203,25 @@ def test_div_rational():
     assert 0 / rational3 == expected_rational5
     with pytest.raises(ZeroDivisionError):
         rational3 / 0
+
+
+def test_imul_isub_rational():
+    rational1 = Rational(4, 5)
+    rational2 = Rational(3, 8)
+    rational3 = Rational(10, 8)
+    rational4 = Rational(6, 2)
+
+    rational1 *= 2
+    rational2 *= Rational(-6, 9)
+    rational3 /= 7
+    rational4 /= Rational(3, 2)
+
+    expected_rational1 = Rational(8, 5)
+    expected_rational2 = Rational(-1, 4)
+    expected_rational3 = Rational(5, 28)
+    expected_rational4 = Rational(2, 1)
+
+    assert rational1 == expected_rational1
+    assert rational2 == expected_rational2
+    assert rational3 == expected_rational3
+    assert rational4 == expected_rational4
