@@ -1,4 +1,5 @@
 from __future__ import annotations
+from operator import xor
 from typing import Union
 
 from math import gcd
@@ -14,7 +15,7 @@ class Rational:
         if denominator == 0:
             raise ZeroDenominatorError
 
-        if numerator < 0 or denominator < 0:
+        if xor(numerator < 0, denominator < 0):
             self._sign = -1
         else:
             self._sign = 1
@@ -99,10 +100,10 @@ class Rational:
         return self.__mul__(other)
 
     def __truediv__(self, other: Union[Rational, int]) -> Rational:
-        ...
+        return Rational._div(self, other)
 
     def __rtruediv__(self, other: Union[Rational, int]) -> Rational:
-        ...
+        return Rational._div(other, self)
 
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)
@@ -110,17 +111,39 @@ class Rational:
         self._denominator = self._denominator // gcd_result
 
     @staticmethod
-    def _sub(first, second) -> Rational:
+    def _sub(first: Union[Rational, int], second: Union[Rational, int]) -> Rational:
         if isinstance(second, int):
+            if second == 0:
+                raise ZeroDivisionError
+
             new_numerator: int = first.numerator - (second * first.denominator)
 
             new_rational = Rational(new_numerator, first.denominator)
             new_rational._normalize_rational()
-            return Rational(new_numerator, first.denominator)
+            return new_rational
 
         if isinstance(second, Rational):
             new_denominator = first.denominator * second.denominator
             new_numerator = (first.numerator * second.denominator) - (second.numerator * first.denominator)
+
+            new_rational = Rational(new_numerator, new_denominator)
+            new_rational._normalize_rational()
+            return new_rational
+
+        raise InvalidOperandType(second)
+
+    @staticmethod
+    def _div(first: Union[Rational, int], second: Union[Rational, int]) -> Rational:
+        if isinstance(second, int):
+            new_denominator: int = first.denominator * second
+
+            new_rational = Rational(first.numerator, new_denominator)
+            new_rational._normalize_rational()
+            return new_rational
+
+        if isinstance(second, Rational):
+            new_denominator: int = first.numerator * second.denominator
+            new_numerator: int = first.denominator * second.numerator
 
             new_rational = Rational(new_numerator, new_denominator)
             new_rational._normalize_rational()

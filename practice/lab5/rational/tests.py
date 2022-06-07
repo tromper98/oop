@@ -180,3 +180,25 @@ def test_mul_rational():
     assert rational3 * 99 == expected_rational3
     assert rational4 * 9 == expected_rational4
     assert rational5 * rational6 == expected_rational5
+
+
+def test_div_rational():
+    rational1 = Rational(4, 9)
+    rational2 = Rational(-1, 2)
+    rational3 = Rational(3, 10)
+    rational4 = Rational(-6, 15)
+    rational5 = Rational(7, 10)
+    rational6 = Rational(10, 7)
+
+    expected_rational1 = Rational(4, 72)
+    expected_rational2 = Rational(-1, 4)
+    expected_rational3 = Rational(0, 1)
+    expected_rational4 = Rational(2, 25)
+    expected_rational5 = Rational(100, 49)
+
+    assert rational1 / 8 == expected_rational1
+    assert 2 / rational2 == expected_rational2
+    assert rational4 / -5 == expected_rational4
+    assert rational5 / rational6 == expected_rational5
+    with pytest.raises(ZeroDenominatorError):
+        0 / rational3
