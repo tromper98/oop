@@ -255,3 +255,17 @@ def test_lt_operator_rational():
     assert not rational3 < rational4
     assert not 3 < rational4
     assert rational6 < rational5
+
+
+def test_gt_operator_rational():
+    rational1 = Rational(1, 2)
+    rational2 = Rational(4, 8)
+    rational3 = Rational(18, 30)
+    rational4 = Rational(5, 9)
+    rational5 = Rational(-3, 7)
+    rational6 = Rational(-2, 21)
+
+    assert not rational1 > rational2
+    assert rational3 > -1
+    assert not rational4 > 10
+    assert rational6 > rational5

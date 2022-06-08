@@ -113,7 +113,15 @@ class Rational:
         raise InvalidOperandType(other)
 
     def __gt__(self, other: Union[int, Rational]):
-        ...
+        if isinstance(other, int):
+            return True if self.numerator > other * self.denominator else False
+
+        if isinstance(other, Rational):
+            new_numerator1 = self.numerator * other.denominator
+            new_numerator2 = other.numerator * self.denominator
+            return True if new_numerator1 > new_numerator2 else False
+
+        raise InvalidOperandType(other)
 
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)
