@@ -101,7 +101,7 @@ class Rational:
 
         return Rational._div(self, other, create_new=False)
 
-    def __lt__(self, other: Union[int, Rational]):
+    def __lt__(self, other: Union[int, Rational]) -> bool:
         if isinstance(other, int):
             return True if self.numerator < other * self.denominator else False
 
@@ -112,7 +112,7 @@ class Rational:
 
         raise InvalidOperandType(other)
 
-    def __gt__(self, other: Union[int, Rational]):
+    def __gt__(self, other: Union[int, Rational]) -> bool:
         if isinstance(other, int):
             return True if self.numerator > other * self.denominator else False
 
@@ -122,6 +122,12 @@ class Rational:
             return True if new_numerator1 > new_numerator2 else False
 
         raise InvalidOperandType(other)
+
+    def __le__(self, other) -> bool:
+        return True if self.__lt__(other) or self.__eq__(other) else False
+
+    def __ge__(self, other) -> bool:
+        return True if self.__gt__(other) or self.__eq__(other) else False
 
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)

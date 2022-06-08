@@ -269,3 +269,33 @@ def test_gt_operator_rational():
     assert rational3 > -1
     assert not rational4 > 10
     assert rational6 > rational5
+
+
+def test_le_operator_rational():
+    rational1 = Rational(4, 9)
+    rational2 = Rational(-1, 2)
+    rational3 = Rational(3, 8)
+    rational4 = Rational(-6, 15)
+    rational5 = Rational(7, 10)
+    rational6 = Rational(21, 30)
+
+    assert not rational1 <= rational2
+    assert rational2 <= rational3
+    assert not rational3 <= rational4
+    assert rational4 <= rational5
+    assert rational5 <= rational6
+
+
+def test_ge_operator_rational():
+    rational1 = Rational(4, 9)
+    rational2 = Rational(-1, 2)
+    rational3 = Rational(3, 8)
+    rational4 = Rational(-6, 15)
+    rational5 = Rational(7, 10)
+    rational6 = Rational(21, 30)
+
+    assert rational1 >= rational2
+    assert not rational2 >= rational3
+    assert rational3 >= rational4
+    assert not rational4 >= rational5
+    assert  rational5 >= rational6
