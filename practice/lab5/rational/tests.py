@@ -240,3 +240,18 @@ def test_not_equal_rational():
     assert not rational2 != rational4
     assert not rational5 != rational6
     assert rational3 != rational5
+
+
+def test_lt_operator_rational():
+    rational1 = Rational(6, 11)
+    rational2 = Rational(-3, 5)
+    rational3 = Rational(5, 10)
+    rational4 = Rational(1, 2)
+    rational5 = Rational(-2, 7)
+    rational6 = Rational(-8, 19)
+
+    assert rational1 < 1
+    assert rational2 < rational1
+    assert not rational3 < rational4
+    assert not 3 < rational4
+    assert rational6 < rational5
