@@ -21,6 +21,12 @@ def test_init_rational():
     with pytest.raises(ZeroDenominatorError):
         Rational(1, 0)
 
+    with pytest.raises(InvalidNumeratorType):
+        Rational(1.0, 5)
+
+    with pytest.raises(InvalidDenominatorType):
+        Rational(1, ['str'])
+
 
 def test_normalize_rationals():
     rational1 = Rational(1, 4)
@@ -161,7 +167,7 @@ def test_iadd_and_isub_rational():
     assert rational4 == expected_rational4
 
 
-def test_mul_rational():
+def test_multiply_rational():
     rational1 = Rational(8, 19)
     rational2 = Rational(3, 7)
     rational3 = Rational()
@@ -182,7 +188,7 @@ def test_mul_rational():
     assert rational5 * rational6 == expected_rational5
 
 
-def test_div_rational():
+def test_divide_rational():
     rational1 = Rational(4, 9)
     rational2 = Rational(-1, 2)
     rational3 = Rational(3, 10)
@@ -242,14 +248,16 @@ def test_not_equal_rational():
     assert rational3 != rational5
 
 
-def test_lt_operator_rational():
+def test_less_operator_rational():
     rational1 = Rational(6, 11)
     rational2 = Rational(-3, 5)
     rational3 = Rational(5, 10)
     rational4 = Rational(1, 2)
     rational5 = Rational(-2, 7)
     rational6 = Rational(-8, 19)
+    rational7 = Rational(-3, -3)
 
+    assert rational7 == 1
     assert rational1 < 1
     assert rational2 < rational1
     assert not rational3 < rational4
@@ -257,28 +265,32 @@ def test_lt_operator_rational():
     assert rational6 < rational5
 
 
-def test_gt_operator_rational():
+def test_grater_operator_rational():
     rational1 = Rational(1, 2)
     rational2 = Rational(4, 8)
     rational3 = Rational(18, 30)
     rational4 = Rational(5, 9)
     rational5 = Rational(-3, 7)
     rational6 = Rational(-2, 21)
+    rational7 = Rational(-2, -2)
 
+    assert rational7 >= Rational(1, 1)
     assert not rational1 > rational2
     assert rational3 > -1
     assert not rational4 > 10
     assert rational6 > rational5
 
 
-def test_le_operator_rational():
+def test_less_or_equal_operator_rational():
     rational1 = Rational(4, 9)
     rational2 = Rational(-1, 2)
     rational3 = Rational(3, 8)
     rational4 = Rational(-6, 15)
     rational5 = Rational(7, 10)
     rational6 = Rational(21, 30)
+    rational7 = Rational(-1, -1)
 
+    assert rational7 <= Rational(3, 3)
     assert not rational1 <= rational2
     assert rational2 <= rational3
     assert not rational3 <= rational4
@@ -286,7 +298,7 @@ def test_le_operator_rational():
     assert rational5 <= rational6
 
 
-def test_ge_operator_rational():
+def test_grater_or_equal_operator_rational():
     rational1 = Rational(4, 9)
     rational2 = Rational(-1, 2)
     rational3 = Rational(3, 8)
@@ -299,3 +311,20 @@ def test_ge_operator_rational():
     assert rational3 >= rational4
     assert not rational4 >= rational5
     assert rational5 >= rational6
+
+
+def test_to_compound_fraction_rational():
+    rational1 = Rational(3, 9)
+    rational2 = Rational(0, 6)
+    rational3 = Rational(10, 3)
+    rational4 = Rational(-9, 4)
+
+    expected1 = (0, Rational(3, 9))
+    expected2 = (0, Rational(0, 6))
+    expected3 = (3, Rational(1, 3))
+    expected4 = (-2, Rational(-1, 4))
+
+    assert rational1.to_compound_fraction() == expected1
+    assert rational2.to_compound_fraction() == expected2
+    assert rational3.to_compound_fraction() == expected3
+    assert rational4.to_compound_fraction() == expected4

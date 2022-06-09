@@ -1,10 +1,9 @@
 from __future__ import annotations
-from typing import Optional
-
-from operator import xor
-from typing import Union
 
 from math import gcd
+from operator import xor
+from typing import Union, Tuple
+
 from exceptions import *
 
 
@@ -14,6 +13,11 @@ class Rational:
     _sign: int
 
     def __init__(self, numerator: int = 0, denominator: int = 1):
+        if not isinstance(numerator, int):
+            raise InvalidNumeratorType(numerator)
+        if not isinstance(denominator, int):
+            raise InvalidDenominatorType(denominator)
+
         if denominator == 0:
             raise ZeroDenominatorError
 
@@ -38,6 +42,9 @@ class Rational:
         return self.numerator / self.denominator
 
     def __eq__(self, other) -> bool:
+        if isinstance(other, int):
+            return True if self.numerator == other * self.denominator else False
+
         if isinstance(other, Rational):
             self_gcd = gcd(self.numerator, self.denominator)
             other_gcd = gcd(other.numerator, other.denominator)
@@ -49,6 +56,8 @@ class Rational:
                 return False
 
             return True
+
+        raise InvalidOperandType(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -136,6 +145,11 @@ class Rational:
         gcd_result = gcd(self.numerator, self.denominator)
         self._numerator = self._numerator // gcd_result
         self._denominator = self._denominator // gcd_result
+
+    def to_compound_fraction(self) -> Tuple[int, Rational]:
+        integer_part: int = self._numerator // self.denominator * self._sign
+        fractional_part: Rational = Rational(self._numerator % self.denominator * self._sign, self.denominator)
+        return integer_part, fractional_part
 
     @staticmethod
     def _add(first: Rational, second: Union[Rational, int], create_new: bool = True) -> Rational:
