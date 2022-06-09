@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from math import gcd
-from operator import xor
 from typing import Union, Tuple
 
 from exceptions import *
@@ -10,7 +9,7 @@ from exceptions import *
 class Rational:
     _numerator: int
     _denominator: int
-    _sign: int
+#Лучше знак не хранить
 
     def __init__(self, numerator: int = 0, denominator: int = 1):
         if not isinstance(numerator, int):
@@ -21,17 +20,16 @@ class Rational:
         if denominator == 0:
             raise ZeroDenominatorError
 
-        if xor(numerator < 0, denominator < 0):
-            self._sign = -1
-        else:
-            self._sign = 1
+        if denominator < 0:
+            numerator *= -1
 
-        self._numerator = abs(numerator)
+        self._numerator = numerator
         self._denominator = abs(denominator)
+        self._normalize_rational()
 
     @property
     def numerator(self):
-        return self._numerator * self._sign
+        return self._numerator
 
     @property
     def denominator(self):
@@ -41,25 +39,17 @@ class Rational:
     def to_float(self):
         return self.numerator / self.denominator
 
+#Возможно код станет проще, если сразу нормализовывать при создании
     def __eq__(self, other) -> bool:
         if isinstance(other, int):
-            return True if self.numerator == other * self.denominator else False
+            return self.numerator == other * self.denominator
 
         if isinstance(other, Rational):
-            self_gcd = gcd(self.numerator, self.denominator)
-            other_gcd = gcd(other.numerator, other.denominator)
-
-            if self.numerator / self_gcd != other.numerator / other_gcd:
-                return False
-
-            if self.denominator / self_gcd != other.denominator / other_gcd:
-                return False
-
-            return True
+            return self.numerator == other.numerator
 
         raise InvalidOperandType(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
     def __pos__(self):
@@ -95,6 +85,7 @@ class Rational:
     def __rtruediv__(self, other: Union[Rational, int]) -> Rational:
         return Rational._div(self, other)
 
+#Попробовать реализовать _add как модифицирующую операцию
     def __iadd__(self, other):
         return Rational._add(self, other, create_new=False)
 
@@ -112,23 +103,19 @@ class Rational:
 
     def __lt__(self, other: Union[int, Rational]) -> bool:
         if isinstance(other, int):
-            return True if self.numerator < other * self.denominator else False
+            return self.numerator < other * self.denominator
 
         if isinstance(other, Rational):
-            new_numerator1 = self.numerator * other.denominator
-            new_numerator2 = other.numerator * self.denominator
-            return True if new_numerator1 < new_numerator2 else False
+            return self.numerator < other.numerator  # упростить
 
         raise InvalidOperandType(other)
 
     def __gt__(self, other: Union[int, Rational]) -> bool:
         if isinstance(other, int):
-            return True if self.numerator > other * self.denominator else False
+            return self.numerator > other * self.denominator
 
         if isinstance(other, Rational):
-            new_numerator1 = self.numerator * other.denominator
-            new_numerator2 = other.numerator * self.denominator
-            return True if new_numerator1 > new_numerator2 else False
+            return self.numerator > other.numerator
 
         raise InvalidOperandType(other)
 
@@ -138,6 +125,7 @@ class Rational:
     def __ge__(self, other) -> bool:
         return True if self.__gt__(other) or self.__eq__(other) else False
 
+#написать тест
     def __str__(self):
         return f'{self.numerator}/{self.denominator}'
 
@@ -147,8 +135,13 @@ class Rational:
         self._denominator = self._denominator // gcd_result
 
     def to_compound_fraction(self) -> Tuple[int, Rational]:
-        integer_part: int = self._numerator // self.denominator * self._sign
-        fractional_part: Rational = Rational(self._numerator % self.denominator * self._sign, self.denominator)
+        integer_part: int = abs(self.numerator) // self.denominator
+        new_numerator = abs(self.numerator) % self.denominator
+        if self.numerator < 0:
+            integer_part *= -1
+            new_numerator *= -1
+
+        fractional_part: Rational = Rational(new_numerator, self.denominator)
         return integer_part, fractional_part
 
     @staticmethod
@@ -181,6 +174,9 @@ class Rational:
 
     @staticmethod
     def _sub(first: Union[Rational, int], second: Union[Rational, int], create_new: bool = True) -> Rational:
+        if not isinstance(first, (Rational, int)):
+            raise InvalidOperandType(first)
+
         if isinstance(second, int):
             new_numerator: int = first.numerator - (second * first.denominator)
 
