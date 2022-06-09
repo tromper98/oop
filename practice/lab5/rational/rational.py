@@ -129,6 +129,9 @@ class Rational:
     def __ge__(self, other) -> bool:
         return True if self.__gt__(other) or self.__eq__(other) else False
 
+    def __str__(self):
+        return f'{self.numerator}/{self.denominator}'
+
     def _normalize_rational(self):
         gcd_result = gcd(self.numerator, self.denominator)
         self._numerator = self._numerator // gcd_result

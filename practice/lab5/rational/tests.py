@@ -298,4 +298,4 @@ def test_ge_operator_rational():
     assert not rational2 >= rational3
     assert rational3 >= rational4
     assert not rational4 >= rational5
-    assert  rational5 >= rational6
+    assert rational5 >= rational6
