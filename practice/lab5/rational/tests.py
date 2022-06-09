@@ -216,3 +216,11 @@ def test_to_compound_fraction_rational():
     assert rational2.to_compound_fraction() == expected2
     assert rational3.to_compound_fraction() == expected3
     assert rational4.to_compound_fraction() == expected4
+
+
+def test_rational_to_str():
+    assert Rational().__str__() == '0/1'
+    assert Rational(3, 4).__str__() == '3/4'
+    assert Rational(6, 18).__str__() == '1/3'
+    assert Rational(-1, 5).__str__() == '-1/5'
+    assert Rational(-1, -9).__str__() == '1/9'
