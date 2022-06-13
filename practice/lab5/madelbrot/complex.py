@@ -4,7 +4,7 @@ import math
 
 from exceptions import *
 
-FLOAT_EPSILON = 0.0000001
+FLOAT_EPSILON = 0.00000001
 
 
 class Complex:
@@ -12,10 +12,10 @@ class Complex:
     _image: float
 
     def __init__(self, real: float = 0, image: float = 0):
-        if not isinstance(real, float):
+        if not isinstance(real, (int, float)):
             raise InvalidVariableType(real)
 
-        if not isinstance(real, float):
+        if not isinstance(real, (int, float)):
             raise InvalidVariableType(real)
 
         self._real = real
@@ -34,7 +34,7 @@ class Complex:
         return math.sqrt(self.re ** 2 + self.im ** 2)
 
     def __add__(self, other) -> Complex:
-        if isinstance(other, float):
+        if isinstance(other, (int, float)):
             other = Complex(other)
 
         if isinstance(other, Complex):
@@ -52,7 +52,7 @@ class Complex:
         return Complex._sub(other, self)
 
     def __mul__(self, other) -> Complex:
-        if isinstance(other, float):
+        if isinstance(other, (int, float)):
             other = Complex(other)
 
         if isinstance(other, Complex):
@@ -66,7 +66,7 @@ class Complex:
         return self.__mul__(other)
 
     def __truediv__(self, other) -> Complex:
-        return Complex._sub(self, other)
+        return Complex._div(self, other)
 
     def __rtruediv__(self, other) -> Complex:
         return Complex._div(other, self)
@@ -77,15 +77,23 @@ class Complex:
     def __neg__(self) -> Complex:
         return Complex(-self.re, -self.im)
 
-    def __eq__(self, other) -> bool:
-        if abs(self.re - self.re) < FLOAT_EPSILON or abs(self.im - self.im) < FLOAT_EPSILON:
+    def __eq__(self, other: Union[float, int, Complex]) -> bool:
+        if isinstance(other, (float, int)):
+            other = Complex(other)
+        if (abs(self.re - other.re) < FLOAT_EPSILON) and (abs(self.im - other.im) < FLOAT_EPSILON):
             return True
 
         return False
 
+    def __ne__(self, other) -> bool:
+        return not self.__eq__(other)
+
     @staticmethod
-    def _sub(first: Complex, second: Union[float, Complex]) -> Complex:
-        if isinstance(second, float):
+    def _sub(first: Union[float, int, Complex], second: Union[float, int, Complex]) -> Complex:
+        if isinstance(first, (int, float)):
+            first = Complex(first)
+
+        if isinstance(second, (int, float)):
             second = Complex(second)
 
         if isinstance(second, Complex):
@@ -94,9 +102,12 @@ class Complex:
         raise InvalidOperandType(second)
 
     @staticmethod
-    def _div(first: Complex, second: Union[float, Complex]) -> Complex:
-        if isinstance(second, float):
-            second = Complex
+    def _div(first: Union[float, int, Complex], second: Union[float, int, Complex]) -> Complex:
+        if isinstance(first, (int, float)):
+            first = Complex(first)
+
+        if isinstance(second, (int, float)):
+            second = Complex(second)
 
         if isinstance(second, Complex):
             new_re: float = (first.re * second.re + first.im * second.im) / (second.re ** 2 + second.im ** 2)
