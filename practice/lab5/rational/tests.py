@@ -132,7 +132,8 @@ def test_multiply_rational():
 
 def test_divide_rational():
     assert Rational(4, 9) / 8 == Rational(4, 72)
-    assert 2 / Rational(-1, 2) == Rational(-1, 4)
+    assert 2 / Rational(-1, 2) == Rational(-4, 1)
+    assert Rational(-1, 2) / 2 == Rational(-1, 2)
     assert Rational(-6, 15) / -5 == Rational(2, 25)
     assert Rational(7, 10) / Rational(10, 7) == Rational(49, 100)
     assert 0 / Rational(3, 10) == Rational(0, 1)
