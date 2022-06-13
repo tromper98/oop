@@ -12,6 +12,12 @@ class Complex:
     _image: float
 
     def __init__(self, real: float = 0, image: float = 0):
+        if not isinstance(real, float):
+            raise InvalidVariableType(real)
+
+        if not isinstance(real, float):
+            raise InvalidVariableType(real)
+
         self._real = real
         self._image = image
 
