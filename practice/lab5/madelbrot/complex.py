@@ -4,6 +4,8 @@ import math
 
 from exceptions import *
 
+FLOAT_EPSILON = 0.0000001
+
 
 class Complex:
     _real: float
@@ -69,6 +71,12 @@ class Complex:
     def __neg__(self) -> Complex:
         return Complex(-self.re, -self.im)
 
+    def __eq__(self, other) -> bool:
+        if abs(self.re - self.re) < FLOAT_EPSILON or abs(self.im - self.im) < FLOAT_EPSILON:
+            return True
+
+        return False
+
     @staticmethod
     def _sub(first: Complex, second: Union[float, Complex]) -> Complex:
         if isinstance(second, float):
@@ -85,8 +93,8 @@ class Complex:
             second = Complex
 
         if isinstance(second, Complex):
-            new_re: float = (first.re * second.re + first.im * second.im) / (second.re**2 + second.im**2)
-            new_im: float = (first.im * second.re - first.re * second.im) / (second.re**2 + second.im**2)
+            new_re: float = (first.re * second.re + first.im * second.im) / (second.re ** 2 + second.im ** 2)
+            new_im: float = (first.im * second.re - first.re * second.im) / (second.re ** 2 + second.im ** 2)
             return Complex(new_re, new_im)
 
         raise InvalidOperandType(second)
