@@ -87,3 +87,10 @@ def test_neg_operator_complex():
     assert -Complex(9, -5) == Complex(-9, 5)
     assert -Complex(-10, 4) == Complex(10, -4)
     assert -Complex(-9, -15) == Complex(9, 15)
+
+
+def test_complex_to_str():
+    assert Complex().__str__() == '0 + 0i'
+    assert Complex(3, 8).__str__() == '3 + 8i'
+    assert Complex(5, -2).__str__() == '5 - 2i'
+    assert Complex(-6, -10).__str__() == '-6 - 10i'

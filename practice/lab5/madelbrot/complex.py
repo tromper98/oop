@@ -88,6 +88,9 @@ class Complex:
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
+    def __str__(self):
+        return f'{self.re}' + (f' + ' if self.im >= 0 else f' - ') + f'{abs(self.im)}i'
+
     @staticmethod
     def _sub(first: Union[float, int, Complex], second: Union[float, int, Complex]) -> Complex:
         if isinstance(first, (int, float)):
