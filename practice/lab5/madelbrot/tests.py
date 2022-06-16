@@ -1,4 +1,5 @@
 import pytest
+import math
 
 from exceptions import *
 from complex import Complex
@@ -94,3 +95,10 @@ def test_complex_to_str():
     assert Complex(3, 8).__str__() == '3 + 8i'
     assert Complex(5, -2).__str__() == '5 - 2i'
     assert Complex(-6, -10).__str__() == '-6 - 10i'
+
+
+def test_magnitude_complex():
+    assert Complex(1,1).magnitude == math.sqrt(2)
+    assert Complex(4, 9).magnitude == math.sqrt(97)
+    assert Complex(-5, 9).magnitude == math.sqrt(106)
+    assert Complex(-4, -7).magnitude == math.sqrt(65)
