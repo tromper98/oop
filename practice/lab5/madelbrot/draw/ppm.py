@@ -1,30 +1,38 @@
-from typing import List, Tuple
+from typing import List
 
-from rgb import RGB
+from .rgb import RGB
+from exceptions.ppmexceptions import *
 
-FORMAT = 'P6'
+FORMAT = 'P3'
+MAX_COLOR = 'ffffff'
 
 
 class PPMImage:
     _file_name: str
-    _columns: int
-    _rows: int
     _brightness: int
 
-    def __init__(self, file_name: str, columns: int, rows: int, brightness: int = 1):
+    def __init__(self, file_name: str, brightness: int = 1):
+        if not isinstance(file_name, str):
+            raise FileNameTypeError(file_name)
+
         if not 1 <= brightness <= 255:
-            raise ValueError('Brightness must be in [1, 255]')
+            raise BrightnessError(brightness)
 
         self._file_name = file_name
-        self._columns = columns
-        self._rows = rows
         self._brightness = brightness
 
-    def save(self, pixels: List[RGB]):
-        with open(self._file_name, 'w', encoding='utf-8') as file:
-            file.write(FORMAT)
-            file.write(f'{self._columns} {self._rows}')
-            file.write(f'{self._brightness}')
-            for pixel in pixels:
-                file.write(f'{pixel.r} {pixel.g} {pixel.b}')
+    def save(self, pixels: List[List[float]]):
+        encoded_pixels = []
+        rows = len(pixels)
+        columns = len(pixels[0])
 
+        for row in pixels:
+            encoded_row = list(map(RGB.from_number, list(map(int, row))))
+            encoded_pixels.extend(encoded_row)
+
+        with open(self._file_name, 'w', encoding='utf-8') as file:
+            file.write(FORMAT + '\n')
+            file.write(f'{rows} {columns}\n')
+            file.write(f'{self._brightness}\n')
+            for pixel in encoded_pixels:
+                file.write(f'{pixel.r} {pixel.g} {pixel.b}\n')

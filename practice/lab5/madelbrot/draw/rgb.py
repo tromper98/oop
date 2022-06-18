@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from exceptions.rgbexceptions import *
+
+
 class RGB:
     _r: int
     _g: int
@@ -32,3 +37,10 @@ class RGB:
     @property
     def b(self):
         return self._b
+
+    @staticmethod
+    def from_number(number: int) -> RGB:
+        blue = number & 255
+        green = (number >> 8) & 255
+        red = (number >> 16) & 255
+        return RGB(blue, green, red)
