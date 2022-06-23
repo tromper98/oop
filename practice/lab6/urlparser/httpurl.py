@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 
-from
+from exceptions import *
 
 POSSIBLE_PROTOCOLS = {
     'http': 80,
@@ -15,16 +15,42 @@ class HttpUrl:
     _port: Optional[int]
     _document: Optional[str]
 
-    def __init__(self, protocol: str, domain: str, port: Optional[int], document: Optional[str] = None):
+    def __init__(self, protocol: str, domain: str, port: Optional[int] = None, document: Optional[str] = None):
+        HttpUrl._validate_arguments(protocol, domain, port)
 
-        self._protocol = protocol
+        self._protocol = protocol.lower()
         self._domain = domain
         self._port = port if protocol not in POSSIBLE_PROTOCOLS.values() else None
-        self._document = document if document[0] == '/' else '/' + document
+
+        if document:
+            self._document = document if document[0] == '/' else '/' + document
+        else:
+            self._document = None
 
     @classmethod
     def from_string(cls, url: str) -> HttpUrl:
         ...
+
+    @staticmethod
+    def _validate_arguments(protocol: str, domain: str, port: Optional[int]):
+        if protocol.lower() not in POSSIBLE_PROTOCOLS:
+            raise InvalidProtocol(protocol, list(POSSIBLE_PROTOCOLS.keys()))
+
+        if domain is None or domain == '':
+            raise InvalidDomain()
+
+        if port is not None and not HttpUrl._is_valid_port(port):
+            raise InvalidPort(port)
+
+    @staticmethod
+    def _is_valid_port(port: int) -> bool:
+        if not isinstance(port, int):
+            return False
+
+        if not 1 <= port <= 65535:
+            return False
+
+        return True
 
     def _parse_url(self, url: str):
         ...
@@ -34,8 +60,13 @@ class HttpUrl:
         url: str = f'{self._protocol}://{self._domain}'
         if self._port:
             url += f':{self._port}'
-        url += self._document
+        if self._document:
+            url += self._document
         return url
+
+    @property
+    def protocol(self) -> str:
+        return self._protocol
 
     @property
     def domain(self) -> str:
@@ -43,6 +74,9 @@ class HttpUrl:
 
     @property
     def document(self) -> str:
+        if not self._document:
+            return '/'
+
         return self._document
 
     @property
