@@ -24,3 +24,7 @@ class InvalidPort(HttpUrlExceptions):
     def __init__(self, port):
         print(f"Invalid port. Port must be integer in [1, 65535] but {port} were given")
 
+
+class EmptyProtocol(HttpUrlExceptions):
+    def __init__(self):
+        print('Protocol im URL doesn\'t found')

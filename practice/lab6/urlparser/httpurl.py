@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Tuple
 
 from exceptions import *
 
@@ -7,6 +7,9 @@ POSSIBLE_PROTOCOLS = {
     'http': 80,
     'https': 443
 }
+
+MAX_PREFIX_LENGTH: int = 8
+PROTOCOL_HOST_DELIMITER_LENGTH: int = 3
 
 
 class HttpUrl:
@@ -29,7 +32,8 @@ class HttpUrl:
 
     @classmethod
     def from_string(cls, url: str) -> HttpUrl:
-        ...
+        protocol, domain, port, document = cls._parse_url(url)
+        return HttpUrl(protocol, domain, port, document)
 
     @staticmethod
     def _validate_arguments(protocol: str, domain: str, port: Optional[int]):
@@ -52,8 +56,39 @@ class HttpUrl:
 
         return True
 
-    def _parse_url(self, url: str):
-        ...
+    @staticmethod
+    def _parse_url(url: str) -> Tuple[str, str, int, str]:
+        prefix: str = url[0:MAX_PREFIX_LENGTH]
+        if '://' not in prefix:
+            raise EmptyProtocol()
+
+        protocol: str = prefix[:prefix.find(':')].lower()
+
+        path: str = url[len(protocol) + PROTOCOL_HOST_DELIMITER_LENGTH:]
+
+        host_end: int = path.find(':')
+        port_end: int = path.find('/')
+
+        if host_end > port_end and port_end != -1:
+            host_end = -1
+
+        if port_end == -1:
+            port_end = len(path)
+
+        if host_end != -1:
+            host: str = path[:host_end]
+            port: Optional[str] = path[host_end + 1: port_end]
+            try:
+                port: int = int(port)
+            except ValueError:
+                raise InvalidPort(port)
+
+        else:
+            host = path[:port_end]
+            port = None
+
+        document: Optional[str] = path[port_end + 1:]
+        return protocol, host, port, document
 
     @property
     def url(self) -> str:

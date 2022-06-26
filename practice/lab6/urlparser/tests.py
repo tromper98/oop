@@ -4,6 +4,22 @@ from exceptions import *
 from httpurl import HttpUrl
 
 
+def is_equal_urls(target: HttpUrl, expected: HttpUrl) -> bool:
+    if target.protocol != expected.protocol:
+        return False
+
+    if target.domain != expected.domain:
+        return False
+
+    if target.port != expected.port:
+        return False
+
+    if target.document != expected.document:
+        return False
+
+    return True
+
+
 def test_create_url_from_args():
     url = HttpUrl('http', 'www.domain.com', 45, '/document')
     assert url.url == 'http://www.domain.com:45/document'
@@ -86,3 +102,39 @@ def test_fail_create_url_with_invalid_ports():
         HttpUrl('https', 'www.test.com', 0)
     with pytest.raises(InvalidPort):
         HttpUrl('https', 'www.google.com', 65536)
+
+
+def test_create_httpurl_from_string():
+    url1 = 'https://google.com/docs/text1.txt'
+    url2 = 'HTTPS://yandex.com:70/docs/text2.txt'
+    url3 = 'http://go.ru'
+    url4 = 'http://dada.ua:50'
+
+    expected1 = HttpUrl('https', 'google.com', document='docs/text1.txt')
+    expected2 = HttpUrl('https', 'yandex.com', 70, 'docs/text2.txt')
+    expected3 = HttpUrl('http', 'go.ru')
+    expected4 = HttpUrl('http', 'dada.ua', 50)
+
+    assert is_equal_urls(HttpUrl.from_string(url1), expected1)
+    assert is_equal_urls(HttpUrl.from_string(url2), expected2)
+    assert is_equal_urls(HttpUrl.from_string(url3), expected3)
+    assert is_equal_urls(HttpUrl.from_string(url4), expected4)
+
+
+def test_fail_create_httpurl_from_string():
+    url1 = 'httr://google.com/docs/text1.txt'
+    url2 = 'HTTps://yandex.com:-70/docs/text2.txt'
+    url3 = 'http://go.ru:0'
+    url4 = 'http://:50'
+
+    with pytest.raises(HttpUrlExceptions):
+        HttpUrl.from_string(url1)
+
+    with pytest.raises(HttpUrlExceptions):
+        HttpUrl.from_string(url2)
+
+    with pytest.raises(HttpUrlExceptions):
+        HttpUrl.from_string(url3)
+
+    with pytest.raises(HttpUrlExceptions):
+        HttpUrl.from_string(url4)
