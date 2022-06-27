@@ -1,1 +1,1 @@
-from .httpurlexceptions import *
+from .httpurlexception import *

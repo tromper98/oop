@@ -60,7 +60,7 @@ class HttpUrl:
     def _parse_url(url: str) -> Tuple[str, str, int, str]:
         prefix: str = url[0:MAX_PREFIX_LENGTH]
         if '://' not in prefix:
-            raise EmptyProtocol()
+            raise DelimiterNotFound()
 
         protocol: str = prefix[:prefix.find(':')].lower()
 

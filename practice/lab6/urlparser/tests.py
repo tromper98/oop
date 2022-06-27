@@ -2,6 +2,13 @@ import pytest
 
 from exceptions import *
 from httpurl import HttpUrl
+from commandlineurlhandler import CommandLineUrlHandler
+
+OUTPUT_STORAGE = []
+
+
+def write_to_output_storage(string: str):
+    return OUTPUT_STORAGE.append(string)
 
 
 def is_equal_urls(target: HttpUrl, expected: HttpUrl) -> bool:
@@ -127,14 +134,84 @@ def test_fail_create_httpurl_from_string():
     url3 = 'http://go.ru:0'
     url4 = 'http://:50'
 
-    with pytest.raises(HttpUrlExceptions):
+    with pytest.raises(HttpUrlException):
         HttpUrl.from_string(url1)
 
-    with pytest.raises(HttpUrlExceptions):
+    with pytest.raises(HttpUrlException):
         HttpUrl.from_string(url2)
 
-    with pytest.raises(HttpUrlExceptions):
+    with pytest.raises(HttpUrlException):
         HttpUrl.from_string(url3)
 
-    with pytest.raises(HttpUrlExceptions):
+    with pytest.raises(HttpUrlException):
         HttpUrl.from_string(url4)
+
+
+def test_command_line_url_handler():
+    OUTPUT_STORAGE.clear()
+    handler = CommandLineUrlHandler(output_func=write_to_output_storage)
+
+    expected1 = """
+            url: http://google.com/docs/doc1.docx
+            protocol: http
+            domain: google.com
+            port: 80
+            document: /docs/doc1.docx 
+            """
+
+    expected2 = """
+            url: https://google.com
+            protocol: https
+            domain: google.com
+            port: 443
+            document: / 
+            """
+
+    expected3 = """
+            url: https://yandex.com:300/documents/text1.doc
+            protocol: https
+            domain: yandex.com
+            port: 300
+            document: /documents/text1.doc 
+            """
+
+    expected4 = """
+            url: http://gogo.us:95
+            protocol: http
+            domain: gogo.us
+            port: 95
+            document: / 
+            """
+
+    handler.print_url_info('http://google.com/docs/doc1.docx')
+    handler.print_url_info('https://google.com')
+    handler.print_url_info('https://yandex.com:300/documents/text1.doc')
+    handler.print_url_info('http://gogo.us:95')
+
+    assert OUTPUT_STORAGE[0] == expected1
+    assert OUTPUT_STORAGE[1] == expected2
+    assert OUTPUT_STORAGE[2] == expected3
+    assert OUTPUT_STORAGE[3] == expected4
+
+
+def test_command_line_url_handler_return_error():
+    OUTPUT_STORAGE.clear()
+    handler = CommandLineUrlHandler(output_func=write_to_output_storage)
+
+    expected1 = 'Protocol in URL doesn\'t found'
+    expected2 = 'Invalid port. Port must be integer in [1, 65535] but -100 were given'
+    expected3 = 'Invalid port. Port must be integer in [1, 65535] but port1 were given'
+    expected4 = 'Invalid protocol httr. Protocol must be in (http, https)'
+    expected5 = 'Domain can\'t be None or empty'
+
+    handler.print_url_info('http//google.com')
+    handler.print_url_info('http://gogo.ru:-100/docs/text1.txt')
+    handler.print_url_info('http://gogo.ru:port1/docs/text1.txt')
+    handler.print_url_info('httr://google.com')
+    handler.print_url_info('http://:100/gde_domain')
+
+    assert OUTPUT_STORAGE[0] == DelimiterNotFound()
+    # assert OUTPUT_STORAGE[1] == InvalidPort(-100)
+    # assert OUTPUT_STORAGE[2] == InvalidPort('port1')
+    # assert OUTPUT_STORAGE[3] == InvalidProtocol('httr', ['http', 'https'])
+    # assert OUTPUT_STORAGE[4] == InvalidDomain()
