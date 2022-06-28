@@ -1,6 +1,6 @@
-from typing import Protocol
+from interfaces.base.ipassenger import IPassenger
 
 
-class IPerson(Protocol):
+class IPerson(IPassenger):
     def get_name(self) -> str:
         ...
