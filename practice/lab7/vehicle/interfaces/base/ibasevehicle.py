@@ -22,7 +22,7 @@ class IBaseVehicle(Protocol):
     def get_passenger(self, index: int) -> IPassenger:
         ...
 
-    def add_passenger(self, passenger: IPassenger) -> None:
+    def add_passenger(self, passenger) -> None:
         ...
 
     def remove_passenger(self, index: int) -> None:

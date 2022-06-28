@@ -1,6 +1,6 @@
 from typing import Protocol
 
 
-class IBasePerson(Protocol):
+class IPerson(Protocol):
     def get_name(self) -> str:
         ...
